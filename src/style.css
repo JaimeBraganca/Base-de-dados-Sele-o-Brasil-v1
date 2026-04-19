@@ -160,3 +160,20 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   .btn-add span { display: none; }
   .side-panel, .form-panel { max-width: 100%; border-left: none; }
 }
+
+/* ── UPDATED NIVEL COLORS ── */
+.nivel-A-plus { background: #e8eeff; color: #3d5af1; border: 1px solid #3d5af1; }
+.nivel-A { background: #e0f7f7; color: #00b0b9; border: 1px solid #00b0b9; }
+.nivel-AB { background: #e8f5e2; color: #2e7d32; border: 1px solid #2e7d32; }
+.nivel-B-plus { background: #e8f5e2; color: #1b8a1b; border: 1px solid #1b8a1b; }
+.nivel-B { background: #fffde0; color: #c8a000; border: 1px solid #c8a000; }
+.nivel-B-minus { background: #fff4e0; color: #e08000; border: 1px solid #e08000; }
+.nivel-BC { background: #ffe8e8; color: #d32f2f; border: 1px solid #d32f2f; }
+.nivel-default { background: var(--surface-2); color: var(--text-2); border: 1px solid var(--border); }
+
+/* ── PLAYER RIGHT LAYOUT ── */
+.player-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; min-width: 110px; }
+.player-right-top { display: flex; justify-content: flex-end; }
+.player-right-bottom { display: flex; align-items: center; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+.pos-tag { font-size: 11px; color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+.player-ano { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; }
