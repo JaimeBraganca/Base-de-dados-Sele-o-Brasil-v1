@@ -166,6 +166,15 @@ function renderApp() {
 
       <div class="stats-bar">
         <div class="stats-count" id="stats-count"><strong>${state.filtered.length}</strong> de ${state.players.length} jogadores</div>
+        <div class="sort-controls">
+          <select class="sort-select" id="sort-col">
+            <option value="nome">Nome</option>
+            <option value="posicao">Posição</option>
+            <option value="nivel">Nível</option>
+            <option value="ano">Ano</option>
+          </select>
+          <button class="sort-dir-btn" id="sort-dir">↑↓</button>
+        </div>
       </div>
 
       <div class="player-list" id="player-list">
@@ -190,16 +199,12 @@ function renderPlayerList() {
       <div class="player-avatar">${initials(p.nome)}</div>
       <div class="player-info">
         <div class="player-name">${p.nome}</div>
+        <div class="player-ano-inline">${p.ano || '—'}</div>
         <div class="player-meta">${p.clube || '—'}</div>
       </div>
       <div class="player-right">
-        <div class="player-right-top">
-          <span class="nivel-badge ${nivelClass(p.nivel)}">${p.nivel || '—'}</span>
-        </div>
-        <div class="player-right-bottom">
-          <span class="pos-tag">${p.posicao || '—'}</span>
-          <span class="player-ano">${p.ano || '—'}</span>
-        </div>
+        <span class="nivel-badge ${nivelClass(p.nivel)}">${p.nivel || '—'}</span>
+        <span class="pos-tag">${p.posicao || '—'}</span>
       </div>
       <div class="chevron">${icon('chevron')}</div>
     </div>
@@ -226,6 +231,12 @@ function bindAppEvents() {
     document.getElementById('f-pos').value = ''
     document.getElementById('f-nivel').value = ''
     document.getElementById('f-ano').value = ''
+    updateList()
+  })
+  document.getElementById('sort-col').addEventListener('change', e => { state.sortCol = e.target.value; updateList() })
+  document.getElementById('sort-dir').addEventListener('click', () => {
+    state.sortDir *= -1
+    document.getElementById('sort-dir').textContent = state.sortDir === 1 ? '↑↓' : '↓↑'
     updateList()
   })
   document.getElementById('btn-add').addEventListener('click', () => openForm(null))
