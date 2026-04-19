@@ -5,6 +5,7 @@ const NIVEIS = ['A +','A','A/B','B +','B','B -','B/C']
 
 let state = {
   user: null,
+  role: null,
   players: [],
   filtered: [],
   loading: true,
@@ -139,7 +140,7 @@ function renderApp() {
           <span class="topbar-title">Database</span>
         </div>
         <div class="topbar-right">
-          <button class="btn-add" id="btn-add">${icon('plus')}<span>Novo Jogador</span></button>
+          ${(state.role === 'admin' || state.role === 'moderator') ? `<button class="btn-add" id="btn-add">${icon('plus')}<span>Novo Jogador</span></button>` : ''}
           <button class="btn-icon" id="btn-logout" title="Sair">${icon('logout')}</button>
         </div>
       </div>
@@ -239,7 +240,7 @@ function bindAppEvents() {
     document.getElementById('sort-dir').textContent = state.sortDir === 1 ? '↑↓' : '↓↑'
     updateList()
   })
-  document.getElementById('btn-add').addEventListener('click', () => openForm(null))
+  const btnAdd = document.getElementById('btn-add'); if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
   document.getElementById('btn-logout').addEventListener('click', async () => { await supabase.auth.signOut() })
   document.getElementById('overlay').addEventListener('click', closeAll)
   bindRowEvents()
@@ -278,7 +279,7 @@ function openPanel(player) {
         <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="panel-actions">
-        <button class="btn-edit" id="panel-edit">Editar</button>
+        ${state.role === 'admin' ? `<button class="btn-edit" id="panel-edit">Editar</button>` : ''}
         <button class="btn-icon" id="panel-close">${icon('close')}</button>
       </div>
     </div>
@@ -325,12 +326,12 @@ function openPanel(player) {
         </div>
       </div>
       ${player.notas ? `<div><div class="panel-section-title">Notas</div><div class="notas-box">${player.notas}</div></div>` : ''}
-      <div><button class="btn-delete" id="panel-delete" style="width:100%">Eliminar jogador</button></div>
+      ${state.role === 'admin' ? `<div><button class="btn-delete" id="panel-delete" style="width:100%">Eliminar jogador</button></div>` : ''}
     </div>
   `
   document.getElementById('panel-close').addEventListener('click', closeAll)
-  document.getElementById('panel-edit').addEventListener('click', () => { closePanel(); openForm(player) })
-  document.getElementById('panel-delete').addEventListener('click', () => deletePlayer(player))
+  const btnEdit = document.getElementById('panel-edit'); if (btnEdit) btnEdit.addEventListener('click', () => { closePanel(); openForm(player) })
+  const btnDel = document.getElementById('panel-delete'); if (btnDel) btnDel.addEventListener('click', () => deletePlayer(player))
   document.getElementById('overlay').classList.add('open')
   document.getElementById('side-panel').classList.add('open')
 }
@@ -493,16 +494,22 @@ async function loadPlayers() {
   updateList()
 }
 
+async function fetchRole() {
+  const { data } = await supabase.from('user_roles').select('role').eq('id', state.user.id).single()
+  state.role = data?.role || 'viewer'
+}
+
 async function init() {
   const { data: { session } } = await supabase.auth.getSession()
   state.user = session?.user || null
   if (!state.user) { renderAuth(); return }
+  await fetchRole()
   renderApp()
   await loadPlayers()
-  supabase.auth.onAuthStateChange((event, session) => {
+  supabase.auth.onAuthStateChange(async (event, session) => {
     state.user = session?.user || null
     if (!state.user) { renderAuth() }
-    else if (event === 'SIGNED_IN') { renderApp(); loadPlayers() }
+    else if (event === 'SIGNED_IN') { await fetchRole(); renderApp(); loadPlayers() }
   })
 }
 
