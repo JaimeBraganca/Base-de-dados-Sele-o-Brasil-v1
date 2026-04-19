@@ -276,17 +276,15 @@ function openPanel(player) {
 
   document.getElementById('panel-content').innerHTML = `
     <div class="panel-header">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <button class="btn-back" id="panel-back" title="Voltar à lista">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </button>
-        <div>
-          <div class="panel-header-title">${player.nome}</div>
-          <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' · ')}</div>
-        </div>
+      <div>
+        <div class="panel-header-title">${player.nome}</div>
+        <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' · ')}</div>
       </div>
       <div class="panel-actions">
         ${state.role === 'admin' ? `<button class="btn-edit" id="panel-edit">Editar</button>` : ''}
+        <button class="btn-back" id="panel-back" title="Voltar à lista">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </button>
       </div>
     </div>
     <div class="panel-body">
