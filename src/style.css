@@ -177,3 +177,15 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .player-right-bottom { display: flex; align-items: center; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
 .pos-tag { font-size: 11px; color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
 .player-ano { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; }
+
+/* ── SORT CONTROLS ── */
+.stats-bar { justify-content: space-between; }
+.sort-controls { display: flex; align-items: center; gap: 6px; }
+.sort-select { padding: 5px 24px 5px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%239ba5b0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 7px center; }
+.sort-select:focus { outline: none; border-color: var(--accent); }
+.sort-dir-btn { padding: 5px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-2); font-size: 12px; cursor: pointer; transition: background 0.12s; }
+.sort-dir-btn:hover { background: var(--surface-2); color: var(--text); }
+
+/* ── PLAYER ROW UPDATED ── */
+.player-ano-inline { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; margin: 1px 0; }
+.player-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
