@@ -198,7 +198,7 @@ function renderPlayerList() {
   }
   return state.filtered.map(p => `
     <div class="player-row" data-id="${p.id}">
-      <div class="player-avatar">${initials(p.nome)}</div>
+      <div class="player-avatar">${p.foto ? `<img src="${p.foto}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='${initials(p.nome)}'" />` : initials(p.nome)}</div>
       <div class="player-info">
         <div class="player-name">${p.nome}</div>
         <div class="player-ano-inline">${p.ano || '—'}</div>
@@ -276,9 +276,12 @@ function openPanel(player) {
 
   document.getElementById('panel-content').innerHTML = `
     <div class="panel-header">
-      <div>
-        <div class="panel-header-title">${player.nome}</div>
-        <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' · ')}</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="panel-avatar-large">${player.foto ? `<img src="${player.foto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'" />` : initials(player.nome)}</div>
+        <div>
+          <div class="panel-header-title">${player.nome}</div>
+          <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' · ')}</div>
+        </div>
       </div>
       <div class="panel-actions">
         ${state.role === 'admin' ? `<button class="btn-edit" id="panel-edit">Editar</button>` : ''}
@@ -421,6 +424,11 @@ function openForm(player) {
         <input class="form-input" id="f-video" type="url" value="${p.video || ''}" placeholder="https://youtube.com/..." />
       </div>
       <div class="form-group">
+        <label class="form-label">Foto (URL da imagem)</label>
+        <input class="form-input" id="f-foto" type="url" value="${p.foto || ''}" placeholder="https://..." />
+        ${p.foto ? `<img src="${p.foto}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-top:8px;" />` : ''}
+      </div>
+      <div class="form-group">
         <label class="form-label">Notas</label>
         <textarea class="form-textarea" id="f-notas">${p.notas || ''}</textarea>
       </div>
@@ -459,6 +467,7 @@ async function savePlayer() {
     telefone: document.getElementById('f-telefone').value.trim() || null,
     instagram: ig || null,
     instagram_link: igLink,
+    foto: document.getElementById('f-foto').value.trim() || null,
     link: document.getElementById('f-link').value.trim() || null,
     video: document.getElementById('f-video').value.trim() || null,
     notas: document.getElementById('f-notas').value.trim() || null,
