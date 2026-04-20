@@ -1,7 +1,7 @@
 {
-  "name": "Scouting Department — All In Sports Group",
-  "short_name": "Scouting",
-  "description": "Base de dados da All In Sports Group",
+  "name": "Base de Dados — All In Sports Group",
+  "short_name": "Base de Dados",
+  "description": "Base de dados de scouting da All In Sports Group",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f6f8",
