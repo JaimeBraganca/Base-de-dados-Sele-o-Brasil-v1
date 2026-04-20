@@ -209,3 +209,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ── HOME BUTTON ── */
 .btn-back { width: 34px; height: 34px; border-radius: 8px; border: 0.5px solid var(--border-2); background: var(--bg); color: var(--text-2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.12s, color 0.12s; flex-shrink: 0; }
 .btn-back:hover { background: var(--surface-2); color: var(--accent); }
+
+/* ── PLAYER AVATAR WITH PHOTO ── */
+.player-avatar img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; display: block; }
+.panel-avatar-large { width: 44px; height: 44px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: var(--accent); flex-shrink: 0; font-family: 'DM Mono', monospace; overflow: hidden; }
