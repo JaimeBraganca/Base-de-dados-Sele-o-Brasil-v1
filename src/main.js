@@ -72,7 +72,7 @@ function renderAuth() {
       <div class="auth-card">
         <div class="auth-logo">
           <img src="${LOGO}" class="auth-logo-img" />
-          <div class="auth-title">Database</div>
+          <div class="auth-title">Base de Dados</div>
           <div class="auth-sub">All In Sports Group</div>
         </div>
         <form class="auth-form" id="auth-form">
@@ -138,7 +138,7 @@ function renderApp() {
       <div class="topbar">
         <div class="topbar-left">
           <div class="topbar-logo"><img src="${LOGO}" style="width:30px;height:30px;object-fit:cover;" /></div>
-          <span class="topbar-title">Database</span>
+          <span class="topbar-title">Base de Dados</span>
         </div>
         <div class="topbar-right">
           ${(state.role === 'admin' || state.role === 'moderator') ? `<button class="btn-add" id="btn-add">${icon('plus')}<span>Novo Jogador</span></button>` : ''}
