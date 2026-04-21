@@ -120,7 +120,7 @@ function applyFilters() {
     }
     if (state.filterPos && p.posicao !== state.filterPos) return false
     if (state.filterNivel && p.nivel !== state.filterNivel) return false
-    if (state.filterAno && String(p.ano) !== String(state.filterAno)) return false
+    if (state.filterAno && parseInt(p.ano) !== parseInt(state.filterAno)) return false
     return true
   })
   const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
@@ -144,7 +144,7 @@ function applyFilters() {
 
 // ── RENDER APP ──
 function renderApp() {
-  const anos = [...new Set(state.players.map(p => p.ano).filter(a => a && a > 0))].sort()
+  const anos = [...new Set(state.players.map(p => parseInt(p.ano)).filter(a => a && a > 0))].sort((a,b) => a - b)
   document.getElementById('app').innerHTML = `
     <div class="app-layout">
       <div class="topbar">
@@ -239,7 +239,7 @@ function bindAppEvents() {
   document.getElementById('search').addEventListener('input', e => { state.search = e.target.value; updateList() })
   document.getElementById('f-pos').addEventListener('change', e => { state.filterPos = e.target.value; updateList() })
   document.getElementById('f-nivel').addEventListener('change', e => { state.filterNivel = e.target.value; updateList() })
-  document.getElementById('f-ano').addEventListener('change', e => { state.filterAno = e.target.value; updateList() })
+  document.getElementById('f-ano').addEventListener('change', e => { state.filterAno = e.target.value ? parseInt(e.target.value) : ''; updateList() })
   document.getElementById('btn-clear').addEventListener('click', () => {
     state.search = ''; state.filterPos = ''; state.filterNivel = ''; state.filterAno = ''
     document.getElementById('search').value = ''
