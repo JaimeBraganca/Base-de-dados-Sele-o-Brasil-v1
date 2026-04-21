@@ -354,6 +354,7 @@ function openPanel(player) {
   const btnDel = document.getElementById('panel-delete'); if (btnDel) btnDel.addEventListener('click', () => deletePlayer(player))
   document.getElementById('overlay').classList.add('open')
   document.getElementById('side-panel').classList.add('open')
+  history.pushState(null, '', location.href)
 }
 
 function closePanel() { document.getElementById('side-panel').classList.remove('open') }
@@ -437,9 +438,16 @@ function openForm(player) {
         <input class="form-input" id="f-video" type="url" value="${p.video || ''}" placeholder="https://youtube.com/..." />
       </div>
       <div class="form-group">
-        <label class="form-label">Foto (URL da imagem)</label>
-        <input class="form-input" id="f-foto" type="url" value="${p.foto || ''}" placeholder="https://..." />
-        ${p.foto ? `<img src="${p.foto}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-top:8px;" />` : ''}
+        <label class="form-label">Foto</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${p.foto ? `<img id="foto-preview" src="${p.foto}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;" />` : `<div id="foto-preview" style="width:64px;height:64px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-2);">Sem foto</div>`}
+          <input class="form-input" id="f-foto" type="url" value="${p.foto || ''}" placeholder="URL da imagem (https://...)" />
+          <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed var(--border-2);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text-2);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Escolher ficheiro local
+            <input type="file" id="f-foto-file" accept="image/*" style="display:none;" />
+          </label>
+        </div>
       </div>
       <div class="form-group">
         <label class="form-label">Notas</label>
@@ -457,6 +465,22 @@ function openForm(player) {
   document.getElementById('overlay').classList.add('open')
   document.getElementById('form-panel').classList.add('open')
   document.getElementById('f-nome').focus()
+  const fileInput = document.getElementById('f-foto-file')
+  if (fileInput) {
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = ev => {
+        const preview = document.getElementById('foto-preview')
+        if (preview) {
+          preview.outerHTML = `<img id="foto-preview" src="${ev.target.result}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;" />`
+        }
+        document.getElementById('f-foto').value = ''
+      }
+      reader.readAsDataURL(file)
+    })
+  }
 }
 
 // ── CRUD ──
@@ -466,6 +490,19 @@ async function savePlayer() {
   const btn = document.getElementById('form-save')
   btn.disabled = true
   btn.textContent = 'A guardar...'
+
+  // Handle local file upload
+  const fileInput = document.getElementById('f-foto-file')
+  let fotoUrl = document.getElementById('f-foto').value.trim() || null
+  if (fileInput && fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0]
+    fotoUrl = await new Promise((resolve) => {
+      const reader = new FileReader()
+      reader.onload = e => resolve(e.target.result)
+      reader.readAsDataURL(file)
+    })
+  }
+
   const ig = document.getElementById('f-instagram').value.trim().replace(/^@/, '')
   const igLink = ig ? `https://www.instagram.com/${ig}/` : null
   const data = {
@@ -480,7 +517,7 @@ async function savePlayer() {
     telefone: document.getElementById('f-telefone').value.trim() || null,
     instagram: ig || null,
     instagram_link: igLink,
-    foto: document.getElementById('f-foto').value.trim() || null,
+    foto: fotoUrl,
     link: document.getElementById('f-link').value.trim() || null,
     video: document.getElementById('f-video').value.trim() || null,
     notas: document.getElementById('f-notas').value.trim() || null,
@@ -524,6 +561,21 @@ async function fetchRole() {
   const { data } = await supabase.from('user_roles').select('role').eq('id', state.user.id).single()
   state.role = data?.role || 'viewer'
 }
+
+// Intercept Android back button
+window.addEventListener('popstate', () => {
+  const panel = document.getElementById('side-panel')
+  const form = document.getElementById('form-panel')
+  const overlay = document.getElementById('overlay')
+  if (form && form.classList.contains('open')) {
+    form.classList.remove('open')
+    if (panel && !panel.classList.contains('open')) overlay && overlay.classList.remove('open')
+    history.pushState(null, '', location.href)
+  } else if (panel && panel.classList.contains('open')) {
+    closeAll()
+    history.pushState(null, '', location.href)
+  }
+})
 
 async function init() {
   const { data: { session } } = await supabase.auth.getSession()
