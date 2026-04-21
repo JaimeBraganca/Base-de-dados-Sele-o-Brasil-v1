@@ -255,7 +255,10 @@ function bindAppEvents() {
     updateList()
   })
   const btnAdd = document.getElementById('btn-add'); if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
-  document.getElementById('btn-logout').addEventListener('click', async () => { await supabase.auth.signOut() })
+  document.getElementById('btn-logout').addEventListener('click', async () => {
+    resetState()
+    await supabase.auth.signOut()
+  })
   document.getElementById('overlay').addEventListener('click', closeAll)
   bindRowEvents()
 }
@@ -562,6 +565,20 @@ async function fetchRole() {
   state.role = data?.role || 'viewer'
 }
 
+function resetState() {
+  state.search = ''
+  state.filterPos = ''
+  state.filterNivel = ''
+  state.filterAno = ''
+  state.sortCol = 'nome'
+  state.sortDir = 1
+  state.selectedPlayer = null
+  state.editingPlayer = null
+  state.players = []
+  state.filtered = []
+  state.loading = true
+}
+
 // Intercept Android back button
 window.addEventListener('popstate', () => {
   const panel = document.getElementById('side-panel')
@@ -586,7 +603,7 @@ async function init() {
   await loadPlayers()
   supabase.auth.onAuthStateChange(async (event, session) => {
     state.user = session?.user || null
-    if (!state.user) { renderAuth() }
+    if (!state.user) { resetState(); renderAuth() }
     else if (event === 'SIGNED_IN') { await fetchRole(); renderApp(); loadPlayers() }
   })
 }
