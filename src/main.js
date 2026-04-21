@@ -120,11 +120,23 @@ function applyFilters() {
     }
     if (state.filterPos && p.posicao !== state.filterPos) return false
     if (state.filterNivel && p.nivel !== state.filterNivel) return false
-    if (state.filterAno && String(p.ano) !== state.filterAno) return false
+    if (state.filterAno && String(p.ano) !== String(state.filterAno)) return false
     return true
   })
+  const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
   state.filtered.sort((a, b) => {
     let av = a[state.sortCol] ?? '', bv = b[state.sortCol] ?? ''
+    if (state.sortCol === 'nivel') {
+      const ai = NIVEL_ORDER.indexOf(av), bi = NIVEL_ORDER.indexOf(bv)
+      const an = ai === -1 ? 99 : ai, bn = bi === -1 ? 99 : bi
+      return an < bn ? -state.sortDir : an > bn ? state.sortDir : 0
+    }
+    if (state.sortCol === 'posicao') {
+      const POSICAO_ORDER = ['Guarda-Redes','Defesa Central','Lateral Dir.','Lateral Esq.','Médio Defensivo','Médio-Centro','Médio Ofensivo','Extremo Dir.','Extremo Esq.','Ponta de Lança']
+      const ai = POSICAO_ORDER.indexOf(av), bi = POSICAO_ORDER.indexOf(bv)
+      const an = ai === -1 ? 99 : ai, bn = bi === -1 ? 99 : bi
+      return an < bn ? -state.sortDir : an > bn ? state.sortDir : 0
+    }
     if (!isNaN(av) && !isNaN(bv) && av !== '' && bv !== '') { av = +av; bv = +bv }
     return av < bv ? -state.sortDir : av > bv ? state.sortDir : 0
   })
@@ -161,7 +173,7 @@ function renderApp() {
         </select>
         <select class="filter-select" id="f-ano">
           <option value="">Ano</option>
-          ${anos.map(a => `<option value="${a}" ${state.filterAno===String(a)?'selected':''}>${a}</option>`).join('')}
+          ${anos.map(a => `<option value="${String(a)}" ${String(state.filterAno)===String(a)?'selected':''}>${a}</option>`).join('')}
         </select>
         <button class="btn-clear-filters" id="btn-clear">Limpar</button>
       </div>
@@ -171,9 +183,10 @@ function renderApp() {
         <div class="sort-controls">
           <select class="sort-select" id="sort-col">
             <option value="nome">Nome</option>
-            <option value="posicao">Posição</option>
-            <option value="nivel">Nível</option>
             <option value="ano">Ano</option>
+            <option value="clube">Clube</option>
+            <option value="nivel">Nível</option>
+            <option value="posicao">Posição</option>
           </select>
           <button class="sort-dir-btn" id="sort-dir">↑↓</button>
         </div>
