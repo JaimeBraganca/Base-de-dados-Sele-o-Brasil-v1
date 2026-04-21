@@ -65,8 +65,77 @@ function icon(name) {
   return icons[name] || ''
 }
 
+
+// ── WEBAUTHN ──
+const WA_KEY = 'wa_credential_id'
+
+function bufferToBase64(buffer) {
+  return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
+}
+
+function base64ToBuffer(base64) {
+  const b64 = base64.replace(/-/g, '+').replace(/_/g, '/')
+  const bin = atob(b64)
+  return Uint8Array.from(bin, c => c.charCodeAt(0)).buffer
+}
+
+function isWebAuthnSupported() {
+  return window.PublicKeyCredential !== undefined
+}
+
+async function isBiometricAvailable() {
+  if (!isWebAuthnSupported()) return false
+  try {
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+  } catch { return false }
+}
+
+async function registerBiometric(userEmail) {
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32))
+    const userId = new TextEncoder().encode(userEmail)
+    const credential = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'Base de Dados — All In Sports', id: location.hostname },
+        user: { id: userId, name: userEmail, displayName: userEmail },
+        pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+        timeout: 60000,
+      }
+    })
+    if (credential) {
+      localStorage.setItem(WA_KEY, bufferToBase64(credential.rawId))
+      localStorage.setItem('wa_email', userEmail)
+      return true
+    }
+  } catch (e) { console.log('WebAuthn register error:', e) }
+  return false
+}
+
+async function authenticateBiometric() {
+  const credId = localStorage.getItem(WA_KEY)
+  if (!credId) return null
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32))
+    const credential = await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ id: base64ToBuffer(credId), type: 'public-key' }],
+        userVerification: 'required',
+        timeout: 60000,
+      }
+    })
+    return credential ? localStorage.getItem('wa_email') : null
+  } catch (e) { console.log('WebAuthn auth error:', e); return null }
+}
+
 // ── AUTH ──
 function renderAuth() {
+  const hasBiometric = localStorage.getItem(WA_KEY)
+  const bioEmail = localStorage.getItem('wa_email')
+
   document.getElementById('app').innerHTML = `
     <div class="auth-screen">
       <div class="auth-card">
@@ -75,10 +144,18 @@ function renderAuth() {
           <div class="auth-title">Base de Dados</div>
           <div class="auth-sub">All In Sports Group</div>
         </div>
-        <form class="auth-form" id="auth-form">
+        ${hasBiometric ? `
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
+          <button class="btn-primary" id="btn-biometric" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+            Entrar com impressão digital
+          </button>
+          <div style="text-align:center;font-size:12px;color:var(--text-3);">ou</div>
+        </div>` : ''}
+        <form class="auth-form" id="auth-form" style="${hasBiometric ? 'margin-top:0' : ''}">
           <div>
             <label class="field-label">Email</label>
-            <input class="field-input" type="email" id="auth-email" placeholder="email@allinsportsgroup.com" autocomplete="email" required />
+            <input class="field-input" type="email" id="auth-email" placeholder="email@allinsportsgroup.com" autocomplete="email" value="${bioEmail || ''}" required />
           </div>
           <div>
             <label class="field-label">Password</label>
@@ -108,6 +185,30 @@ function renderAuth() {
       btn.textContent = 'Entrar'
     }
   })
+
+  // Biometric button handler
+  const bioBtn = document.getElementById('btn-biometric')
+  if (bioBtn) {
+    bioBtn.addEventListener('click', async () => {
+      bioBtn.disabled = true
+      bioBtn.textContent = 'A verificar...'
+      const email = await authenticateBiometric()
+      if (email) {
+        // Re-authenticate with stored session or prompt password once
+        const errEl = document.getElementById('auth-error')
+        errEl.textContent = 'Biometria confirmada! Introduz a password uma última vez para reativar a sessão.'
+        errEl.style.display = 'block'
+        errEl.style.background = 'var(--green-bg)'
+        errEl.style.borderColor = 'var(--green)'
+        errEl.style.color = 'var(--green)'
+        document.getElementById('auth-email').value = email
+        document.getElementById('auth-password').focus()
+      } else {
+        bioBtn.disabled = false
+        bioBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg> Entrar com impressão digital`
+      }
+    })
+  }
 }
 
 // ── FILTERS ──
@@ -594,6 +695,32 @@ window.addEventListener('popstate', () => {
   }
 })
 
+async function offerBiometricSetup(email) {
+  if (!localStorage.getItem(WA_KEY) && await isBiometricAvailable()) {
+    setTimeout(async () => {
+      const toast = document.getElementById('toast')
+      if (!toast) return
+      toast.innerHTML = `
+        <span>Ativar impressão digital?</span>
+        <button onclick="setupBiometric('${email}')" style="margin-left:12px;padding:4px 10px;background:white;color:#16a34a;border:none;border-radius:4px;font-weight:600;cursor:pointer;font-size:13px;">Ativar</button>
+        <button onclick="document.getElementById('toast').classList.remove('show')" style="margin-left:6px;padding:4px 10px;background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;cursor:pointer;font-size:13px;">Agora não</button>
+      `
+      toast.className = 'toast success show'
+      toast.style.whiteSpace = 'normal'
+      toast.style.textAlign = 'center'
+    }, 1500)
+  }
+}
+
+window.setupBiometric = async function(email) {
+  const toast = document.getElementById('toast')
+  toast.classList.remove('show')
+  const ok = await registerBiometric(email)
+  setTimeout(() => {
+    showToast(ok ? 'Impressão digital ativada! ✓' : 'Não foi possível ativar.', ok ? 'success' : 'error')
+  }, 300)
+}
+
 async function init() {
   const { data: { session } } = await supabase.auth.getSession()
   state.user = session?.user || null
@@ -604,7 +731,12 @@ async function init() {
   supabase.auth.onAuthStateChange(async (event, session) => {
     state.user = session?.user || null
     if (!state.user) { resetState(); renderAuth() }
-    else if (event === 'SIGNED_IN') { await fetchRole(); renderApp(); loadPlayers() }
+    else if (event === 'SIGNED_IN') {
+      await fetchRole()
+      renderApp()
+      loadPlayers()
+      if (session?.user?.email) offerBiometricSetup(session.user.email)
+    }
   })
 }
 
