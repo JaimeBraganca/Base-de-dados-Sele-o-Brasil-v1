@@ -221,7 +221,7 @@ function applyFilters() {
     }
     if (state.filterPos && p.posicao !== state.filterPos) return false
     if (state.filterNivel && p.nivel !== state.filterNivel) return false
-    if (state.filterAno !== '' && String(p.ano) !== String(state.filterAno)) return false
+    if (state.filterAno !== '') { console.log('ANO DEBUG:', JSON.stringify(p.ano), typeof p.ano, '===', JSON.stringify(state.filterAno), typeof state.filterAno, '?', String(p.ano) === String(state.filterAno)); if (String(p.ano) !== String(state.filterAno)) return false }
     return true
   })
   const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
