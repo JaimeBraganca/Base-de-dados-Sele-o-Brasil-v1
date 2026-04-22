@@ -62,7 +62,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .btn-add:hover { opacity: 0.88; }
 .btn-add svg { width: 15px; height: 15px; }
 
-.filters-bar { padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.filters-bar { padding: 12px 20px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; position: sticky; top: 54px; z-index: 40; }
 .search-wrap { position: relative; flex: 1; min-width: 200px; }
 .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; stroke: var(--text-3); fill: none; stroke-width: 2; pointer-events: none; }
 .search-input { width: 100%; padding: 9px 12px 9px 34px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; -webkit-appearance: none; transition: border-color 0.15s, box-shadow 0.15s; }
