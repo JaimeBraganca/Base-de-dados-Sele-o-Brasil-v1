@@ -1,4 +1,4 @@
-const CACHE_NAME = 'scouting-dept-v1'
+const CACHE_NAME = 'scouting-dept-v4'
 const ASSETS = ['/', '/index.html']
 
 self.addEventListener('install', e => {
