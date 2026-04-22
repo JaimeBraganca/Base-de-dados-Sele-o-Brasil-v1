@@ -146,7 +146,7 @@ function renderAuth() {
         </div>
         ${hasBiometric ? `
         <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
-          <button class="btn-primary" id="btn-biometric" style="display:flex;align-items:center;justify-content:center;gap:10px;">
+          <button class="btn-biometric-main" id="btn-biometric">
             <svg viewBox="0 0 32 32" fill="none" width="22" height="22"><path d="M16 4C9.373 4 4 9.373 4 16" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M28 16c0 6.627-5.373 12-12 12" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 10a6 6 0 0 1 6 6c0 2-.4 3.9-1.1 5.6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M10 16a6 6 0 0 1 6-6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 16v8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 19c0 2.5.8 4.8 2.1 6.7" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M19 19c0 1.4-.2 2.7-.7 3.9" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="white"/></svg>
             Entrar com impressão digital
           </button>
@@ -191,9 +191,10 @@ function renderAuth() {
       btn.disabled = false
       btn.textContent = 'Entrar'
     } else {
-      // If toggle is on, register biometric after login
+      // If toggle is on, register biometric and store credentials
       const toggle = document.getElementById('bio-toggle')
       if (toggle && toggle.checked) {
+        localStorage.setItem('wa_pwd', btoa(password))
         setTimeout(async () => {
           await registerBiometric(email)
         }, 1000)
