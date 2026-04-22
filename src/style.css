@@ -43,7 +43,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .field-input { width: 100%; padding: 11px 13px; background: var(--surface); border: 1px solid var(--border-2); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none; }
 .field-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,102,255,0.1); }
 .field-input::placeholder { color: var(--text-3); }
-.btn-primary { width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+.btn-primary { width: 100%; padding: 12px; background: linear-gradient(135deg, #0066ff, #0044cc); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
 .btn-primary:hover { opacity: 0.88; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .auth-error { background: var(--red-bg); border: 1px solid #fca5a5; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--red); }
@@ -228,3 +228,9 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .toggle-slider::before { content: ''; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
 .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
 .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ── BIOMETRIC LOGIN BUTTON ── */
+.btn-biometric-main { width: 100%; padding: 16px; background: linear-gradient(135deg, #6a3de8 0%, #4a1fa8 100%); color: #fff; border: none; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; letter-spacing: 0.3px; transition: opacity 0.15s, transform 0.1s; }
+.btn-biometric-main:hover { opacity: 0.92; }
+.btn-biometric-main:active { transform: scale(0.98); }
+.btn-biometric-main:disabled { opacity: 0.6; cursor: not-allowed; }
