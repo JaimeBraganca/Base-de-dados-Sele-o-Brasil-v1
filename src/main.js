@@ -162,6 +162,13 @@ function renderAuth() {
             <input class="field-input" type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" required />
           </div>
           <div id="auth-error" style="display:none" class="auth-error"></div>
+          <label class="toggle-row" id="bio-toggle-row" style="display:none;">
+            <span class="toggle-label">Ativar impressão digital para próximos acessos</span>
+            <div class="toggle-switch">
+              <input type="checkbox" id="bio-toggle" />
+              <span class="toggle-slider"></span>
+            </div>
+          </label>
           <button type="submit" class="btn-primary" id="auth-btn">Entrar</button>
         </form>
       </div>
@@ -183,6 +190,22 @@ function renderAuth() {
       errEl.style.display = 'block'
       btn.disabled = false
       btn.textContent = 'Entrar'
+    } else {
+      // If toggle is on, register biometric after login
+      const toggle = document.getElementById('bio-toggle')
+      if (toggle && toggle.checked) {
+        setTimeout(async () => {
+          await registerBiometric(email)
+        }, 1000)
+      }
+    }
+  })
+
+  // Show toggle if biometric available and not yet registered
+  isBiometricAvailable().then(available => {
+    const toggleRow = document.getElementById('bio-toggle-row')
+    if (available && !localStorage.getItem(WA_KEY) && toggleRow) {
+      toggleRow.style.display = 'flex'
     }
   })
 
