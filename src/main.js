@@ -221,7 +221,7 @@ function applyFilters() {
     }
     if (state.filterPos && p.posicao !== state.filterPos) return false
     if (state.filterNivel && p.nivel !== state.filterNivel) return false
-    if (state.filterAno !== '' && String(p.ano || '').trim() !== String(state.filterAno).trim()) return false
+    if (state.filterAno !== '' && p.ano !== state.filterAno) return false
     return true
   })
   const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
@@ -245,7 +245,7 @@ function applyFilters() {
 
 // ── RENDER APP ──
 function renderApp() {
-  const anos = [...new Set(state.players.map(p => parseInt(p.ano)).filter(a => !isNaN(a) && a > 0))].sort((a,b) => a - b)
+  const anos = [...new Set(state.players.map(p => p.ano).filter(a => a && a !== ''))].sort()
   document.getElementById('app').innerHTML = `
     <div class="app-layout">
       <div class="topbar">
@@ -274,7 +274,7 @@ function renderApp() {
         </select>
         <select class="filter-select" id="f-ano">
           <option value="">Ano</option>
-          ${anos.map(a => `<option value="${a}" ${String(state.filterAno)===String(a)?'selected':''}>${a}</option>`).join('')}
+          ${anos.map(a => `<option value="${a}" ${state.filterAno===a?'selected':''}>${a}</option>`).join('')}
         </select>
         <button class="btn-clear-filters" id="btn-clear">Limpar</button>
       </div>
@@ -656,7 +656,8 @@ async function deletePlayer(player) {
 async function loadPlayers() {
   const { data, error } = await supabase.from('players').select('*').order('nome')
   if (error) { showToast('Erro ao carregar dados.', 'error'); return }
-  state.players = data || []
+  // Normalize ano to string for consistent filtering
+  state.players = (data || []).map(p => ({ ...p, ano: p.ano ? String(parseInt(p.ano)) : '' }))
   state.loading = false
   updateList()
 }
