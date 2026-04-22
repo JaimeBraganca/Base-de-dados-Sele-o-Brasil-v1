@@ -221,7 +221,7 @@ function applyFilters() {
     }
     if (state.filterPos && p.posicao !== state.filterPos) return false
     if (state.filterNivel && p.nivel !== state.filterNivel) return false
-    if (state.filterAno !== '' && p.ano !== state.filterAno) return false
+    if (state.filterAno !== '' && String(p.ano) !== String(state.filterAno)) return false
     return true
   })
   const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
@@ -245,7 +245,7 @@ function applyFilters() {
 
 // ── RENDER APP ──
 function renderApp() {
-  const anos = [...new Set(state.players.map(p => p.ano).filter(a => a && a !== ''))].sort()
+  const anos = [...new Set(state.players.map(p => p.ano).filter(a => a && a !== ''))].sort((a,b) => Number(a) - Number(b))
   document.getElementById('app').innerHTML = `
     <div class="app-layout">
       <div class="topbar">
@@ -657,7 +657,7 @@ async function loadPlayers() {
   const { data, error } = await supabase.from('players').select('*').order('nome')
   if (error) { showToast('Erro ao carregar dados.', 'error'); return }
   // Normalize ano to string for consistent filtering
-  state.players = (data || []).map(p => ({ ...p, ano: p.ano ? String(parseInt(p.ano)) : '' }))
+  state.players = (data || []).map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
   state.loading = false
   updateList()
 }
