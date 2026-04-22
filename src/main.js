@@ -147,10 +147,10 @@ function renderAuth() {
         ${hasBiometric ? `
         <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
           <button class="btn-primary" id="btn-biometric" style="display:flex;align-items:center;justify-content:center;gap:10px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg>
+            <svg viewBox="0 0 32 32" fill="none" width="22" height="22"><path d="M16 4C9.373 4 4 9.373 4 16" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M28 16c0 6.627-5.373 12-12 12" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 10a6 6 0 0 1 6 6c0 2-.4 3.9-1.1 5.6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M10 16a6 6 0 0 1 6-6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 16v8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 19c0 2.5.8 4.8 2.1 6.7" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M19 19c0 1.4-.2 2.7-.7 3.9" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="white"/></svg>
             Entrar com impressão digital
           </button>
-          <div style="text-align:center;font-size:12px;color:var(--text-3);">ou</div>
+          <div style="text-align:center;font-size:12px;color:var(--text-3);margin-top:-4px;">ou entra com email e password</div>
         </div>` : ''}
         <form class="auth-form" id="auth-form" style="${hasBiometric ? 'margin-top:0' : ''}">
           <div>
@@ -205,7 +205,7 @@ function renderAuth() {
         document.getElementById('auth-password').focus()
       } else {
         bioBtn.disabled = false
-        bioBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/></svg> Entrar com impressão digital`
+        bioBtn.innerHTML = `<svg viewBox="0 0 32 32" fill="none" width="22" height="22"><path d="M16 4C9.373 4 4 9.373 4 16" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M28 16c0 6.627-5.373 12-12 12" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 10a6 6 0 0 1 6 6c0 2-.4 3.9-1.1 5.6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M10 16a6 6 0 0 1 6-6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 16v8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 19c0 2.5.8 4.8 2.1 6.7" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M19 19c0 1.4-.2 2.7-.7 3.9" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="white"/></svg> Entrar com impressão digital`
       }
     })
   }
@@ -221,7 +221,7 @@ function applyFilters() {
     }
     if (state.filterPos && p.posicao !== state.filterPos) return false
     if (state.filterNivel && p.nivel !== state.filterNivel) return false
-    if (state.filterAno && parseInt(p.ano) !== parseInt(state.filterAno)) return false
+    if (state.filterAno !== '' && state.filterAno !== null && parseInt(p.ano) !== parseInt(state.filterAno)) return false
     return true
   })
   const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
@@ -245,7 +245,7 @@ function applyFilters() {
 
 // ── RENDER APP ──
 function renderApp() {
-  const anos = [...new Set(state.players.map(p => parseInt(p.ano)).filter(a => a && a > 0))].sort((a,b) => a - b)
+  const anos = [...new Set(state.players.map(p => parseInt(p.ano)).filter(a => !isNaN(a) && a > 0))].sort((a,b) => a - b)
   document.getElementById('app').innerHTML = `
     <div class="app-layout">
       <div class="topbar">
@@ -274,7 +274,7 @@ function renderApp() {
         </select>
         <select class="filter-select" id="f-ano">
           <option value="">Ano</option>
-          ${anos.map(a => `<option value="${String(a)}" ${String(state.filterAno)===String(a)?'selected':''}>${a}</option>`).join('')}
+          ${anos.map(a => `<option value="${a}" ${parseInt(state.filterAno)===a?'selected':''}>${a}</option>`).join('')}
         </select>
         <button class="btn-clear-filters" id="btn-clear">Limpar</button>
       </div>
@@ -340,7 +340,7 @@ function bindAppEvents() {
   document.getElementById('search').addEventListener('input', e => { state.search = e.target.value; updateList() })
   document.getElementById('f-pos').addEventListener('change', e => { state.filterPos = e.target.value; updateList() })
   document.getElementById('f-nivel').addEventListener('change', e => { state.filterNivel = e.target.value; updateList() })
-  document.getElementById('f-ano').addEventListener('change', e => { state.filterAno = e.target.value ? parseInt(e.target.value) : ''; updateList() })
+  document.getElementById('f-ano').addEventListener('change', e => { state.filterAno = e.target.value !== '' ? parseInt(e.target.value) : ''; updateList() })
   document.getElementById('btn-clear').addEventListener('click', () => {
     state.search = ''; state.filterPos = ''; state.filterNivel = ''; state.filterAno = ''
     document.getElementById('search').value = ''
@@ -697,18 +697,19 @@ window.addEventListener('popstate', () => {
 
 async function offerBiometricSetup(email) {
   if (!localStorage.getItem(WA_KEY) && await isBiometricAvailable()) {
-    setTimeout(async () => {
-      const toast = document.getElementById('toast')
-      if (!toast) return
-      toast.innerHTML = `
-        <span>Ativar impressão digital?</span>
-        <button onclick="setupBiometric('${email}')" style="margin-left:12px;padding:4px 10px;background:white;color:#16a34a;border:none;border-radius:4px;font-weight:600;cursor:pointer;font-size:13px;">Ativar</button>
-        <button onclick="document.getElementById('toast').classList.remove('show')" style="margin-left:6px;padding:4px 10px;background:transparent;color:white;border:1px solid rgba(255,255,255,0.4);border-radius:4px;cursor:pointer;font-size:13px;">Agora não</button>
-      `
-      toast.className = 'toast success show'
-      toast.style.whiteSpace = 'normal'
-      toast.style.textAlign = 'center'
-    }, 1500)
+    // Show register button in topbar
+    const topbarRight = document.querySelector('.topbar-right')
+    if (!topbarRight) return
+    const existing = document.getElementById('btn-setup-bio')
+    if (existing) return
+    const btn = document.createElement('button')
+    btn.id = 'btn-setup-bio'
+    btn.className = 'btn-add'
+    btn.style.background = 'var(--green)'
+    btn.style.fontSize = '12px'
+    btn.innerHTML = `<svg viewBox="0 0 32 32" fill="none" width="18" height="18"><path d="M16 4C9.373 4 4 9.373 4 16" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/><path d="M28 16c0 6.627-5.373 12-12 12" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/><path d="M16 10a6 6 0 0 1 6 6c0 2-.4 3.9-1.1 5.6" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/><path d="M10 16a6 6 0 0 1 6-6" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/><path d="M16 16v8" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/><path d="M13 19c0 2.5.8 4.8 2.1 6.7" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/><path d="M19 19c0 1.4-.2 2.7-.7 3.9" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="#0066ff"/></svg><span>Ativar digital</span>`
+    btn.addEventListener('click', () => window.setupBiometric(email))
+    topbarRight.insertBefore(btn, topbarRight.firstChild)
   }
 }
 
