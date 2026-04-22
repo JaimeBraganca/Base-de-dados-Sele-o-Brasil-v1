@@ -194,7 +194,7 @@ function renderAuth() {
       // If toggle is on, register biometric and store credentials
       const toggle = document.getElementById('bio-toggle')
       if (toggle && toggle.checked) {
-        localStorage.setItem('wa_pwd', btoa(password))
+        try { localStorage.setItem('wa_pwd', btoa(unescape(encodeURIComponent(password)))) } catch(e) { localStorage.setItem('wa_pwd', btoa(password)) }
         setTimeout(async () => {
           await registerBiometric(email)
         }, 1000)
