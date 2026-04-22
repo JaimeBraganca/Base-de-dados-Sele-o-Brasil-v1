@@ -221,7 +221,7 @@ function applyFilters() {
     }
     if (state.filterPos && p.posicao !== state.filterPos) return false
     if (state.filterNivel && p.nivel !== state.filterNivel) return false
-    if (state.filterAno !== '' && state.filterAno !== null && parseInt(p.ano) !== parseInt(state.filterAno)) return false
+    if (state.filterAno !== '' && String(p.ano || '').trim() !== String(state.filterAno).trim()) return false
     return true
   })
   const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
@@ -274,7 +274,7 @@ function renderApp() {
         </select>
         <select class="filter-select" id="f-ano">
           <option value="">Ano</option>
-          ${anos.map(a => `<option value="${a}" ${parseInt(state.filterAno)===a?'selected':''}>${a}</option>`).join('')}
+          ${anos.map(a => `<option value="${a}" ${String(state.filterAno)===String(a)?'selected':''}>${a}</option>`).join('')}
         </select>
         <button class="btn-clear-filters" id="btn-clear">Limpar</button>
       </div>
@@ -340,7 +340,7 @@ function bindAppEvents() {
   document.getElementById('search').addEventListener('input', e => { state.search = e.target.value; updateList() })
   document.getElementById('f-pos').addEventListener('change', e => { state.filterPos = e.target.value; updateList() })
   document.getElementById('f-nivel').addEventListener('change', e => { state.filterNivel = e.target.value; updateList() })
-  document.getElementById('f-ano').addEventListener('change', e => { state.filterAno = e.target.value !== '' ? parseInt(e.target.value) : ''; updateList() })
+  document.getElementById('f-ano').addEventListener('change', e => { state.filterAno = e.target.value; updateList() })
   document.getElementById('btn-clear').addEventListener('click', () => {
     state.search = ''; state.filterPos = ''; state.filterNivel = ''; state.filterAno = ''
     document.getElementById('search').value = ''
