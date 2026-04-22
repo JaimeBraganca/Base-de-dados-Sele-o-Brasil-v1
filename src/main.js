@@ -245,7 +245,7 @@ function applyFilters() {
 
 // ── RENDER APP ──
 function renderApp() {
-  const anos = [...new Set(state.players.map(p => p.ano).filter(a => a && a !== ''))].sort((a,b) => Number(a) - Number(b))
+
   document.getElementById('app').innerHTML = `
     <div class="app-layout">
       <div class="topbar">
@@ -274,7 +274,6 @@ function renderApp() {
         </select>
         <select class="filter-select" id="f-ano">
           <option value="">Ano</option>
-          ${anos.map(a => `<option value="${a}" ${state.filterAno===a?'selected':''}>${a}</option>`).join('')}
         </select>
         <button class="btn-clear-filters" id="btn-clear">Limpar</button>
       </div>
@@ -333,6 +332,12 @@ function updateList() {
   if (list) list.innerHTML = renderPlayerList()
   const stats = document.getElementById('stats-count')
   if (stats) stats.innerHTML = `<strong>${state.filtered.length}</strong> de ${state.players.length} jogadores`
+  // Repopulate anos dropdown with actual data
+  const anoSelect = document.getElementById('f-ano')
+  if (anoSelect && state.players.length > 0) {
+    const anos = [...new Set(state.players.map(p => p.ano).filter(a => a && a !== ''))].sort((a,b) => Number(a) - Number(b))
+    anoSelect.innerHTML = '<option value="">Ano</option>' + anos.map(a => `<option value="${a}" ${state.filterAno===a?'selected':''}>${a}</option>`).join('')
+  }
   bindRowEvents()
 }
 
