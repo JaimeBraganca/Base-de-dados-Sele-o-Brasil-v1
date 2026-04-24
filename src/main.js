@@ -17,6 +17,15 @@ let state = {
   sortDir: 1,
   selectedPlayer: null,
   editingPlayer: null,
+  realtimeChannel: null,
+}
+
+function isNew(player) {
+  if (!player.data_insercao) return false
+  const inserted = new Date(player.data_insercao)
+  const now = new Date()
+  const diffDays = (now - inserted) / (1000 * 60 * 60 * 24)
+  return diffDays <= 7
 }
 
 function initials(name) {
@@ -337,7 +346,10 @@ function renderPlayerList() {
     <div class="player-row" data-id="${p.id}">
       <div class="player-avatar">${p.foto ? `<img src="${p.foto}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='${initials(p.nome)}'" />` : initials(p.nome)}</div>
       <div class="player-info">
-        <div class="player-name">${p.nome}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="player-name">${p.nome}</div>
+          ${isNew(p) ? '<span class="badge-new">NOVO</span>' : ''}
+        </div>
         <div class="player-ano-inline">${p.ano || '—'}</div>
         <div class="player-meta">${p.clube || '—'}</div>
       </div>
@@ -668,7 +680,11 @@ async function savePlayer() {
     btn.textContent = state.editingPlayer ? 'Guardar' : 'Adicionar jogador'
     return
   }
-  showToast(state.editingPlayer ? 'Jogador atualizado!' : 'Jogador adicionado!', 'success')
+  const isNew = !state.editingPlayer
+  showToast(isNew ? 'Jogador adicionado!' : 'Jogador atualizado!', 'success')
+  if (isNew) {
+    sendLocalNotification('Novo jogador adicionado!', `${nome} foi adicionado à base de dados.`)
+  }
   closeAll()
   await loadPlayers()
 }
@@ -685,15 +701,52 @@ async function deletePlayer(player) {
 async function loadPlayers() {
   const { data, error } = await supabase.from('players').select('*').order('nome')
   if (error) { showToast('Erro ao carregar dados.', 'error'); return }
-  // Normalize ano to string for consistent filtering
   state.players = (data || []).map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
   state.loading = false
   updateList()
+  // Subscribe to realtime updates
+  if (!state.realtimeChannel) {
+    state.realtimeChannel = supabase
+      .channel('players-changes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'players' }, (payload) => {
+        const novo = payload.new
+        if (novo && novo.nome) {
+          sendLocalNotification('Novo jogador adicionado!', `${novo.nome} foi adicionado à base de dados.`)
+          loadPlayers()
+        }
+      })
+      .subscribe()
+  }
 }
 
 async function fetchRole() {
   const { data } = await supabase.from('user_roles').select('role').eq('id', state.user.id).single()
   state.role = data?.role || 'viewer'
+}
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) return
+  if (Notification.permission === 'default') {
+    await Notification.requestPermission()
+  }
+}
+
+function sendLocalNotification(title, body) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return
+  try {
+    new Notification(title, {
+      body,
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+    })
+  } catch(e) {
+    // Use service worker notification as fallback
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.showNotification(title, { body, icon: '/icon-192.png' })
+      })
+    }
+  }
 }
 
 function resetState() {
@@ -767,6 +820,7 @@ async function init() {
       renderApp()
       loadPlayers()
       if (session?.user?.email) offerBiometricSetup(session.user.email)
+      requestNotificationPermission()
     }
   })
 }
