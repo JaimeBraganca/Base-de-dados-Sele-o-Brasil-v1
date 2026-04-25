@@ -241,3 +241,6 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 /* ── NOVO BADGE ── */
 .badge-new { display: inline-block; padding: 2px 7px; background: #dcfce7; color: #16a34a; border: 1px solid #16a34a; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; font-family: 'DM Mono', monospace; animation: pulse-new 2s infinite; flex-shrink: 0; }
 @keyframes pulse-new { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── POSITION BADGE IN PANEL — same font as project ── */
+.pos-badge-panel { display: inline-block; padding: 2px 9px; border-radius: 4px; font-size: 13px; font-weight: 500; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); font-family: 'DM Sans', sans-serif; }
