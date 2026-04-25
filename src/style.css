@@ -250,13 +250,13 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 
 /* ── NOVO — ring + badge ── */
 .novo-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
-.novo-ring { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 2.5px; border-radius: 50%; display: inline-flex; }
+.novo-ring { background: linear-gradient(135deg, #0066ff, #0044cc, #003399); padding: 2.5px; border-radius: 50%; display: inline-flex; }
 .novo-ring .player-avatar,
 .novo-ring .panel-avatar-large { border: 2px solid white; }
-.novo-label { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #f09433, #dc2743, #bc1888); color: white; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; padding: 2px 6px; border-radius: 4px; white-space: nowrap; font-family: 'DM Sans', sans-serif; border: 1.5px solid white; }
+.novo-label { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #0066ff, #0044cc, #003399); color: white; font-size: 9px; font-weight: 700; letter-spacing: 0.8px; padding: 2px 6px; border-radius: 4px; white-space: nowrap; font-family: 'DM Sans', sans-serif; border: 1.5px solid white; }
 .novo-wrap-list { position: relative; display: inline-flex; flex-shrink: 0; margin-bottom: 6px; }
 .novo-wrap-list .novo-label { font-size: 8px; padding: 1px 5px; bottom: -7px; }
 
 /* ── PANEL AVATAR NEW RING ── */
-.panel-avatar-new-ring { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); padding: 2.5px; border-radius: 50%; display: inline-flex; }
+.panel-avatar-new-ring { background: linear-gradient(135deg, #0066ff, #0044cc, #003399); padding: 2.5px; border-radius: 50%; display: inline-flex; }
 .panel-avatar-new-ring .panel-avatar-large { border: 2px solid white; }
