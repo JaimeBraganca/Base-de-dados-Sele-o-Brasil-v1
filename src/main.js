@@ -446,9 +446,7 @@ function openPanel(player) {
         <button class="btn-icon" id="panel-share" title="Partilhar perfil">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         </button>
-        <button class="btn-back" id="panel-back" title="Voltar à lista">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10"/><polyline points="8 17 3 12 8 7"/><line x1="3" y1="12" x2="15" y2="12"/></svg>
-        </button>
+
       </div>
     </div>
     <div class="panel-body">
@@ -496,9 +494,8 @@ function openPanel(player) {
       ${state.role === 'admin' ? `<div><button class="btn-delete" id="panel-delete" style="width:100%">Eliminar jogador</button></div>` : ''}
     </div>
   `
-  document.getElementById('panel-back').addEventListener('click', closeAll)
   document.getElementById('panel-share').addEventListener('click', () => {
-    const url = `${location.origin}?player=${player.id}`
+    const url = `${location.origin}/#player=${player.id}`
     if (navigator.share) {
       navigator.share({
         title: `${player.nome} — Base de Dados All In Sports`,
@@ -824,14 +821,31 @@ async function init() {
   state.user = session?.user || null
   if (!state.user) {
     // Store shared player id to open after login
-    const params = new URLSearchParams(location.search)
-    if (params.get('player')) localStorage.setItem('open_player', params.get('player'))
+    const hash = location.hash
+    if (hash && hash.startsWith('#player=')) {
+      localStorage.setItem('open_player', hash.replace('#player=', ''))
+    }
     renderAuth(); return
   }
   await fetchRole()
   renderApp()
   await loadPlayers()
-  // Open shared player if any
+  // Open shared player from URL hash
+  function checkAndOpenSharedPlayer() {
+    const hash = location.hash
+    if (hash && hash.startsWith('#player=')) {
+      const playerId = hash.replace('#player=', '')
+      const player = state.players.find(p => p.id === playerId)
+      if (player) {
+        openPanel(player)
+        // Clear hash without reload
+        history.replaceState(null, '', location.pathname)
+      }
+    }
+  }
+  checkAndOpenSharedPlayer()
+  
+  // Also store for after login if not yet authenticated
   const openPlayerId = localStorage.getItem('open_player')
   if (openPlayerId) {
     localStorage.removeItem('open_player')
