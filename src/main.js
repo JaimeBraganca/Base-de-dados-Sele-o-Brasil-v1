@@ -370,9 +370,9 @@ function renderPlayerList() {
 
   let html = ''
   if (newPlayers.length > 0) {
-    html += `<div class="section-header">Entradas Recentes <span class="section-count">${newPlayers.length}</span></div>`
+    html += `<div class="section-header">Entradas Recentes</div>`
     html += newPlayers.map(renderRow).join('')
-    html += `<div class="section-header">Todos os Jogadores <span class="section-count">${state.filtered.length}</span></div>`
+    html += `<div class="section-header">Todos os Jogadores</div>`
   }
   html += state.filtered.map(renderRow).join('')
   return html
