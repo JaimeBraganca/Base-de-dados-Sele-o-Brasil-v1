@@ -25,7 +25,7 @@ function isNew(player) {
   const inserted = new Date(player.data_insercao)
   const now = new Date()
   const diffDays = (now - inserted) / (1000 * 60 * 60 * 24)
-  return diffDays <= 7
+  return diffDays <= 10
 }
 
 function initials(name) {
@@ -344,11 +344,14 @@ function renderPlayerList() {
   }
   return state.filtered.map(p => `
     <div class="player-row" data-id="${p.id}">
-      <div class="player-avatar">${p.foto ? `<img src="${p.foto}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='${initials(p.nome)}'" />` : initials(p.nome)}</div>
+      <div class="${isNew(p) ? 'novo-wrap-list' : ''}">
+        ${isNew(p) ? '<div class="novo-ring">' : ''}
+        <div class="player-avatar">${p.foto ? `<img src="${p.foto}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;" onerror="this.parentElement.textContent='${initials(p.nome)}'" />` : initials(p.nome)}</div>
+        ${isNew(p) ? '</div><span class="novo-label">NOVO</span>' : ''}
+      </div>
       <div class="player-info">
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="player-name">${p.nome}</div>
-          ${isNew(p) ? '<span class="badge-new">NOVO</span>' : ''}
         </div>
         <div class="player-ano-inline">${p.ano || '—'}</div>
         <div class="player-meta">${p.clube || '—'}</div>
@@ -435,7 +438,11 @@ function openPanel(player) {
   document.getElementById('panel-content').innerHTML = `
     <div class="panel-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div class="panel-avatar-large">${player.foto ? `<img src="${player.foto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'" />` : initials(player.nome)}</div>
+        <div class="${isNew(player) ? 'novo-wrap' : ''}" style="position:relative;">
+          ${isNew(player) ? '<div class="panel-avatar-new-ring">' : ''}
+          <div class="panel-avatar-large">${player.foto ? `<img src="${player.foto}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'" />` : initials(player.nome)}</div>
+          ${isNew(player) ? '</div><span class="novo-label">NOVO</span>' : ''}
+        </div>
         <div>
           <div class="panel-header-title">${player.nome}</div>
           <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' · ')}</div>
