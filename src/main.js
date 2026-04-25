@@ -372,11 +372,9 @@ function renderPlayerList() {
   if (newPlayers.length > 0) {
     html += `<div class="section-header">Entradas Recentes <span class="section-count">${newPlayers.length}</span></div>`
     html += newPlayers.map(renderRow).join('')
-    if (regularPlayers.length > 0) {
-      html += `<div class="section-header">Todos os Jogadores <span class="section-count">${regularPlayers.length}</span></div>`
-    }
+    html += `<div class="section-header">Todos os Jogadores <span class="section-count">${state.filtered.length}</span></div>`
   }
-  html += regularPlayers.map(renderRow).join('')
+  html += state.filtered.map(renderRow).join('')
   return html
 }
 
