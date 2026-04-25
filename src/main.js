@@ -509,7 +509,7 @@ function openPanel(player) {
   const btnDel = document.getElementById('panel-delete'); if (btnDel) btnDel.addEventListener('click', () => deletePlayer(player))
   document.getElementById('overlay').classList.add('open')
   document.getElementById('side-panel').classList.add('open')
-  history.pushState({ panel: true }, '', location.pathname)
+  pushPanelState()
 }
 
 function closePanel() { document.getElementById('side-panel').classList.remove('open') }
@@ -774,19 +774,31 @@ function resetState() {
 }
 
 // Intercept Android back button
+function pushPanelState() {
+  history.pushState({ panel: true }, '', location.pathname)
+}
+
 window.addEventListener('popstate', (e) => {
   const panel = document.getElementById('side-panel')
   const form = document.getElementById('form-panel')
   const overlay = document.getElementById('overlay')
-  if (form && form.classList.contains('open')) {
-    form.classList.remove('open')
-    if (panel && !panel.classList.contains('open')) overlay && overlay.classList.remove('open')
-    history.pushState({ panel: true }, '', location.pathname)
-  } else if (panel && panel.classList.contains('open')) {
-    closeAll()
+  const anyOpen = (panel && panel.classList.contains('open')) || (form && form.classList.contains('open'))
+  if (anyOpen) {
+    // Close whatever is open and push state again to stay in app
+    if (form && form.classList.contains('open')) {
+      form.classList.remove('open')
+    }
+    if (panel && panel.classList.contains('open')) {
+      panel.classList.remove('open')
+    }
+    if (overlay) overlay.classList.remove('open')
+    // Push state again so next back still stays in app
     history.pushState({ panel: false }, '', location.pathname)
   }
 })
+
+// Push initial state on load so first back press is intercepted
+history.replaceState({ panel: false }, '', location.pathname)
 
 async function offerBiometricSetup(email) {
   if (!localStorage.getItem(WA_KEY) && await isBiometricAvailable()) {
