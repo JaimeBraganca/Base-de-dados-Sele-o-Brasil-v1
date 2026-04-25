@@ -443,8 +443,11 @@ function openPanel(player) {
       </div>
       <div class="panel-actions">
         ${state.role === 'admin' ? `<button class="btn-edit" id="panel-edit">Editar</button>` : ''}
+        <button class="btn-icon" id="panel-share" title="Partilhar perfil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </button>
         <button class="btn-back" id="panel-back" title="Voltar à lista">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10"/><polyline points="8 17 3 12 8 7"/><line x1="3" y1="12" x2="15" y2="12"/></svg>
         </button>
       </div>
     </div>
@@ -454,7 +457,7 @@ function openPanel(player) {
         <div class="info-grid">
           <div class="info-row"><span class="info-label">Nº Processo</span><span class="info-val">${player.processo || '—'}</span></div>
           <div class="info-row"><span class="info-label">Ano Nascimento</span><span class="info-val">${player.ano || '—'}</span></div>
-          <div class="info-row"><span class="info-label">Posição</span><span class="info-val"><span class="nivel-badge nivel-default">${player.posicao || '—'}</span></span></div>
+          <div class="info-row"><span class="info-label">Posição</span><span class="info-val"><span class="pos-badge-panel">${player.posicao || '—'}</span></span></div>
           <div class="info-row"><span class="info-label">Nível</span><span class="info-val"><span class="nivel-badge ${nivelClass(player.nivel)}">${player.nivel || '—'}</span></span></div>
           <div class="info-row"><span class="info-label">Clube Actual</span><span class="info-val">${player.clube || '—'}</span></div>
         </div>
@@ -469,7 +472,6 @@ function openPanel(player) {
       <div>
         <div class="panel-section-title">Contactos & Links</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Telemóvel</span><span class="info-val">${player.telefone || '<span style="color:var(--text-3)">—</span>'}</span></div>
           <div class="info-row">
             <span class="info-label">Instagram</span>
             <span class="info-val">
@@ -495,6 +497,18 @@ function openPanel(player) {
     </div>
   `
   document.getElementById('panel-back').addEventListener('click', closeAll)
+  document.getElementById('panel-share').addEventListener('click', () => {
+    const url = `${location.origin}?player=${player.id}`
+    if (navigator.share) {
+      navigator.share({
+        title: `${player.nome} — Base de Dados All In Sports`,
+        text: `${player.nome} | ${player.posicao || ''} | ${player.clube || ''}`,
+        url
+      })
+    } else {
+      navigator.clipboard.writeText(url).then(() => showToast('Link copiado!', 'success'))
+    }
+  })
   const btnEdit = document.getElementById('panel-edit'); if (btnEdit) btnEdit.addEventListener('click', () => { closePanel(); openForm(player) })
   const btnDel = document.getElementById('panel-delete'); if (btnDel) btnDel.addEventListener('click', () => deletePlayer(player))
   document.getElementById('overlay').classList.add('open')
@@ -808,10 +822,24 @@ window.setupBiometric = async function(email) {
 async function init() {
   const { data: { session } } = await supabase.auth.getSession()
   state.user = session?.user || null
-  if (!state.user) { renderAuth(); return }
+  if (!state.user) {
+    // Store shared player id to open after login
+    const params = new URLSearchParams(location.search)
+    if (params.get('player')) localStorage.setItem('open_player', params.get('player'))
+    renderAuth(); return
+  }
   await fetchRole()
   renderApp()
   await loadPlayers()
+  // Open shared player if any
+  const openPlayerId = localStorage.getItem('open_player')
+  if (openPlayerId) {
+    localStorage.removeItem('open_player')
+    setTimeout(() => {
+      const player = state.players.find(p => p.id === openPlayerId)
+      if (player) openPanel(player)
+    }, 500)
+  }
   supabase.auth.onAuthStateChange(async (event, session) => {
     state.user = session?.user || null
     if (!state.user) { resetState(); renderAuth() }
