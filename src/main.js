@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js'
 
 const POSICOES = ['Guarda-Redes','Defesa Central','Lateral Dir.','Lateral Esq.','Médio Defensivo','Médio-Centro','Médio Ofensivo','Extremo Dir.','Extremo Esq.','Ponta de Lança']
-const NIVEIS = ['A +','A','A/B','B +','B','B -','B/C']
+const NIVEIS = ['A+','A','A/B','B+','B','B-','B/C']
 
 let state = {
   user: null,
@@ -37,11 +37,11 @@ function initials(name) {
 function nivelClass(n) {
   if (!n) return 'nivel-default'
   const m = n.trim()
-  if (m === 'A +') return 'nivel-A-plus'
+  if (m === 'A+') return 'nivel-A-plus'
   if (m === 'A') return 'nivel-A'
   if (m === 'A/B') return 'nivel-AB'
-  if (m === 'B +') return 'nivel-B-plus'
-  if (m === 'B -') return 'nivel-B-minus'
+  if (m === 'B+') return 'nivel-B-plus'
+  if (m === 'B-') return 'nivel-B-minus'
   if (m === 'B/C') return 'nivel-BC'
   if (m === 'B') return 'nivel-B'
   return 'nivel-default'
@@ -257,7 +257,7 @@ function applyFilters() {
     if (state.filterAno !== '') { console.log('ANO DEBUG:', JSON.stringify(p.ano), typeof p.ano, '===', JSON.stringify(state.filterAno), typeof state.filterAno, '?', String(p.ano) === String(state.filterAno)); if (String(p.ano) !== String(state.filterAno)) return false }
     return true
   })
-  const NIVEL_ORDER = ['A +','A','A/B','B +','B','B -','B/C']
+  const NIVEL_ORDER = ['A+','A','A/B','B+','B','B-','B/C']
   state.filtered.sort((a, b) => {
     let av = a[state.sortCol] ?? '', bv = b[state.sortCol] ?? ''
     if (state.sortCol === 'nivel') {
@@ -453,7 +453,6 @@ function openPanel(player) {
       <div>
         <div class="panel-section-title">Identificação</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Nº Processo</span><span class="info-val">${player.processo || '—'}</span></div>
           <div class="info-row"><span class="info-label">Ano Nascimento</span><span class="info-val">${player.ano || '—'}</span></div>
           <div class="info-row"><span class="info-label">Posição</span><span class="info-val"><span class="pos-badge-panel">${player.posicao || '—'}</span></span></div>
           <div class="info-row"><span class="info-label">Nível</span><span class="info-val"><span class="nivel-badge ${nivelClass(player.nivel)}">${player.nivel || '—'}</span></span></div>
@@ -510,7 +509,7 @@ function openPanel(player) {
   const btnDel = document.getElementById('panel-delete'); if (btnDel) btnDel.addEventListener('click', () => deletePlayer(player))
   document.getElementById('overlay').classList.add('open')
   document.getElementById('side-panel').classList.add('open')
-  history.pushState(null, '', location.href)
+  history.pushState({ panel: true }, '', location.pathname)
 }
 
 function closePanel() { document.getElementById('side-panel').classList.remove('open') }
@@ -775,17 +774,17 @@ function resetState() {
 }
 
 // Intercept Android back button
-window.addEventListener('popstate', () => {
+window.addEventListener('popstate', (e) => {
   const panel = document.getElementById('side-panel')
   const form = document.getElementById('form-panel')
   const overlay = document.getElementById('overlay')
   if (form && form.classList.contains('open')) {
     form.classList.remove('open')
     if (panel && !panel.classList.contains('open')) overlay && overlay.classList.remove('open')
-    history.pushState(null, '', location.href)
+    history.pushState({ panel: true }, '', location.pathname)
   } else if (panel && panel.classList.contains('open')) {
     closeAll()
-    history.pushState(null, '', location.href)
+    history.pushState({ panel: false }, '', location.pathname)
   }
 })
 
@@ -837,9 +836,11 @@ async function init() {
       const playerId = hash.replace('#player=', '')
       const player = state.players.find(p => p.id === playerId)
       if (player) {
-        openPanel(player)
-        // Clear hash without reload
+        // Clear hash first
         history.replaceState(null, '', location.pathname)
+        // Push state so back button closes panel instead of exiting app
+        history.pushState({ panel: true }, '', location.pathname)
+        openPanel(player)
       }
     }
   }
