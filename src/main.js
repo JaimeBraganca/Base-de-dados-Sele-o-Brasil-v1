@@ -797,8 +797,6 @@ window.addEventListener('popstate', (e) => {
   }
 })
 
-// Push initial state on load so first back press is intercepted
-history.replaceState({ panel: false }, '', location.pathname)
 
 async function offerBiometricSetup(email) {
   if (!localStorage.getItem(WA_KEY) && await isBiometricAvailable()) {
@@ -858,6 +856,11 @@ async function init() {
   }
   checkAndOpenSharedPlayer()
   
+  // Push initial state AFTER reading hash, so back button works
+  if (!location.hash) {
+    history.replaceState({ panel: false }, '', location.pathname)
+  }
+
   // Also store for after login if not yet authenticated
   const openPlayerId = localStorage.getItem('open_player')
   if (openPlayerId) {
