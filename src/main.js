@@ -342,7 +342,11 @@ function renderPlayerList() {
   if (!state.filtered.length) {
     return `<div class="empty-state">${icon('players')}<p>Nenhum jogador encontrado</p><span>Tenta ajustar os filtros</span></div>`
   }
-  return state.filtered.map(p => `
+
+  const newPlayers = state.filtered.filter(p => isNew(p))
+  const regularPlayers = state.filtered.filter(p => !isNew(p))
+
+  const renderRow = p => `
     <div class="player-row" data-id="${p.id}">
       <div class="${isNew(p) ? 'novo-wrap-list' : ''}">
         ${isNew(p) ? '<div class="novo-ring">' : ''}
@@ -362,7 +366,18 @@ function renderPlayerList() {
       </div>
       <div class="chevron">${icon('chevron')}</div>
     </div>
-  `).join('')
+  `
+
+  let html = ''
+  if (newPlayers.length > 0) {
+    html += `<div class="section-header">Entradas Recentes <span class="section-count">${newPlayers.length}</span></div>`
+    html += newPlayers.map(renderRow).join('')
+    if (regularPlayers.length > 0) {
+      html += `<div class="section-header">Todos os Jogadores <span class="section-count">${regularPlayers.length}</span></div>`
+    }
+  }
+  html += regularPlayers.map(renderRow).join('')
+  return html
 }
 
 function updateList() {
