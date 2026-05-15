@@ -424,7 +424,7 @@ function bindAppEvents() {
     updateList()
   })
   const btnAdd = document.getElementById('btn-add'); if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
-  document.  // Tab switching
+  // Tab switching
   document.querySelectorAll('.tab-item[data-db]').forEach(tab => {
     tab.addEventListener('click', () => {
       if (state.activeDb === tab.dataset.db) return
@@ -434,7 +434,7 @@ function bindAppEvents() {
       loadPlayers()
     })
   })
-  getElementById('btn-logout').addEventListener('click', async () => {
+  document.getElementById('btn-logout').addEventListener('click', async () => {
     resetState()
     await supabase.auth.signOut()
   })
