@@ -728,11 +728,12 @@ async function savePlayer() {
     notas: document.getElementById('f-notas').value.trim() || null,
   }
   let error
+  const activeTable = DATABASES.find(d => d.id === state.activeDb)?.table || 'players'
   if (state.editingPlayer) {
-    ;({ error } = await supabase.from('players').update(data).eq('id', state.editingPlayer.id))
+    ;({ error } = await supabase.from(activeTable).update(data).eq('id', state.editingPlayer.id))
   } else {
     data.data_insercao = new Date().toISOString().split('T')[0]
-    ;({ error } = await supabase.from('players').insert(data))
+    ;({ error } = await supabase.from(activeTable).insert(data))
   }
   if (error) {
     showToast('Erro ao guardar.', 'error')
@@ -775,7 +776,7 @@ async function savePlayer() {
 
 async function deletePlayer(player) {
   if (!confirm(`Tens a certeza que queres eliminar "${player.nome}"?`)) return
-  const { error } = await supabase.from('players').delete().eq('id', player.id)
+  const { error } = await supabase.from(DATABASES.find(d => d.id === state.activeDb)?.table || 'players').delete().eq('id', player.id)
   if (error) { showToast('Erro ao eliminar.', 'error'); return }
   showToast('Jogador eliminado.', 'success')
   closeAll()
