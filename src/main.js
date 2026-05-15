@@ -746,6 +746,9 @@ async function savePlayer() {
     sendLocalNotification('Novo jogador adicionado!', `${nome} foi adicionado à base de dados.`)
   }
   closeAll()
+  // Clear cache so fresh data is loaded
+  state.dbCache[state.activeDb] = null
+  state.dbCache['geral'] = null
   await loadPlayers()
 }
 
@@ -755,6 +758,9 @@ async function deletePlayer(player) {
   if (error) { showToast('Erro ao eliminar.', 'error'); return }
   showToast('Jogador eliminado.', 'success')
   closeAll()
+  // Clear cache so fresh data is loaded
+  state.dbCache[state.activeDb] = null
+  state.dbCache['geral'] = null
   await loadPlayers()
 }
 
