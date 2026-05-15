@@ -6,6 +6,7 @@ const DATABASES = [
   { id: 'fpf', label: 'FPF Formação', table: 'players_portugal' },
   { id: 'cbf', label: 'CBF Base', table: 'players' },
 ]
+const PEDIDOS_DB = { id: 'pedidos', label: '⚑ Pedidos', table: 'club_requests', isPedidos: true }
 
 import { supabase } from './supabase.js'
 
@@ -322,6 +323,8 @@ function renderApp() {
       </div>
       <div class="tabs-bar" id="tabs-bar">
         ${DATABASES.map(db => `<div class="tab-item ${state.activeDb === db.id ? 'active' : ''}" data-db="${db.id}">${db.label}</div>`).join('')}
+        <div style="flex:1"></div>
+        <div class="tab-item tab-pedidos ${state.activeDb === 'pedidos' ? 'active-pedidos' : ''}" data-db="pedidos" data-pedidos="1">⚑ Pedidos</div>
       </div>
 
       <div class="stats-bar">
@@ -431,7 +434,10 @@ function bindAppEvents() {
     tab.addEventListener('click', () => {
       if (state.activeDb === tab.dataset.db) return
       state.activeDb = tab.dataset.db
-      document.querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.db === state.activeDb))
+      document.querySelectorAll('.tab-item').forEach(t => {
+        t.classList.toggle('active', t.dataset.db === state.activeDb && !t.dataset.pedidos)
+        t.classList.toggle('active-pedidos', t.dataset.db === state.activeDb && !!t.dataset.pedidos)
+      })
       state.players = []; state.filtered = []
       loadPlayers()
     })
@@ -751,7 +757,41 @@ async function deletePlayer(player) {
   await loadPlayers()
 }
 
+async function loadPedidos() {
+  const wrap = document.getElementById('list-wrap') || document.querySelector('.list-container')
+  const { data, error } = await supabase.from('club_requests').select('*').order('created_at', { ascending: false })
+  if (error) { showToast('Erro ao carregar pedidos.', 'error'); return }
+  const pedidos = data || []
+  const container = document.getElementById('list-container') || document.querySelector('.players-list')
+  if (!container) return
+
+  if (!pedidos.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div>Sem pedidos de clubes</div></div>'
+    return
+  }
+
+  container.innerHTML = `
+    <div class="pedidos-header">
+      <div class="pedidos-col">Clube</div>
+      <div class="pedidos-col">Posição</div>
+      <div class="pedidos-col">Salário</div>
+      <div class="pedidos-col">Valor Transf.</div>
+      <div class="pedidos-col">Data</div>
+    </div>
+    ${pedidos.map(p => `
+      <div class="pedido-row">
+        <div class="pedidos-col"><strong>${p.clube || '—'}</strong></div>
+        <div class="pedidos-col"><span class="pos-tag">${p.posicao || '—'}</span></div>
+        <div class="pedidos-col">${p.salario || '—'}</div>
+        <div class="pedidos-col">${p.valor_transferencia || '—'}</div>
+        <div class="pedidos-col muted">${p.created_at ? new Date(p.created_at).toLocaleDateString('pt') : '—'}</div>
+      </div>
+    `).join('')}
+  `
+}
+
 async function loadPlayers() {
+  if (state.activeDb === 'pedidos') { loadPedidos(); return }
   const db = DATABASES.find(d => d.id === state.activeDb)
   let query
   if (db?.isGeral) {
