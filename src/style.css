@@ -270,3 +270,16 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .tab-item { padding:10px 18px; font-size:13px; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:color 0.15s; }
 .tab-item:hover { color:var(--text); }
 .tab-item.active { color:var(--text); font-weight:500; border-bottom-color:var(--accent); }
+
+/* ── PEDIDOS TAB ── */
+.tab-pedidos { color: #e67e00 !important; border-color: transparent; font-weight: 500; }
+.tab-pedidos:hover { color: #bf6500 !important; background: #fff8f0; border-radius: 6px 6px 0 0; }
+.tab-pedidos.active-pedidos { color: #e67e00 !important; border-bottom: 2px solid #e67e00 !important; font-weight: 600; }
+
+/* ── PEDIDOS TABLE ── */
+.pedidos-header { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; padding:10px 20px; border-bottom:1px solid var(--border); background:var(--surface-2, #f8f8f8); font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+.pedido-row { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; padding:12px 20px; border-bottom:1px solid var(--border); font-size:13px; color:var(--text); transition:background 0.1s; }
+.pedido-row:hover { background:var(--surface-2, #f8f8f8); }
+.pedidos-col { display:flex; align-items:center; }
+.pedidos-col.muted { color:var(--text-muted); font-size:12px; }
+.pos-tag { background:var(--accent-light, #e8f0ff); color:var(--accent, #0066ff); padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
