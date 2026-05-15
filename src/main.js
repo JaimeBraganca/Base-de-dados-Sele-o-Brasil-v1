@@ -854,7 +854,8 @@ async function loadPlayers() {
   const table = db?.table || 'players'
   const { data, error } = await supabase.from(table).select('*').order('nome')
   if (error) { showToast('Erro ao carregar dados.', 'error'); return }
-  state.players = (data || []).map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
+  const activeDb = DATABASES.find(d => d.id === state.activeDb)
+  state.players = (data || []).map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '', _sourceTable: activeDb?.table || 'players' }))
   state.dbCache[state.activeDb] = state.players
   state.loading = false
   updateList()
