@@ -16,6 +16,7 @@ const NIVEIS = ['A+','A','A/B','B+','B','B-','B/C']
 let state = {
   user: null,
   activeDb: 'geral',
+  dbCache: {},
   role: null,
   players: [],
   filtered: [],
@@ -757,6 +758,15 @@ async function deletePlayer(player) {
   await loadPlayers()
 }
 
+
+// Preload all tabs in background
+async function preloadAll() {
+  for (const db of DATABASES) {
+    if (db.isGeral || state.dbCache[db.id]) continue
+    const { data } = await supabase.from(db.table).select('*')
+    if (data) state.dbCache[db.id] = data.map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
+  }
+}
 async function loadPedidos() {
   const wrap = document.getElementById('list-wrap') || document.querySelector('.list-container')
   const { data, error } = await supabase.from('club_requests').select('*').order('created_at', { ascending: false })
@@ -792,22 +802,42 @@ async function loadPedidos() {
 
 async function loadPlayers() {
   if (state.activeDb === 'pedidos') { loadPedidos(); return }
+  // Return cached data instantly
+  if (state.dbCache[state.activeDb]) {
+    state.players = state.dbCache[state.activeDb]
+    state.loading = false
+    updateList()
+    return
+  }
   const db = DATABASES.find(d => d.id === state.activeDb)
   let query
   if (db?.isGeral) {
-    // Combine all tables - for now just players (expand later)
-    const { data, error } = await supabase.from('players').select('*').order('nome')
-    if (error) { showToast('Erro ao carregar dados.', 'error'); return }
-    state.players = data || []
-    applyFilters()
+    // Combine all tables
+    const [r1, r2, r3] = await Promise.all([
+      supabase.from('players').select('*'),
+      supabase.from('players_mercado').select('*'),
+      supabase.from('players_portugal').select('*'),
+    ])
+    if (r1.error || r2.error || r3.error) { showToast('Erro ao carregar dados.', 'error'); return }
+    const all = [
+      ...(r1.data || []).map(p => ({...p, _source: 'CBF Base'})),
+      ...(r2.data || []).map(p => ({...p, _source: 'Mercado'})),
+      ...(r3.data || []).map(p => ({...p, _source: 'FPF Formação'})),
+    ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
+    state.players = all.map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
+    state.dbCache[state.activeDb] = state.players
+    state.loading = false
+    updateList()
     return
   }
   const table = db?.table || 'players'
   const { data, error } = await supabase.from(table).select('*').order('nome')
   if (error) { showToast('Erro ao carregar dados.', 'error'); return }
   state.players = (data || []).map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
+  state.dbCache[state.activeDb] = state.players
   state.loading = false
   updateList()
+  setTimeout(preloadAll, 1000)
   // Subscribe to realtime updates
   if (!state.realtimeChannel) {
     state.realtimeChannel = supabase
