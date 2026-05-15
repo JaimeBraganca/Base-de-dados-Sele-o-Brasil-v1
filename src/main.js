@@ -1,8 +1,10 @@
 import './style.css'
 
 const DATABASES = [
-  { id: 'selecoes', label: 'Seleções Brasileiras' },
-  { id: 'geral', label: 'Geral' },
+  { id: 'geral', label: 'Geral', isGeral: true },
+  { id: 'mercado', label: 'Mercado', table: 'players_mercado' },
+  { id: 'fpf', label: 'FPF Formação', table: 'players_portugal' },
+  { id: 'cbf', label: 'CBF Base', table: 'players' },
 ]
 
 import { supabase } from './supabase.js'
@@ -12,7 +14,7 @@ const NIVEIS = ['A+','A','A/B','B+','B','B-','B/C']
 
 let state = {
   user: null,
-  activeDb: 'selecoes',
+  activeDb: 'geral',
   role: null,
   players: [],
   filtered: [],
@@ -750,7 +752,18 @@ async function deletePlayer(player) {
 }
 
 async function loadPlayers() {
-  const { data, error } = await supabase.from('players').select('*').order('nome')
+  const db = DATABASES.find(d => d.id === state.activeDb)
+  let query
+  if (db?.isGeral) {
+    // Combine all tables - for now just players (expand later)
+    const { data, error } = await supabase.from('players').select('*').order('nome')
+    if (error) { showToast('Erro ao carregar dados.', 'error'); return }
+    state.players = data || []
+    applyFilters()
+    return
+  }
+  const table = db?.table || 'players'
+  const { data, error } = await supabase.from(table).select('*').order('nome')
   if (error) { showToast('Erro ao carregar dados.', 'error'); return }
   state.players = (data || []).map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
   state.loading = false
