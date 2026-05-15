@@ -746,10 +746,31 @@ async function savePlayer() {
     sendLocalNotification('Novo jogador adicionado!', `${nome} foi adicionado à base de dados.`)
   }
   closeAll()
-  // Clear cache so fresh data is loaded
-  state.dbCache[state.activeDb] = null
-  state.dbCache['geral'] = null
-  await loadPlayers()
+  // Update local state immediately without waiting for network
+  if (!isNew) {
+    const idx = state.players.findIndex(p => p.id === state.editingPlayer.id)
+    if (idx >= 0) {
+      state.players[idx] = { ...state.players[idx], ...data }
+      // Update all caches
+      Object.keys(state.dbCache).forEach(k => {
+        if (state.dbCache[k]) {
+          const ci = state.dbCache[k].findIndex(p => p.id === state.editingPlayer.id)
+          if (ci >= 0) state.dbCache[k][ci] = { ...state.dbCache[k][ci], ...data }
+        }
+      })
+    }
+  } else {
+    // For new players, clear cache and reload
+    state.dbCache[state.activeDb] = null
+    state.dbCache['geral'] = null
+  }
+  applyFilters()
+  // Reload in background to sync
+  setTimeout(() => {
+    state.dbCache[state.activeDb] = null
+    state.dbCache['geral'] = null
+    loadPlayers()
+  }, 2000)
 }
 
 async function deletePlayer(player) {
