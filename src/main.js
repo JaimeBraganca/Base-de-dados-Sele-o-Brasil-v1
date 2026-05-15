@@ -728,7 +728,13 @@ async function savePlayer() {
     notas: document.getElementById('f-notas').value.trim() || null,
   }
   let error
-  const activeTable = DATABASES.find(d => d.id === state.activeDb)?.table || 'players'
+  // Determine correct table - use player's original table if in geral
+  let activeTable
+  if (state.editingPlayer && state.editingPlayer._sourceTable) {
+    activeTable = state.editingPlayer._sourceTable
+  } else {
+    activeTable = DATABASES.find(d => d.id === state.activeDb)?.table || 'players'
+  }
   if (state.editingPlayer) {
     ;({ error } = await supabase.from(activeTable).update(data).eq('id', state.editingPlayer.id))
   } else {
@@ -746,37 +752,15 @@ async function savePlayer() {
   if (isNew) {
     sendLocalNotification('Novo jogador adicionado!', `${nome} foi adicionado à base de dados.`)
   }
+  // Clear ALL cache and force fresh reload
+  Object.keys(state.dbCache).forEach(k => { state.dbCache[k] = null })
   closeAll()
-  // Update local state immediately without waiting for network
-  if (!isNew) {
-    const idx = state.players.findIndex(p => p.id === state.editingPlayer.id)
-    if (idx >= 0) {
-      state.players[idx] = { ...state.players[idx], ...data }
-      // Update all caches
-      Object.keys(state.dbCache).forEach(k => {
-        if (state.dbCache[k]) {
-          const ci = state.dbCache[k].findIndex(p => p.id === state.editingPlayer.id)
-          if (ci >= 0) state.dbCache[k][ci] = { ...state.dbCache[k][ci], ...data }
-        }
-      })
-    }
-  } else {
-    // For new players, clear cache and reload
-    state.dbCache[state.activeDb] = null
-    state.dbCache['geral'] = null
-  }
-  applyFilters()
-  // Reload in background to sync
-  setTimeout(() => {
-    state.dbCache[state.activeDb] = null
-    state.dbCache['geral'] = null
-    loadPlayers()
-  }, 2000)
+  await loadPlayers()
 }
 
 async function deletePlayer(player) {
   if (!confirm(`Tens a certeza que queres eliminar "${player.nome}"?`)) return
-  const { error } = await supabase.from(DATABASES.find(d => d.id === state.activeDb)?.table || 'players').delete().eq('id', player.id)
+  const { error } = await supabase.from(player._sourceTable || DATABASES.find(d => d.id === state.activeDb)?.table || 'players').delete().eq('id', player.id)
   if (error) { showToast('Erro ao eliminar.', 'error'); return }
   showToast('Jogador eliminado.', 'success')
   closeAll()
@@ -798,9 +782,9 @@ async function preloadAll() {
   })
   // Build geral from cache
   const all = [
-    ...(state.dbCache['cbf'] || []).map(p => ({...p, _source: 'CBF Base'})),
-    ...(state.dbCache['mercado'] || []).map(p => ({...p, _source: 'Mercado'})),
-    ...(state.dbCache['fpf'] || []).map(p => ({...p, _source: 'FPF Formação'})),
+    ...(state.dbCache['cbf'] || []).map(p => ({...p, _source: 'CBF Base', _sourceTable: 'players'})),
+    ...(state.dbCache['mercado'] || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
+    ...(state.dbCache['fpf'] || []).map(p => ({...p, _source: 'FPF Formação', _sourceTable: 'players_portugal'})),
   ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
   state.dbCache['geral'] = all
 }
@@ -857,9 +841,9 @@ async function loadPlayers() {
     ])
     if (r1.error || r2.error || r3.error) { showToast('Erro ao carregar dados.', 'error'); return }
     const all = [
-      ...(r1.data || []).map(p => ({...p, _source: 'CBF Base'})),
-      ...(r2.data || []).map(p => ({...p, _source: 'Mercado'})),
-      ...(r3.data || []).map(p => ({...p, _source: 'FPF Formação'})),
+      ...(r1.data || []).map(p => ({...p, _source: 'CBF Base', _sourceTable: 'players'})),
+      ...(r2.data || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
+      ...(r3.data || []).map(p => ({...p, _source: 'FPF Formação', _sourceTable: 'players_portugal'})),
     ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
     state.players = all.map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
     state.dbCache[state.activeDb] = state.players
