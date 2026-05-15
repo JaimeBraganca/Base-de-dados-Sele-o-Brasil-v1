@@ -735,14 +735,19 @@ async function savePlayer() {
   } else {
     activeTable = DATABASES.find(d => d.id === state.activeDb)?.table || 'players'
   }
+  console.log('SAVE: table=', activeTable, 'id=', state.editingPlayer?.id, 'activeDb=', state.activeDb)
+  let result
   if (state.editingPlayer) {
-    ;({ error } = await supabase.from(activeTable).update(data).eq('id', state.editingPlayer.id))
+    result = await supabase.from(activeTable).update(data).eq('id', state.editingPlayer.id)
   } else {
     data.data_insercao = new Date().toISOString().split('T')[0]
-    ;({ error } = await supabase.from(activeTable).insert(data))
+    result = await supabase.from(activeTable).insert(data)
   }
+  console.log('SAVE RESULT:', result)
+  error = result.error
   if (error) {
-    showToast('Erro ao guardar.', 'error')
+    console.error('SAVE ERROR:', error)
+    showToast('Erro: ' + error.message, 'error')
     btn.disabled = false
     btn.textContent = state.editingPlayer ? 'Guardar' : 'Adicionar jogador'
     return
