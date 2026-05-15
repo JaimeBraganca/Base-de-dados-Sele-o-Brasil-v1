@@ -1,3 +1,10 @@
+import './style.css'
+
+const DATABASES = [
+  { id: 'selecoes', label: 'Seleções Brasileiras' },
+  { id: 'geral', label: 'Geral' },
+]
+
 import { supabase } from './supabase.js'
 
 const POSICOES = ['Guarda-Redes','Defesa Central','Lateral Dir.','Lateral Esq.','Médio Defensivo','Médio-Centro','Médio Ofensivo','Extremo Dir.','Extremo Esq.','Ponta de Lança']
@@ -5,6 +12,7 @@ const NIVEIS = ['A+','A','A/B','B+','B','B-','B/C']
 
 let state = {
   user: null,
+  activeDb: 'selecoes',
   role: null,
   players: [],
   filtered: [],
@@ -310,6 +318,9 @@ function renderApp() {
         </select>
         <button class="btn-clear-filters" id="btn-clear">Limpar</button>
       </div>
+      <div class="tabs-bar" id="tabs-bar">
+        ${DATABASES.map(db => `<div class="tab-item ${state.activeDb === db.id ? 'active' : ''}" data-db="${db.id}">${db.label}</div>`).join('')}
+      </div>
 
       <div class="stats-bar">
         <div class="stats-count" id="stats-count"><strong>${state.filtered.length}</strong> de ${state.players.length} jogadores</div>
@@ -413,7 +424,17 @@ function bindAppEvents() {
     updateList()
   })
   const btnAdd = document.getElementById('btn-add'); if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
-  document.getElementById('btn-logout').addEventListener('click', async () => {
+  document.  // Tab switching
+  document.querySelectorAll('.tab-item[data-db]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (state.activeDb === tab.dataset.db) return
+      state.activeDb = tab.dataset.db
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.toggle('active', t.dataset.db === state.activeDb))
+      state.players = []; state.filtered = []
+      loadPlayers()
+    })
+  })
+  getElementById('btn-logout').addEventListener('click', async () => {
     resetState()
     await supabase.auth.signOut()
   })
