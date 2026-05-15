@@ -761,11 +761,20 @@ async function deletePlayer(player) {
 
 // Preload all tabs in background
 async function preloadAll() {
-  for (const db of DATABASES) {
-    if (db.isGeral || state.dbCache[db.id]) continue
-    const { data } = await supabase.from(db.table).select('*')
+  // Load all tables in parallel
+  const tables = DATABASES.filter(db => !db.isGeral && db.table)
+  const results = await Promise.all(tables.map(db => supabase.from(db.table).select('*')))
+  tables.forEach((db, i) => {
+    const { data } = results[i]
     if (data) state.dbCache[db.id] = data.map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
-  }
+  })
+  // Build geral from cache
+  const all = [
+    ...(state.dbCache['cbf'] || []).map(p => ({...p, _source: 'CBF Base'})),
+    ...(state.dbCache['mercado'] || []).map(p => ({...p, _source: 'Mercado'})),
+    ...(state.dbCache['fpf'] || []).map(p => ({...p, _source: 'FPF Formação'})),
+  ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
+  state.dbCache['geral'] = all
 }
 async function loadPedidos() {
   const wrap = document.getElementById('list-wrap') || document.querySelector('.list-container')
@@ -837,7 +846,7 @@ async function loadPlayers() {
   state.dbCache[state.activeDb] = state.players
   state.loading = false
   updateList()
-  setTimeout(preloadAll, 1000)
+  preloadAll()
   // Subscribe to realtime updates
   if (!state.realtimeChannel) {
     state.realtimeChannel = supabase
@@ -962,6 +971,7 @@ async function init() {
   }
   await fetchRole()
   renderApp()
+  preloadAll()  // Start loading all tables in parallel immediately
   await loadPlayers()
   // Open shared player from URL hash
   function checkAndOpenSharedPlayer() {
