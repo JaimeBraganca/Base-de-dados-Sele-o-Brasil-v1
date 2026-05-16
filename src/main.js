@@ -582,6 +582,11 @@ function openForm(player) {
       <button class="btn-icon" id="form-close">${icon('close')}</button>
     </div>
     <div class="form-body">
+      <div class="form-row">
+        <div class="form-group form-group-full">
+          <label class="form-label">Nome *</label>
+          <input class="form-input" id="f-nome" type="text" placeholder="Nome completo" value="${p.nome || ''}" />
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
