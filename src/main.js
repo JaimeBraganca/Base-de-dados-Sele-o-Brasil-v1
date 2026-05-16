@@ -3,8 +3,10 @@ import './style.css'
 const DATABASES = [
   { id: 'geral', label: 'Geral', isGeral: true },
   { id: 'mercado', label: 'Mercado', table: 'players_mercado' },
-  { id: 'fpf', label: 'FPF Formação', table: 'players_portugal' },
-  { id: 'cbf', label: 'CBF Base', table: 'players' },
+  { id: 'cbf', label: 'CBF Seleções', table: 'players' },
+  { id: 'fpf', label: 'FPF Seleções', table: 'players_portugal' },
+  { id: 'ligas-portugal', label: 'Ligas Portugal', table: 'players_ligas_portugal' },
+  { id: 'ligas-brasil', label: 'Ligas Brasil', table: 'players_ligas_brasil' },
 ]
 const PEDIDOS_DB = { id: 'pedidos', label: '⚑ Pedidos', table: 'club_requests', isPedidos: true }
 
@@ -787,9 +789,11 @@ async function preloadAll() {
   })
   // Build geral from cache
   const all = [
-    ...(state.dbCache['cbf'] || []).map(p => ({...p, _source: 'CBF Base', _sourceTable: 'players'})),
     ...(state.dbCache['mercado'] || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
-    ...(state.dbCache['fpf'] || []).map(p => ({...p, _source: 'FPF Formação', _sourceTable: 'players_portugal'})),
+    ...(state.dbCache['cbf'] || []).map(p => ({...p, _source: 'CBF Seleções', _sourceTable: 'players'})),
+    ...(state.dbCache['fpf'] || []).map(p => ({...p, _source: 'FPF Seleções', _sourceTable: 'players_portugal'})),
+    ...(state.dbCache['ligas-portugal'] || []).map(p => ({...p, _source: 'Ligas Portugal', _sourceTable: 'players_ligas_portugal'})),
+    ...(state.dbCache['ligas-brasil'] || []).map(p => ({...p, _source: 'Ligas Brasil', _sourceTable: 'players_ligas_brasil'})),
   ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
   state.dbCache['geral'] = all
 }
@@ -846,9 +850,9 @@ async function loadPlayers() {
     ])
     if (r1.error || r2.error || r3.error) { showToast('Erro ao carregar dados.', 'error'); return }
     const all = [
-      ...(r1.data || []).map(p => ({...p, _source: 'CBF Base', _sourceTable: 'players'})),
-      ...(r2.data || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
-      ...(r3.data || []).map(p => ({...p, _source: 'FPF Formação', _sourceTable: 'players_portugal'})),
+      ...(r1.data || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
+      ...(r2.data || []).map(p => ({...p, _source: 'CBF Seleções', _sourceTable: 'players'})),
+      ...(r3.data || []).map(p => ({...p, _source: 'FPF Seleções', _sourceTable: 'players_portugal'})),
     ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
     state.players = all.map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
     state.dbCache[state.activeDb] = state.players
