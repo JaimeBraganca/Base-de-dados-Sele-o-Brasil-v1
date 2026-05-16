@@ -582,15 +582,6 @@ function openForm(player) {
       <button class="btn-icon" id="form-close">${icon('close')}</button>
     </div>
     <div class="form-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Nome *</label>
-          <input class="form-input" id="f-nome" type="text" value="${p.nome || ''}" placeholder="Nome completo" />
-        </div>
-        <div class="form-group" style="max-width:90px">
-          <label class="form-label">Nº Proc.</label>
-          <input class="form-input" id="f-processo" type="text" value="${p.processo || ''}" />
-        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -714,7 +705,6 @@ async function savePlayer() {
   const igLink = ig ? `https://www.instagram.com/${ig}/` : null
   const data = {
     nome,
-    processo: document.getElementById('f-processo').value.trim() || null,
     posicao: document.getElementById('f-posicao').value || null,
     nivel: document.getElementById('f-nivel-form').value || null,
     clube: document.getElementById('f-clube').value.trim() || null,
@@ -737,18 +727,17 @@ async function savePlayer() {
   } else {
     activeTable = DATABASES.find(d => d.id === state.activeDb)?.table || 'players'
   }
-  console.log('SAVE: table=', activeTable, 'id=', state.editingPlayer?.id, 'activeDb=', state.activeDb)
+  // Remove null values to avoid column-not-found errors on different tables
+  const cleanData = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== null && v !== undefined && v !== ''))
   let result
   if (state.editingPlayer) {
-    result = await supabase.from(activeTable).update(data).eq('id', state.editingPlayer.id)
+    result = await supabase.from(activeTable).update(cleanData).eq('id', state.editingPlayer.id)
   } else {
-    data.data_insercao = new Date().toISOString().split('T')[0]
-    result = await supabase.from(activeTable).insert(data)
+    cleanData.data_insercao = new Date().toISOString().split('T')[0]
+    result = await supabase.from(activeTable).insert(cleanData)
   }
-  console.log('SAVE RESULT:', result)
   error = result.error
   if (error) {
-    console.error('SAVE ERROR:', error)
     showToast('Erro: ' + error.message, 'error')
     btn.disabled = false
     btn.textContent = state.editingPlayer ? 'Guardar' : 'Adicionar jogador'
