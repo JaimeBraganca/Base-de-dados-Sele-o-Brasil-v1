@@ -278,3 +278,10 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .pedido-row:hover { background:var(--bg); }
 .pedidos-col { display:flex; align-items:center; }
 .pos-tag { background:#e8f0ff; color:#0066ff; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+
+/* ── PEDIDOS LIST ── */
+.pedido-list-header { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; padding:10px 20px; background:var(--bg); border-bottom:1px solid var(--border); font-size:11px; font-weight:600; color:var(--text-2); text-transform:uppercase; letter-spacing:0.4px; position:sticky; top:198px; z-index:30; }
+.pedido-list-row { display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; padding:14px 20px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; align-items:center; }
+.pedido-list-row:hover { background:var(--bg); }
+.pedido-cell { font-size:13px; color:var(--text-2); }
+.pedido-cell-clube { font-size:14px; color:var(--text); font-weight:500; }
