@@ -1058,8 +1058,9 @@ async function openPedidoPanel(pedido) {
         data_limite: document.getElementById('ped-data').value || null,
         jogadores_sugeridos: currentSuggested,
       }
+      console.log('Saving pedido:', data)
       const { error } = await supabase.from('club_requests').update(data).eq('id', pedido.id)
-      if (error) { showToast('Erro ao guardar.', 'error'); return }
+      if (error) { console.error('Save error:', error); showToast('Erro: ' + error.message, 'error'); return }
       showToast('Pedido guardado!', 'success')
       closePanel()
       loadPedidos()
