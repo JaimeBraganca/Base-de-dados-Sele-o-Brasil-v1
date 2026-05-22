@@ -118,11 +118,11 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .panel-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
 .panel-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-3); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 .info-grid { display: flex; flex-direction: column; }
-.info-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border); gap: 16px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); gap: 16px; min-height: 44px; }
 .info-row:last-child { border-bottom: none; }
-.info-label { font-size: 13px; color: var(--text-2); flex-shrink: 0; }
-.info-val { font-size: 13px; color: var(--text); font-weight: 500; text-align: right; word-break: break-word; }
-.info-val a { color: var(--accent); text-decoration: none; }
+.info-label { font-size: 13px; color: var(--text-2); flex-shrink: 0; max-width: 45%; }
+.info-val { font-size: 13px; color: var(--text); font-weight: 500; text-align: right; word-break: break-word; flex: 1; display: flex; align-items: center; justify-content: flex-end; }
+.info-val a { color: var(--accent); text-decoration: none; display: flex; align-items: center; }
 .info-val a:hover { text-decoration: underline; }
 .notas-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 13px; color: var(--text-2); line-height: 1.6; }
 
@@ -198,12 +198,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .btn-back { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.12s, color 0.12s; flex-shrink: 0; }
 .btn-back:hover { background: var(--surface-2); color: var(--accent); }
 
-/* ── PANEL INFO ROWS — fixed height, vertically centered ── */
-.info-row { display: flex; align-items: center; justify-content: space-between; padding: 0 0; height: 44px; border-bottom: 0.5px solid var(--border); gap: 16px; }
-.info-row:last-child { border-bottom: none; }
-.info-label { font-size: 13px; color: var(--text-2); flex-shrink: 0; line-height: 44px; }
-.info-val { font-size: 13px; color: var(--text); font-weight: 500; text-align: right; display: flex; align-items: center; justify-content: flex-end; }
-.info-val a { display: flex; align-items: center; justify-content: flex-end; }
+/* ── PANEL INFO ROWS ── */
 .info-val img { width: 28px; height: 28px; object-fit: contain; border-radius: 6px; display: block; }
 
 /* ── HOME BUTTON ── */
@@ -266,8 +261,11 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .section-count { background: var(--accent-light); color: var(--accent); border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
 
 /* ── TABS ── */
-.tabs-bar { display:flex; align-items:center; border-bottom:1px solid var(--border); background:var(--surface); padding:0 20px; gap:0; position:sticky; top:114px; z-index:38; }
-.tab-item { padding:10px 18px; font-size:13px; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:color 0.15s; }
+.tabs-bar { display:flex; align-items:center; border-bottom:1px solid var(--border); background:var(--surface); padding:0; gap:0; position:sticky; top:114px; z-index:38; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.tabs-bar::-webkit-scrollbar { display:none; }
+.tab-item { padding:10px 18px; font-size:13px; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:color 0.15s; flex-shrink:0; }
+.tab-item:first-child { padding-left:20px; }
+.tab-item:last-child { padding-right:20px; }
 .tab-item:hover { color:var(--text); }
 .tab-item.active { color:var(--text); font-weight:500; border-bottom-color:var(--accent); }
 .tab-pedidos { color: #0066ff !important; font-weight:500; }
