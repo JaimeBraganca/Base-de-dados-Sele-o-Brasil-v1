@@ -76,6 +76,146 @@ function isVimeo(url) { return url && url.includes('vimeo') }
 
 const PEDIDOS_DB = { id: 'pedidos', label: 'Pedidos', table: 'club_requests', isPedidos: true }
 
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast')
+  if (!toast) return
+  toast.textContent = msg
+  toast.className = `toast show ${type}`
+  clearTimeout(toast._timer)
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 3000)
+}
+
+function applyFilters() {
+  let list = state.players
+  if (state.search) {
+    const q = state.search.toLowerCase()
+    list = list.filter(p => (p.nome||'').toLowerCase().includes(q) || (p.clube||'').toLowerCase().includes(q))
+  }
+  if (state.filterPos) list = list.filter(p => p.posicao === state.filterPos)
+  if (state.filterNivel) list = list.filter(p => p.nivel === state.filterNivel)
+  if (state.filterAno) list = list.filter(p => String(p.ano) === state.filterAno)
+  // Sort
+  list = [...list].sort((a, b) => {
+    const col = state.sortCol || 'nome'
+    const va = (a[col] || '').toString().toLowerCase()
+    const vb = (b[col] || '').toString().toLowerCase()
+    return state.sortDir * va.localeCompare(vb)
+  })
+  state.filtered = list
+}
+
+async function isBiometricAvailable() {
+  try {
+    return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())
+  } catch { return false }
+}
+
+async function registerBiometric(email) {
+  try {
+    const challenge = new Uint8Array(32)
+    crypto.getRandomValues(challenge)
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'Scout AIS', id: location.hostname },
+        user: { id: new TextEncoder().encode(email), name: email, displayName: email },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+        timeout: 60000,
+      }
+    })
+    if (cred) {
+      localStorage.setItem(WA_KEY, JSON.stringify({ id: Array.from(new Uint8Array(cred.rawId)), email }))
+      return true
+    }
+  } catch { return false }
+  return false
+}
+
+async function loginWithBiometric() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(WA_KEY) || 'null')
+    if (!stored) return false
+    const challenge = new Uint8Array(32)
+    crypto.getRandomValues(challenge)
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        rpId: location.hostname,
+        allowCredentials: [{ type: 'public-key', id: new Uint8Array(stored.id) }],
+        userVerification: 'required',
+        timeout: 60000,
+      }
+    })
+    return stored.email
+  } catch { return false }
+}
+
+function renderAuth() {
+  const app = document.getElementById('app')
+  const stored = JSON.parse(localStorage.getItem(WA_KEY) || 'null')
+  app.innerHTML = `
+    <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg);">
+      <div style="width:100%;max-width:360px;">
+        <div style="text-align:center;margin-bottom:32px;">
+          <img src="/favicon.png" alt="AIS" style="width:56px;height:56px;border-radius:14px;margin-bottom:12px;" onerror="this.style.display='none'"/>
+          <h1 style="font-size:22px;font-weight:700;color:var(--text);margin:0;">Scout</h1>
+          <p style="color:var(--text-2);margin:6px 0 0;font-size:14px;">All In Sports Group</p>
+        </div>
+        <div class="auth-form">
+          <input type="email" id="auth-email" class="filter-select" style="padding:12px 14px;font-size:15px;width:100%;box-sizing:border-box;" placeholder="Email" autocomplete="email"/>
+          <input type="password" id="auth-pass" class="filter-select" style="padding:12px 14px;font-size:15px;width:100%;box-sizing:border-box;" placeholder="Password" autocomplete="current-password"/>
+          <button id="btn-login" class="btn-add" style="width:100%;justify-content:center;padding:13px;font-size:15px;">Entrar</button>
+          ${stored ? `<button id="btn-bio-login" class="btn-add" style="width:100%;justify-content:center;padding:13px;font-size:15px;background:var(--surface);color:var(--accent);border:1px solid var(--accent);">
+            <svg viewBox="0 0 32 32" fill="none" width="20" height="20"><circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="2"/><path d="M12 16a4 4 0 0 1 8 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="currentColor"/></svg>
+            Entrar com impressão digital
+          </button>` : ''}
+          <div id="auth-error" style="color:var(--red,#e74c3c);font-size:13px;text-align:center;display:none;"></div>
+        </div>
+      </div>
+    </div>
+  `
+  const emailEl = document.getElementById('auth-email')
+  const passEl = document.getElementById('auth-pass')
+  const errEl = document.getElementById('auth-error')
+
+  async function doLogin() {
+    const email = emailEl.value.trim()
+    const pass = passEl.value
+    if (!email || !pass) { errEl.textContent = 'Preenche email e password'; errEl.style.display = 'block'; return }
+    errEl.style.display = 'none'
+    document.getElementById('btn-login').textContent = 'A entrar...'
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass })
+    if (error) {
+      errEl.textContent = error.message === 'Invalid login credentials' ? 'Email ou password incorrectos' : error.message
+      errEl.style.display = 'block'
+      document.getElementById('btn-login').textContent = 'Entrar'
+    }
+  }
+
+  document.getElementById('btn-login').addEventListener('click', doLogin)
+  passEl.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin() })
+
+  const bioBtn = document.getElementById('btn-bio-login')
+  if (bioBtn) {
+    bioBtn.addEventListener('click', async () => {
+      bioBtn.textContent = 'A verificar...'
+      const email = await loginWithBiometric()
+      if (email) {
+        // Can't sign in with biometric directly — show instructions
+        emailEl.value = email
+        passEl.focus()
+        errEl.textContent = 'Introduz a tua password para confirmar'
+        errEl.style.display = 'block'
+      } else {
+        errEl.textContent = 'Não foi possível autenticar'
+        errEl.style.display = 'block'
+      }
+      bioBtn.textContent = 'Entrar com impressão digital'
+    })
+  }
+}
+
 function renderApp() {
   const app = document.getElementById('app')
   const allDbs = [...DATABASES, PEDIDOS_DB]
@@ -125,8 +265,7 @@ function renderApp() {
       <button class="tab-btn pedidos-btn ${state.activeDb==='pedidos'?'active-pedidos':''}" data-db="pedidos" data-pedidos="1">⚑ Pedidos</button>
     </div>
 
-    <div class="main-content">
-      <div class="stats-bar">
+    <div class="stats-bar">
         <div class="stats-count" id="stats-count"><strong>${state.filtered.length}</strong> de ${state.players.length} jogadores</div>
         <div class="sort-controls">
           <select class="sort-select" id="sort-col">
@@ -143,7 +282,6 @@ function renderApp() {
       <div class="player-list" id="player-list">
         ${state.loading ? '<div class="loading"><div class="spinner"></div> A carregar...</div>' : renderPlayerList()}
       </div>
-    </div>
 
     <div class="overlay" id="overlay"></div>
     <div class="side-panel" id="side-panel"><div id="panel-content"></div></div>
@@ -834,8 +972,8 @@ async function loadPlayers() {
     ])
     if (r1.error || r2.error || r3.error) { showToast('Erro ao carregar dados.', 'error'); return }
     const all = [
-      ...(r1.data || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
-      ...(r2.data || []).map(p => ({...p, _source: 'CBF Seleções', _sourceTable: 'players'})),
+      ...(r1.data || []).map(p => ({...p, _source: 'CBF Seleções', _sourceTable: 'players'})),
+      ...(r2.data || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
       ...(r3.data || []).map(p => ({...p, _source: 'FPF Seleções', _sourceTable: 'players_portugal'})),
     ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
     state.players = all.map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
