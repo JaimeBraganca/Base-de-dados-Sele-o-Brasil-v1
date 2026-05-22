@@ -156,9 +156,16 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Pedidos na filters-bar — só visível em mobile */
+.btn-pedidos-filters { display: none; }
+
 @media (max-width: 480px) {
   .btn-add span { display: none; }
   .side-panel, .form-panel { max-width: 100%; border-left: none; }
+  /* Mostrar Pedidos na filters-bar, esconder nas tabs */
+  .btn-pedidos-filters { display: inline-flex; align-items: center; white-space: nowrap; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 500; cursor: pointer; gap: 4px; flex-shrink: 0; }
+  .btn-pedidos-filters.active-pedidos-filters { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .tab-pedidos { display: none; }
 }
 
 /* ── UPDATED NIVEL COLORS ── */
