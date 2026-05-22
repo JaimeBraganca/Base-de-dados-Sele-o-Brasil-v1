@@ -1046,7 +1046,9 @@ async function openPedidoPanel(pedido) {
     document.getElementById('ped-edit-close').addEventListener('click', () => editForm.style.display = 'none')
 
     document.getElementById('ped-save').addEventListener('click', async () => {
-      const data = {
+      const btn = document.getElementById('ped-save')
+      btn.disabled = true; btn.textContent = 'A guardar...'
+      const raw = {
         clube: document.getElementById('ped-clube').value.trim() || null,
         pais: document.getElementById('ped-pais').value.trim() || null,
         posicao: document.getElementById('ped-posicao').value || null,
@@ -1058,9 +1060,9 @@ async function openPedidoPanel(pedido) {
         data_limite: document.getElementById('ped-data').value || null,
         jogadores_sugeridos: currentSuggested,
       }
-      console.log('Saving pedido:', data)
-      const { error } = await supabase.from('club_requests').update(data).eq('id', pedido.id)
-      if (error) { console.error('Save error:', error); showToast('Erro: ' + error.message, 'error'); return }
+      const cleanData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== null && v !== undefined && v !== ''))
+      const { error } = await supabase.from('club_requests').update(cleanData).eq('id', pedido.id)
+      if (error) { showToast('Erro: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Guardar alterações'; return }
       showToast('Pedido guardado!', 'success')
       closePanel()
       loadPedidos()
