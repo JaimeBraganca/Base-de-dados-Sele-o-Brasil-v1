@@ -352,13 +352,6 @@ function bindAppEvents() {
   document.getElementById('f-pos').addEventListener('change', e => { state.filterPos = e.target.value; updateList() })
   document.getElementById('f-nivel').addEventListener('change', e => { state.filterNivel = e.target.value; updateList() })
   document.getElementById('f-ano').addEventListener('change', e => { state.filterAno = e.target.value; updateList() })
-  document.getElementById('btn-pedidos').addEventListener('click', () => {
-    state.activeDb = 'pedidos'
-    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active','active-pedidos'))
-    document.getElementById('btn-pedidos').style.color = '#0066ff'
-    document.getElementById('btn-pedidos').style.borderColor = '#0066ff'
-    loadPedidos()
-  })
   document.getElementById('btn-clear').addEventListener('click', () => {
     state.search = ''; state.filterPos = ''; state.filterNivel = ''; state.filterAno = ''
     document.getElementById('search').value = ''
@@ -373,21 +366,24 @@ function bindAppEvents() {
     document.getElementById('sort-dir').textContent = state.sortDir === 1 ? '↑↓' : '↓↑'
     updateList()
   })
-  const btnAdd = document.getElementById('btn-add'); if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
-  // Tab switching
-  document.querySelectorAll('.tab-item[data-db]').forEach(tab => {
+  const btnAdd = document.getElementById('btn-add-player')
+  if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
+
+  // Tab switching — class is tab-btn, not tab-item
+  document.querySelectorAll('.tab-btn[data-db]').forEach(tab => {
     tab.addEventListener('click', () => {
       if (state.activeDb === tab.dataset.db) return
       state.activeDb = tab.dataset.db
-      const bpBtn = document.getElementById('btn-pedidos'); if(bpBtn){bpBtn.style.color='';bpBtn.style.borderColor='';}
-      document.querySelectorAll('.tab-item').forEach(t => {
+      document.querySelectorAll('.tab-btn').forEach(t => {
         t.classList.toggle('active', t.dataset.db === state.activeDb && !t.dataset.pedidos)
         t.classList.toggle('active-pedidos', t.dataset.db === state.activeDb && !!t.dataset.pedidos)
       })
       state.players = []; state.filtered = []
-      loadPlayers()
+      if (state.activeDb === 'pedidos') loadPedidos()
+      else loadPlayers()
     })
   })
+
   document.getElementById('btn-logout').addEventListener('click', async () => {
     resetState()
     await supabase.auth.signOut()
