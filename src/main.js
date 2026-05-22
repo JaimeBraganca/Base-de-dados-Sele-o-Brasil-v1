@@ -327,6 +327,7 @@ function renderApp() {
           <option value="">Ano</option>
         </select>
         <button class="btn-clear-filters" id="btn-clear">Limpar</button>
+        <button class="btn-pedidos-filters" id="btn-pedidos-filters" data-db="pedidos" data-pedidos="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Pedidos</button>
       </div>
       <div class="tabs-bar" id="tabs-bar">
         ${DATABASES.map(db => {
@@ -441,6 +442,21 @@ function bindAppEvents() {
     updateList()
   })
   const btnAdd = document.getElementById('btn-add'); if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
+  // Pedidos button in filters-bar
+  const btnPedidosFil = document.getElementById('btn-pedidos-filters')
+  if (btnPedidosFil) {
+    btnPedidosFil.addEventListener('click', () => {
+      if (state.activeDb === 'pedidos') return
+      state.activeDb = 'pedidos'
+      document.querySelectorAll('.tab-item').forEach(t => {
+        t.classList.toggle('active', t.dataset.db === state.activeDb && !t.dataset.pedidos)
+        t.classList.toggle('active-pedidos', t.dataset.db === state.activeDb && !!t.dataset.pedidos)
+      })
+      btnPedidosFil.classList.add('active-pedidos-filters')
+      state.players = []; state.filtered = []
+      loadPlayers()
+    })
+  }
   // Tab switching
   document.querySelectorAll('.tab-item[data-db]').forEach(tab => {
     tab.addEventListener('click', () => {
