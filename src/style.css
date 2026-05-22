@@ -116,6 +116,8 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .panel-inline-input { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; text-align: right; width: 100%; padding: 2px 4px; outline: none; transition: border-color 0.15s; }
 .panel-inline-input:focus { border-bottom-color: var(--accent); background: var(--accent-light); border-radius: 4px; }
 .panel-inline-select { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; text-align: right; padding: 2px 4px; outline: none; cursor: pointer; }
+.btn-panel-edit { padding: 8px 18px; border-radius: 8px; border: 1.5px solid var(--accent); background: var(--accent-light, #eff4ff); color: var(--accent); font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; }
+.btn-panel-edit:hover { background: var(--accent); color: #fff; }
 .panel-actions { display: flex; gap: 8px; align-items: center; }
 .btn-edit { padding: 7px 13px; background: var(--accent-light); color: var(--accent); border: 1px solid rgba(0,102,255,0.2); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.12s; }
 .btn-edit:hover { background: #d4e4ff; }
