@@ -933,142 +933,117 @@ async function openPedidoPanel(pedido) {
     <div class="panel-header">
       <div class="panel-header-left">
         ${pedido.logo_url
-          ? `<img src="${pedido.logo_url}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;margin-right:12px;" />`
-          : `<div style="width:40px;height:40px;border-radius:8px;background:#dde1e7;margin-right:12px;flex-shrink:0;"></div>`
+          ? `<img src="${pedido.logo_url}" style="width:48px;height:48px;object-fit:contain;border-radius:10px;margin-right:14px;flex-shrink:0;" />`
+          : `<div style="width:48px;height:48px;border-radius:10px;background:#dde1e7;margin-right:14px;flex-shrink:0;"></div>`
         }
-        <div>
-          <div class="panel-name">${pedido.clube || 'Pedido'}</div>
-          <div class="panel-sub">${pedido.pais || ''}${pedido.posicao ? ' · ' + pedido.posicao : ''}</div>
+        <div style="min-width:0;">
+          <div class="panel-name">${pedido.clube || 'Clube'}</div>
+          <div class="panel-sub">${pedido.pais || '—'}</div>
         </div>
       </div>
-      <button class="btn-icon" id="panel-close-btn">${icon('close')}</button>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        ${isAdmin ? `<button class="btn-panel-edit" id="ped-edit-btn">Editar</button>` : ''}
+        <button class="btn-icon" id="panel-close-btn">${icon('close')}</button>
+      </div>
     </div>
 
     <div class="panel-body">
 
       <div class="panel-section">
-        <div class="panel-section-title">Identificação</div>
+        <div class="panel-section-title">Pedido</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Clube</span>
-            ${isAdmin ? `<input class="panel-inline-input" id="ped-clube" value="${pedido.clube || ''}" />` : `<span class="info-val">${pedido.clube || '—'}</span>`}
-          </div>
-          <div class="info-row"><span class="info-label">País</span>
-            ${isAdmin ? `<input class="panel-inline-input" id="ped-pais" value="${pedido.pais || ''}" />` : `<span class="info-val">${pedido.pais || '—'}</span>`}
-          </div>
-          <div class="info-row"><span class="info-label">Posição</span>
-            ${isAdmin ? `<select class="panel-inline-select" id="ped-posicao"><option value="">—</option>${POSICOES.map(p => `<option value="${p}" ${pedido.posicao===p?'selected':''}>${p}</option>`).join('')}</select>` : `<span class="info-val">${pedido.posicao || '—'}</span>`}
+          <div class="info-row">
+            <span class="info-label">Posição</span>
+            <span class="info-val" id="disp-posicao">${pedido.posicao ? `<span class="pos-badge">${pedido.posicao}</span>` : '—'}</span>
           </div>
         </div>
       </div>
 
       <div class="panel-section">
-        <div class="panel-section-title">Financeiro</div>
+        <div class="panel-section-title">Modelo Financeiro</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Valor Transf.</span>
-            ${isAdmin ? `<input class="panel-inline-input" id="ped-valor" value="${pedido.valor_transferencia || ''}" placeholder="Ex: €2M" />` : `<span class="info-val">${pedido.valor_transferencia || '—'}</span>`}
-          </div>
-          <div class="info-row"><span class="info-label">Salário</span>
-            ${isAdmin ? `<input class="panel-inline-input" id="ped-salario" value="${pedido.salario || ''}" placeholder="Ex: €15k/mês" />` : `<span class="info-val">${pedido.salario || '—'}</span>`}
-          </div>
-          <div class="info-row"><span class="info-label">Budget Total</span>
-            ${isAdmin ? `<input class="panel-inline-input" id="ped-budget" value="${pedido.budget_total || ''}" placeholder="Ex: €5M" />` : `<span class="info-val">${pedido.budget_total || '—'}</span>`}
-          </div>
+          <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val" id="disp-valor">${pedido.valor_transferencia || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Salário</span><span class="info-val" id="disp-salario">${pedido.salario || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Comissões</span><span class="info-val" id="disp-comissoes">${pedido.comissoes || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val" id="disp-budget">${pedido.budget_total || '—'}</span></div>
         </div>
       </div>
 
       <div class="panel-section">
-        <div class="panel-section-title">Detalhes</div>
+        <div class="panel-section-title">Outros Detalhes</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Introduzido por</span>
-            ${isAdmin ? `<input class="panel-inline-input" id="ped-intro" value="${pedido.introduzido_por || ''}" />` : `<span class="info-val">${pedido.introduzido_por || '—'}</span>`}
-          </div>
-          <div class="info-row"><span class="info-label">Data limite</span>
-            ${isAdmin ? `<input class="panel-inline-input" id="ped-data" type="date" value="${dataLimite}" />` : `<span class="info-val">${dataLimite || '—'}</span>`}
-          </div>
+          <div class="info-row"><span class="info-label">Introduzido por</span><span class="info-val" id="disp-intro">${pedido.introduzido_por || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Data limite</span><span class="info-val" id="disp-data">${dataLimite || '—'}</span></div>
         </div>
       </div>
 
       <div class="panel-section">
-        <div class="panel-section-title">Jogadores Sugeridos</div>
-        ${isAdmin ? `
-        <div style="position:relative;margin-bottom:10px;">
-          <input class="form-input" id="ped-search-player" placeholder="Pesquisar jogador..." autocomplete="off" style="width:100%;box-sizing:border-box;" />
+        <div class="panel-section-title">Sugerir Jogador</div>
+        <div style="position:relative;margin-bottom:12px;">
+          <input class="form-input" id="ped-search-player" placeholder="Sugerir jogador..." autocomplete="off" style="width:100%;box-sizing:border-box;" />
           <div id="ped-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:200;max-height:200px;overflow-y:auto;"></div>
-        </div>` : ''}
+        </div>
         <div id="ped-jogadores-lista" style="display:flex;flex-wrap:wrap;gap:6px;min-height:24px;"></div>
       </div>
 
       ${isAdmin ? `
-      <div class="panel-section" style="display:flex;gap:10px;padding-top:0;">
-        <button class="btn-add" id="ped-save" style="flex:1;justify-content:center;">Guardar</button>
-        <button id="ped-delete" style="padding:10px 16px;border-radius:8px;border:1px solid #fca5a5;background:#fff0f0;color:#dc2626;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;">Eliminar</button>
+      <div style="padding:0 20px 20px;">
+        <button id="ped-delete" style="width:100%;padding:14px;border-radius:10px;border:none;background:#fff0f0;color:#dc2626;cursor:pointer;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;">Eliminar pedido</button>
       </div>` : ''}
 
     </div>
+
+    ${isAdmin ? `
+    <div id="ped-edit-form" style="display:none;position:absolute;inset:0;background:var(--surface);overflow-y:auto;z-index:20;">
+      <div class="panel-header">
+        <div style="font-size:15px;font-weight:700;color:var(--text);">Editar Pedido</div>
+        <button class="btn-icon" id="ped-edit-close">${icon('close')}</button>
+      </div>
+      <div class="panel-body">
+        <div class="panel-section">
+          <div class="panel-section-title">Identificação</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div><div class="form-label">Clube</div><input class="form-input" id="ped-clube" value="${pedido.clube || ''}" /></div>
+            <div><div class="form-label">País</div><input class="form-input" id="ped-pais" value="${pedido.pais || ''}" /></div>
+            <div><div class="form-label">Posição</div>
+              <select class="form-select" id="ped-posicao">
+                <option value="">—</option>
+                ${POSICOES.map(p => `<option value="${p}" ${pedido.posicao===p?'selected':''}>${p}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="panel-section">
+          <div class="panel-section-title">Modelo Financeiro</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div><div class="form-label">Valor Transferência</div><input class="form-input" id="ped-valor" value="${pedido.valor_transferencia || ''}" placeholder="Ex: €2M" /></div>
+            <div><div class="form-label">Salário</div><input class="form-input" id="ped-salario" value="${pedido.salario || ''}" placeholder="Ex: €15k/mês" /></div>
+            <div><div class="form-label">Comissões</div><input class="form-input" id="ped-comissoes" value="${pedido.comissoes || ''}" placeholder="Ex: 5%" /></div>
+            <div><div class="form-label">Budget Total</div><input class="form-input" id="ped-budget" value="${pedido.budget_total || ''}" placeholder="Ex: €5M" /></div>
+          </div>
+        </div>
+        <div class="panel-section">
+          <div class="panel-section-title">Outros Detalhes</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div><div class="form-label">Introduzido por</div><input class="form-input" id="ped-intro" value="${pedido.introduzido_por || ''}" /></div>
+            <div><div class="form-label">Data limite</div><input class="form-input" type="date" id="ped-data" value="${dataLimite}" /></div>
+          </div>
+        </div>
+        <div class="panel-section">
+          <button class="btn-add" id="ped-save" style="width:100%;justify-content:center;padding:13px;font-size:14px;">Guardar alterações</button>
+        </div>
+      </div>
+    </div>` : ''}
   `
 
   panel.classList.add('open')
   document.getElementById('overlay').classList.add('show')
   document.getElementById('panel-close-btn').addEventListener('click', closePanel)
 
-  function updateJogadoresLista() {
-    const lista = document.getElementById('ped-jogadores-lista')
-    if (!lista) return
-    if (!currentSuggested.length) {
-      lista.innerHTML = '<span style="font-size:13px;color:var(--text-2);">Nenhum jogador sugerido</span>'
-      return
-    }
-    lista.innerHTML = currentSuggested.map(j => `
-      <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 10px;border-radius:20px;font-size:13px;font-family:'DM Sans',sans-serif;">
-        ${j.nome}
-        ${isAdmin ? `<button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">×</button>` : ''}
-      </span>
-    `).join('')
-    lista.querySelectorAll('.remove-jogador').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentSuggested = currentSuggested.filter(j => String(j.id) !== String(btn.dataset.id))
-        updateJogadoresLista()
-      })
-    })
-  }
-  updateJogadoresLista()
-
   if (isAdmin) {
-    const searchInput = document.getElementById('ped-search-player')
-    const suggestions = document.getElementById('ped-suggestions')
-
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.toLowerCase()
-      if (!q) { suggestions.style.display = 'none'; return }
-      const matches = allPlayers
-        .filter(p => p.nome && p.nome.toLowerCase().includes(q) && !currentSuggested.find(s => String(s.id) === String(p.id)))
-        .slice(0, 8)
-      if (!matches.length) { suggestions.style.display = 'none'; return }
-      suggestions.style.display = 'block'
-      suggestions.innerHTML = matches.map(p => `
-        <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
-          <strong>${p.nome}</strong>
-          <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} · ${p.posicao || ''}</span>
-        </div>
-      `).join('')
-      suggestions.querySelectorAll('.suggestion-item').forEach(item => {
-        item.addEventListener('mouseover', () => item.style.background = 'var(--bg)')
-        item.addEventListener('mouseout', () => item.style.background = '')
-        item.addEventListener('click', () => {
-          currentSuggested.push({ id: item.dataset.id, nome: item.dataset.nome })
-          searchInput.value = ''
-          suggestions.style.display = 'none'
-          updateJogadoresLista()
-        })
-      })
-    })
-
-    document.addEventListener('click', function hideSug(e) {
-      if (!suggestions.contains(e.target) && e.target !== searchInput) {
-        suggestions.style.display = 'none'
-        document.removeEventListener('click', hideSug)
-      }
-    })
+    const editForm = document.getElementById('ped-edit-form')
+    document.getElementById('ped-edit-btn').addEventListener('click', () => editForm.style.display = 'block')
+    document.getElementById('ped-edit-close').addEventListener('click', () => editForm.style.display = 'none')
 
     document.getElementById('ped-save').addEventListener('click', async () => {
       const data = {
@@ -1077,6 +1052,7 @@ async function openPedidoPanel(pedido) {
         posicao: document.getElementById('ped-posicao').value || null,
         valor_transferencia: document.getElementById('ped-valor').value.trim() || null,
         salario: document.getElementById('ped-salario').value.trim() || null,
+        comissoes: document.getElementById('ped-comissoes').value.trim() || null,
         budget_total: document.getElementById('ped-budget').value.trim() || null,
         introduzido_por: document.getElementById('ped-intro').value.trim() || null,
         data_limite: document.getElementById('ped-data').value || null,
@@ -1097,6 +1073,68 @@ async function openPedidoPanel(pedido) {
       loadPedidos()
     })
   }
+
+  // Sugerir jogador — available to all users
+  function updateJogadoresLista() {
+    const lista = document.getElementById('ped-jogadores-lista')
+    if (!lista) return
+    if (!currentSuggested.length) {
+      lista.innerHTML = '<span style="font-size:13px;color:var(--text-2);">Nenhum jogador sugerido ainda</span>'
+      return
+    }
+    lista.innerHTML = currentSuggested.map(j => `
+      <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 12px;border-radius:20px;font-size:13px;font-family:'DM Sans',sans-serif;">
+        ${j.nome}
+        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">×</button>
+      </span>
+    `).join('')
+    lista.querySelectorAll('.remove-jogador').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        currentSuggested = currentSuggested.filter(j => String(j.id) !== String(btn.dataset.id))
+        await supabase.from('club_requests').update({ jogadores_sugeridos: currentSuggested }).eq('id', pedido.id)
+        updateJogadoresLista()
+      })
+    })
+  }
+  updateJogadoresLista()
+
+  const searchInput = document.getElementById('ped-search-player')
+  const suggestions = document.getElementById('ped-suggestions')
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.toLowerCase()
+    if (!q) { suggestions.style.display = 'none'; return }
+    const matches = allPlayers
+      .filter(p => p.nome && p.nome.toLowerCase().includes(q) && !currentSuggested.find(s => String(s.id) === String(p.id)))
+      .slice(0, 8)
+    if (!matches.length) { suggestions.style.display = 'none'; return }
+    suggestions.style.display = 'block'
+    suggestions.innerHTML = matches.map(p => `
+      <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+        <strong>${p.nome}</strong>
+        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} · ${p.posicao || ''}</span>
+      </div>
+    `).join('')
+    suggestions.querySelectorAll('.suggestion-item').forEach(item => {
+      item.addEventListener('mouseover', () => item.style.background = 'var(--bg)')
+      item.addEventListener('mouseout', () => item.style.background = '')
+      item.addEventListener('click', async () => {
+        currentSuggested.push({ id: item.dataset.id, nome: item.dataset.nome })
+        await supabase.from('club_requests').update({ jogadores_sugeridos: currentSuggested }).eq('id', pedido.id)
+        searchInput.value = ''
+        suggestions.style.display = 'none'
+        updateJogadoresLista()
+        showToast('Jogador sugerido!', 'success')
+      })
+    })
+  })
+
+  document.addEventListener('click', function hideSug(e) {
+    if (!suggestions.contains(e.target) && e.target !== searchInput) {
+      suggestions.style.display = 'none'
+      document.removeEventListener('click', hideSug)
+    }
+  })
 }
 
 
