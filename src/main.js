@@ -453,8 +453,7 @@ function bindAppEvents() {
         t.classList.toggle('active-pedidos', t.dataset.db === state.activeDb && !!t.dataset.pedidos)
       })
       btnPedidosFil.classList.add('active-pedidos-filters')
-      state.players = []; state.filtered = []
-      loadPlayers()
+      loadPedidos()
     })
   }
   // Tab switching
@@ -824,7 +823,7 @@ async function loadPedidos() {
 }
 
 function renderPedidos() {
-  const container = document.querySelector('.players-list')
+  const container = document.getElementById('player-list')
   if (!container) return
   const pedidos = state.pedidos || []
 
