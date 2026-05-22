@@ -859,6 +859,7 @@ function renderPedidos() {
       <div class="pedido-col-sort" data-col="posicao">Posição${arrow('posicao')}</div>
       <div class="pedido-col-sort" data-col="valor_transferencia">Valor Transf.${arrow('valor_transferencia')}</div>
       <div class="pedido-col-sort" data-col="salario">Salário${arrow('salario')}</div>
+      <div class="pedido-col-sort pedido-col-right" data-col="budget_total">Budget Total${arrow('budget_total')}</div>
     </div>
     ${pedidos.map(p => `
       <div class="pedido-list-row" data-id="${p.id}">
@@ -870,6 +871,7 @@ function renderPedidos() {
         <div class="pedido-cell">${p.posicao ? `<span class="pos-badge">${p.posicao}</span>` : '—'}</div>
         <div class="pedido-cell">${p.valor_transferencia || '—'}</div>
         <div class="pedido-cell">${p.salario || '—'}</div>
+        <div class="pedido-cell pedido-cell-right">${p.budget_total || '—'}</div>
       </div>
     `).join('')}
   `
