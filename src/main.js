@@ -816,33 +816,56 @@ async function preloadAll() {
   state.dbCache['geral'] = all
 }
 async function loadPedidos() {
-  const { data, error } = await supabase.from('club_requests').select('*').order('clube')
+  const { data, error } = await supabase.from('club_requests').select('*')
   if (error) { showToast('Erro ao carregar pedidos.', 'error'); return }
   state.pedidos = data || []
-  renderPedidos()
+  state.pedidoSortCol = state.pedidoSortCol || 'clube'
+  state.pedidoSortDir = state.pedidoSortDir || 1
+  state.pedidoSearch = state.pedidoSearch || ''
+  // Show sort controls again when switching back to players
+  const sortControls = document.querySelector('.sort-controls')
+  if (sortControls) sortControls.style.display = ''
+  applyPedidoFilters()
 }
 
 function renderPedidos() {
   const container = document.getElementById('player-list')
   if (!container) return
-  const pedidos = state.pedidos || []
+
+  // Update stats bar
+  const stats = document.getElementById('stats-count')
+  const pedidos = state.pedidosFiltered || state.pedidos || []
+  const total = state.pedidos?.length || 0
+  if (stats) stats.innerHTML = `<strong>${pedidos.length}</strong> de ${total} Pedidos`
+
+  // Hide sort controls, show pedido sort controls
+  const sortControls = document.querySelector('.sort-controls')
+  if (sortControls) sortControls.style.display = 'none'
 
   if (!pedidos.length) {
     container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div>Sem pedidos de clubes</div></div>'
     return
   }
 
+  const col = state.pedidoSortCol || 'clube'
+  const dir = state.pedidoSortDir || 1
+  const arrow = (c) => c === col ? (dir === 1 ? ' ↑' : ' ↓') : ' ↕'
+
   container.innerHTML = `
     <div class="pedido-list-header">
-      <div>Clube</div>
-      <div>País</div>
-      <div>Posição</div>
-      <div>Valor Transf.</div>
-      <div>Salário</div>
+      <div class="pedido-col-logo"></div>
+      <div class="pedido-col-sort" data-col="clube">Clube${arrow('clube')}</div>
+      <div class="pedido-col-sort" data-col="pais">País${arrow('pais')}</div>
+      <div class="pedido-col-sort" data-col="posicao">Posição${arrow('posicao')}</div>
+      <div class="pedido-col-sort" data-col="valor_transferencia">Valor Transf.${arrow('valor_transferencia')}</div>
+      <div class="pedido-col-sort" data-col="salario">Salário${arrow('salario')}</div>
     </div>
     ${pedidos.map(p => `
       <div class="pedido-list-row" data-id="${p.id}">
-        <div class="pedido-cell-clube"><strong>${p.clube || '—'}</strong></div>
+        <div class="pedido-cell-logo">
+          ${p.logo_url ? `<img src="${p.logo_url}" alt="${p.clube}" class="pedido-logo-img" />` : '<div class="pedido-logo-placeholder"></div>'}
+        </div>
+        <div class="pedido-cell"><strong>${p.clube || '—'}</strong></div>
         <div class="pedido-cell">${p.pais || '—'}</div>
         <div class="pedido-cell">${p.posicao ? `<span class="pos-badge">${p.posicao}</span>` : '—'}</div>
         <div class="pedido-cell">${p.valor_transferencia || '—'}</div>
@@ -851,12 +874,40 @@ function renderPedidos() {
     `).join('')}
   `
 
+  // Sort on header click
+  container.querySelectorAll('.pedido-col-sort').forEach(th => {
+    th.addEventListener('click', () => {
+      const c = th.dataset.col
+      if (state.pedidoSortCol === c) state.pedidoSortDir *= -1
+      else { state.pedidoSortCol = c; state.pedidoSortDir = 1 }
+      applyPedidoFilters()
+    })
+  })
+
+  // Row click → open panel
   container.querySelectorAll('.pedido-list-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const pedido = pedidos.find(p => p.id === row.dataset.id)
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.pedido-col-sort')) return
+      const pedido = (state.pedidosFiltered || state.pedidos || []).find(p => String(p.id) === String(row.dataset.id))
       if (pedido) openPedidoPanel(pedido)
     })
   })
+}
+
+function applyPedidoFilters() {
+  let list = [...(state.pedidos || [])]
+  // Filters
+  if (state.pedidoSearch) {
+    const q = state.pedidoSearch.toLowerCase()
+    list = list.filter(p => (p.clube||'').toLowerCase().includes(q) || (p.pais||'').toLowerCase().includes(q))
+  }
+  if (state.pedidoFilterPais) list = list.filter(p => p.pais === state.pedidoFilterPais)
+  // Sort
+  const col = state.pedidoSortCol || 'clube'
+  const dir = state.pedidoSortDir || 1
+  list.sort((a, b) => dir * (a[col]||'').toString().localeCompare((b[col]||'').toString()))
+  state.pedidosFiltered = list
+  renderPedidos()
 }
 
 async function openPedidoPanel(pedido) {
