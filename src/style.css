@@ -285,19 +285,19 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .pos-tag { background:#e8f0ff; color:#0066ff; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
 
 /* ── PEDIDOS LIST ── */
-.pedido-list-header { display:grid; grid-template-columns:40px minmax(110px,2fr) minmax(70px,1fr) minmax(65px,1fr) minmax(85px,1fr) minmax(75px,1fr) minmax(90px,1fr); padding:8px 16px; background:var(--bg); border-bottom:1px solid var(--border); font-size:12px; font-weight:600; color:var(--text-2); letter-spacing:0.2px; position:sticky; top:198px; z-index:30; gap:4px; font-family:'DM Sans',sans-serif; overflow:hidden; }
-.pedido-col-logo { flex-shrink:0; }
-.pedido-col-sort { cursor:pointer; user-select:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pedido-list-header { display:grid; grid-template-columns:44px 2fr 1fr 1fr 1.2fr 1fr 1.2fr; padding:0 20px; height:38px; background:#e8eaed; border-bottom:1px solid var(--border); border-top:1px solid var(--border); font-size:12px; font-weight:600; color:#4a5568; letter-spacing:0.2px; position:sticky; top:188px; z-index:30; font-family:'DM Sans',sans-serif; align-items:center; }
+.pedido-col-logo { }
+.pedido-col-sort { cursor:pointer; user-select:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:3px; height:100%; }
 .pedido-col-sort:hover { color:var(--accent); }
-.pedido-col-right { text-align:right; }
-.pedido-list-row { display:grid; grid-template-columns:40px minmax(110px,2fr) minmax(70px,1fr) minmax(65px,1fr) minmax(85px,1fr) minmax(75px,1fr) minmax(90px,1fr); padding:10px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; align-items:center; gap:4px; }
+.pedido-col-right { justify-content:flex-end; text-align:right; }
+.pedido-list-row { display:grid; grid-template-columns:44px 2fr 1fr 1fr 1.2fr 1fr 1.2fr; padding:0 20px; height:52px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; align-items:center; }
 .pedido-list-row:hover { background:var(--bg); }
 .pedido-cell { font-size:13px; color:var(--text-2); font-family:'DM Sans',sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.pedido-cell strong { color:var(--text); font-weight:600; }
+.pedido-cell strong { color:var(--text); font-weight:600; font-size:13px; }
 .pedido-cell-right { text-align:right; font-weight:600; color:var(--text); font-size:13px; font-family:'DM Sans',sans-serif; white-space:nowrap; }
-.pedido-cell-logo { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.pedido-logo-img { width:34px; height:34px; object-fit:contain; border-radius:6px; }
-.pedido-logo-placeholder { width:34px; height:34px; border-radius:6px; background:var(--border); }
+.pedido-cell-logo { display:flex; align-items:center; justify-content:center; }
+.pedido-logo-img { width:34px; height:34px; object-fit:contain; }
+.pedido-logo-placeholder { width:34px; height:34px; border-radius:8px; background:#dde1e7; border:1px solid #c8cdd4; }
 @media (max-width:480px) {
   .pedido-list-header { grid-template-columns:30px minmax(90px,2fr) minmax(55px,1fr) minmax(55px,1fr); gap:4px; }
   .pedido-list-header .pedido-col-sort:nth-child(n+5) { display:none; }
