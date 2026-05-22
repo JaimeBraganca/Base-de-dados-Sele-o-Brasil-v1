@@ -913,7 +913,6 @@ function applyPedidoFilters() {
 }
 
 async function openPedidoPanel(pedido) {
-  // Load all players for suggestion
   const allPlayers = [
     ...(state.dbCache['cbf'] || []),
     ...(state.dbCache['mercado'] || []),
@@ -922,166 +921,184 @@ async function openPedidoPanel(pedido) {
     ...(state.dbCache['ligas-brasil'] || []),
   ]
 
-  const jogadoresSugeridos = Array.isArray(pedido.jogadores_sugeridos) ? pedido.jogadores_sugeridos : []
+  let currentSuggested = Array.isArray(pedido.jogadores_sugeridos) ? [...pedido.jogadores_sugeridos] : []
   const dataLimite = pedido.data_limite ? pedido.data_limite.split('T')[0] : ''
+  const isAdmin = state.role === 'admin' || state.role === 'moderator'
 
-  // Open panel
-  const panel = document.getElementById('player-panel')
+  const panel = document.getElementById('side-panel')
   const panelContent = document.getElementById('panel-content')
   if (!panel || !panelContent) return
 
-  panel.classList.add('open')
   panelContent.innerHTML = `
     <div class="panel-header">
-      <div>
-        <div class="panel-name">${pedido.clube || 'Pedido'}</div>
-        <div class="panel-meta">${pedido.pais || ''}</div>
+      <div class="panel-header-left">
+        ${pedido.logo_url
+          ? `<img src="${pedido.logo_url}" style="width:40px;height:40px;object-fit:contain;border-radius:8px;margin-right:12px;" />`
+          : `<div style="width:40px;height:40px;border-radius:8px;background:#dde1e7;margin-right:12px;flex-shrink:0;"></div>`
+        }
+        <div>
+          <div class="panel-name">${pedido.clube || 'Pedido'}</div>
+          <div class="panel-sub">${pedido.pais || ''}${pedido.posicao ? ' · ' + pedido.posicao : ''}</div>
+        </div>
       </div>
       <button class="btn-icon" id="panel-close-btn">${icon('close')}</button>
     </div>
-    <div class="panel-body" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div>
-          <div class="form-label">Nome do Clube</div>
-          <input class="form-input" id="ped-clube" value="${pedido.clube || ''}" placeholder="Ex: SL Benfica" />
-        </div>
-        <div>
-          <div class="form-label">País</div>
-          <input class="form-input" id="ped-pais" value="${pedido.pais || ''}" placeholder="Ex: Portugal" />
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-        <div>
-          <div class="form-label">Posição</div>
-          <select class="form-select" id="ped-posicao">
-            <option value="">Selecionar</option>
-            ${POSICOES.map(p => `<option value="${p}" ${pedido.posicao===p?'selected':''}>${p}</option>`).join('')}
-          </select>
-        </div>
-        <div>
-          <div class="form-label">Valor da Transferência</div>
-          <input class="form-input" id="ped-valor" value="${pedido.valor_transferencia || ''}" placeholder="Ex: €2M" />
-        </div>
-        <div>
-          <div class="form-label">Salário</div>
-          <input class="form-input" id="ped-salario" value="${pedido.salario || ''}" placeholder="Ex: €15k/mês" />
+
+    <div class="panel-body">
+
+      <div class="panel-section">
+        <div class="panel-section-title">Identificação</div>
+        <div class="info-grid">
+          <div class="info-row"><span class="info-label">Clube</span>
+            ${isAdmin ? `<input class="panel-inline-input" id="ped-clube" value="${pedido.clube || ''}" />` : `<span class="info-val">${pedido.clube || '—'}</span>`}
+          </div>
+          <div class="info-row"><span class="info-label">País</span>
+            ${isAdmin ? `<input class="panel-inline-input" id="ped-pais" value="${pedido.pais || ''}" />` : `<span class="info-val">${pedido.pais || '—'}</span>`}
+          </div>
+          <div class="info-row"><span class="info-label">Posição</span>
+            ${isAdmin ? `<select class="panel-inline-select" id="ped-posicao"><option value="">—</option>${POSICOES.map(p => `<option value="${p}" ${pedido.posicao===p?'selected':''}>${p}</option>`).join('')}</select>` : `<span class="info-val">${pedido.posicao || '—'}</span>`}
+          </div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div>
-          <div class="form-label">Introduzido por</div>
-          <input class="form-input" id="ped-intro" value="${pedido.introduzido_por || ''}" placeholder="Nome" />
-        </div>
-        <div>
-          <div class="form-label">Data limite</div>
-          <input class="form-input" id="ped-data" type="date" value="${dataLimite}" />
-        </div>
-      </div>
-      <div>
-        <div class="form-label">Jogadores sugeridos</div>
-        <div style="position:relative;">
-          <input class="form-input" id="ped-search-player" placeholder="Pesquisar jogador da base de dados..." autocomplete="off" />
-          <div id="ped-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e5e5e5;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:100;max-height:180px;overflow-y:auto;"></div>
-        </div>
-        <div id="ped-jogadores-lista" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">
-          ${jogadoresSugeridos.map(j => `
-            <span style="display:inline-flex;align-items:center;gap:6px;background:#eff4ff;color:#0061ff;padding:4px 10px;border-radius:20px;font-size:13px;">
-              ${j.nome}
-              <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">×</button>
-            </span>
-          `).join('')}
+
+      <div class="panel-section">
+        <div class="panel-section-title">Financeiro</div>
+        <div class="info-grid">
+          <div class="info-row"><span class="info-label">Valor Transf.</span>
+            ${isAdmin ? `<input class="panel-inline-input" id="ped-valor" value="${pedido.valor_transferencia || ''}" placeholder="Ex: €2M" />` : `<span class="info-val">${pedido.valor_transferencia || '—'}</span>`}
+          </div>
+          <div class="info-row"><span class="info-label">Salário</span>
+            ${isAdmin ? `<input class="panel-inline-input" id="ped-salario" value="${pedido.salario || ''}" placeholder="Ex: €15k/mês" />` : `<span class="info-val">${pedido.salario || '—'}</span>`}
+          </div>
+          <div class="info-row"><span class="info-label">Budget Total</span>
+            ${isAdmin ? `<input class="panel-inline-input" id="ped-budget" value="${pedido.budget_total || ''}" placeholder="Ex: €5M" />` : `<span class="info-val">${pedido.budget_total || '—'}</span>`}
+          </div>
         </div>
       </div>
-      <div style="display:flex;gap:10px;margin-top:8px;">
-        <button class="btn-save" id="ped-save" style="flex:1;">Guardar</button>
-        <button class="btn-danger" id="ped-delete" style="background:#fff0f0;color:#dc2626;border:1px solid #fca5a5;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:13px;">Eliminar</button>
+
+      <div class="panel-section">
+        <div class="panel-section-title">Detalhes</div>
+        <div class="info-grid">
+          <div class="info-row"><span class="info-label">Introduzido por</span>
+            ${isAdmin ? `<input class="panel-inline-input" id="ped-intro" value="${pedido.introduzido_por || ''}" />` : `<span class="info-val">${pedido.introduzido_por || '—'}</span>`}
+          </div>
+          <div class="info-row"><span class="info-label">Data limite</span>
+            ${isAdmin ? `<input class="panel-inline-input" id="ped-data" type="date" value="${dataLimite}" />` : `<span class="info-val">${dataLimite || '—'}</span>`}
+          </div>
+        </div>
       </div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">Jogadores Sugeridos</div>
+        ${isAdmin ? `
+        <div style="position:relative;margin-bottom:10px;">
+          <input class="form-input" id="ped-search-player" placeholder="Pesquisar jogador..." autocomplete="off" style="width:100%;box-sizing:border-box;" />
+          <div id="ped-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);z-index:200;max-height:200px;overflow-y:auto;"></div>
+        </div>` : ''}
+        <div id="ped-jogadores-lista" style="display:flex;flex-wrap:wrap;gap:6px;min-height:24px;"></div>
+      </div>
+
+      ${isAdmin ? `
+      <div class="panel-section" style="display:flex;gap:10px;padding-top:0;">
+        <button class="btn-add" id="ped-save" style="flex:1;justify-content:center;">Guardar</button>
+        <button id="ped-delete" style="padding:10px 16px;border-radius:8px;border:1px solid #fca5a5;background:#fff0f0;color:#dc2626;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;">Eliminar</button>
+      </div>` : ''}
+
     </div>
   `
 
-  document.getElementById('panel-close-btn').addEventListener('click', () => panel.classList.remove('open'))
-
-  // Player search with suggestions
-  let currentSuggested = [...jogadoresSugeridos]
-
-  const searchInput = document.getElementById('ped-search-player')
-  const suggestions = document.getElementById('ped-suggestions')
-
-  searchInput.addEventListener('input', () => {
-    const q = searchInput.value.toLowerCase()
-    if (!q) { suggestions.style.display = 'none'; return }
-    const matches = allPlayers
-      .filter(p => p.nome && p.nome.toLowerCase().includes(q) && !currentSuggested.find(s => s.id === p.id))
-      .slice(0, 8)
-    if (!matches.length) { suggestions.style.display = 'none'; return }
-    suggestions.style.display = 'block'
-    suggestions.innerHTML = matches.map(p => `
-      <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid #f5f5f5;">
-        <strong>${p.nome}</strong> <span style="color:#aaa;font-size:12px;">${p.clube || ''} · ${p.posicao || ''}</span>
-      </div>
-    `).join('')
-    suggestions.querySelectorAll('.suggestion-item').forEach(item => {
-      item.addEventListener('mouseover', () => item.style.background = '#f5f5f5')
-      item.addEventListener('mouseout', () => item.style.background = '')
-      item.addEventListener('click', () => {
-        currentSuggested.push({ id: item.dataset.id, nome: item.dataset.nome })
-        searchInput.value = ''
-        suggestions.style.display = 'none'
-        updateJogadoresLista()
-      })
-    })
-  })
-
-  document.addEventListener('click', e => {
-    if (!suggestions.contains(e.target) && e.target !== searchInput) suggestions.style.display = 'none'
-  })
+  panel.classList.add('open')
+  document.getElementById('overlay').classList.add('show')
+  document.getElementById('panel-close-btn').addEventListener('click', closePanel)
 
   function updateJogadoresLista() {
     const lista = document.getElementById('ped-jogadores-lista')
     if (!lista) return
+    if (!currentSuggested.length) {
+      lista.innerHTML = '<span style="font-size:13px;color:var(--text-2);">Nenhum jogador sugerido</span>'
+      return
+    }
     lista.innerHTML = currentSuggested.map(j => `
-      <span style="display:inline-flex;align-items:center;gap:6px;background:#eff4ff;color:#0061ff;padding:4px 10px;border-radius:20px;font-size:13px;">
+      <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 10px;border-radius:20px;font-size:13px;font-family:'DM Sans',sans-serif;">
         ${j.nome}
-        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">×</button>
+        ${isAdmin ? `<button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">×</button>` : ''}
       </span>
     `).join('')
     lista.querySelectorAll('.remove-jogador').forEach(btn => {
       btn.addEventListener('click', () => {
-        currentSuggested = currentSuggested.filter(j => j.id !== btn.dataset.id)
+        currentSuggested = currentSuggested.filter(j => String(j.id) !== String(btn.dataset.id))
         updateJogadoresLista()
       })
     })
   }
   updateJogadoresLista()
 
-  // Save
-  document.getElementById('ped-save').addEventListener('click', async () => {
-    const data = {
-      clube: document.getElementById('ped-clube').value.trim() || null,
-      pais: document.getElementById('ped-pais').value.trim() || null,
-      posicao: document.getElementById('ped-posicao').value || null,
-      valor_transferencia: document.getElementById('ped-valor').value.trim() || null,
-      salario: document.getElementById('ped-salario').value.trim() || null,
-      introduzido_por: document.getElementById('ped-intro').value.trim() || null,
-      data_limite: document.getElementById('ped-data').value || null,
-      jogadores_sugeridos: currentSuggested,
-    }
-    const { error } = await supabase.from('club_requests').update(data).eq('id', pedido.id)
-    if (error) { showToast('Erro ao guardar.', 'error'); return }
-    showToast('Pedido guardado!', 'success')
-    panel.classList.remove('open')
-    loadPedidos()
-  })
+  if (isAdmin) {
+    const searchInput = document.getElementById('ped-search-player')
+    const suggestions = document.getElementById('ped-suggestions')
 
-  // Delete
-  document.getElementById('ped-delete').addEventListener('click', async () => {
-    if (!confirm('Eliminar este pedido?')) return
-    await supabase.from('club_requests').delete().eq('id', pedido.id)
-    showToast('Pedido eliminado.', 'success')
-    panel.classList.remove('open')
-    loadPedidos()
-  })
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase()
+      if (!q) { suggestions.style.display = 'none'; return }
+      const matches = allPlayers
+        .filter(p => p.nome && p.nome.toLowerCase().includes(q) && !currentSuggested.find(s => String(s.id) === String(p.id)))
+        .slice(0, 8)
+      if (!matches.length) { suggestions.style.display = 'none'; return }
+      suggestions.style.display = 'block'
+      suggestions.innerHTML = matches.map(p => `
+        <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;">
+          <strong>${p.nome}</strong>
+          <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} · ${p.posicao || ''}</span>
+        </div>
+      `).join('')
+      suggestions.querySelectorAll('.suggestion-item').forEach(item => {
+        item.addEventListener('mouseover', () => item.style.background = 'var(--bg)')
+        item.addEventListener('mouseout', () => item.style.background = '')
+        item.addEventListener('click', () => {
+          currentSuggested.push({ id: item.dataset.id, nome: item.dataset.nome })
+          searchInput.value = ''
+          suggestions.style.display = 'none'
+          updateJogadoresLista()
+        })
+      })
+    })
+
+    document.addEventListener('click', function hideSug(e) {
+      if (!suggestions.contains(e.target) && e.target !== searchInput) {
+        suggestions.style.display = 'none'
+        document.removeEventListener('click', hideSug)
+      }
+    })
+
+    document.getElementById('ped-save').addEventListener('click', async () => {
+      const data = {
+        clube: document.getElementById('ped-clube').value.trim() || null,
+        pais: document.getElementById('ped-pais').value.trim() || null,
+        posicao: document.getElementById('ped-posicao').value || null,
+        valor_transferencia: document.getElementById('ped-valor').value.trim() || null,
+        salario: document.getElementById('ped-salario').value.trim() || null,
+        budget_total: document.getElementById('ped-budget').value.trim() || null,
+        introduzido_por: document.getElementById('ped-intro').value.trim() || null,
+        data_limite: document.getElementById('ped-data').value || null,
+        jogadores_sugeridos: currentSuggested,
+      }
+      const { error } = await supabase.from('club_requests').update(data).eq('id', pedido.id)
+      if (error) { showToast('Erro ao guardar.', 'error'); return }
+      showToast('Pedido guardado!', 'success')
+      closePanel()
+      loadPedidos()
+    })
+
+    document.getElementById('ped-delete').addEventListener('click', async () => {
+      if (!confirm('Eliminar este pedido?')) return
+      await supabase.from('club_requests').delete().eq('id', pedido.id)
+      showToast('Pedido eliminado.', 'success')
+      closePanel()
+      loadPedidos()
+    })
+  }
 }
+
 
 async function loadPlayers() {
   if (state.activeDb === 'pedidos') { loadPedidos(); return }
