@@ -588,7 +588,11 @@ function openPanel(player) {
   pushPanelState()
 }
 
-function closePanel() { document.getElementById('side-panel').classList.remove('open') }
+function closePanel() {
+  document.getElementById('side-panel').classList.remove('open')
+  document.getElementById('overlay').classList.remove('show')
+  setTimeout(() => { document.getElementById('panel-content').innerHTML = '' }, 300)
+}
 function closeAll() {
   document.getElementById('overlay').classList.remove('open')
   document.getElementById('side-panel').classList.remove('open')
@@ -1064,8 +1068,11 @@ async function openPedidoPanel(pedido) {
       const { error } = await supabase.from('club_requests').update(cleanData).eq('id', pedido.id)
       if (error) { showToast('Erro: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Guardar alterações'; return }
       showToast('Pedido guardado!', 'success')
-      closePanel()
-      loadPedidos()
+      // Reload pedidos and reopen panel with fresh data
+      await loadPedidos()
+      const updated = (state.pedidosFiltered || state.pedidos || []).find(p => p.id === pedido.id)
+      if (updated) openPedidoPanel(updated)
+      else closePanel()
     })
 
     document.getElementById('ped-delete').addEventListener('click', async () => {
