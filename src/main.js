@@ -841,64 +841,48 @@ function renderPedidos() {
   const container = document.getElementById('player-list')
   if (!container) return
 
-  // Update stats bar
   const stats = document.getElementById('stats-count')
   const pedidos = state.pedidosFiltered || state.pedidos || []
   const total = state.pedidos?.length || 0
   if (stats) stats.innerHTML = `<strong>${pedidos.length}</strong> de ${total} Pedidos`
 
-  // Hide sort controls, show pedido sort controls
   const sortControls = document.querySelector('.sort-controls')
   if (sortControls) sortControls.style.display = 'none'
 
   if (!pedidos.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">\u1f4cb</div><div>Sem pedidos de clubes</div></div>'
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">\ud83d\udccb</div><div>Sem pedidos de clubes</div></div>'
     return
   }
 
-  const col = state.pedidoSortCol || 'clube'
-  const dir = state.pedidoSortDir || 1
-  const arrow = (c) => c === col ? (dir === 1 ? ' \u2191' : ' \u2193') : ' \u2195'
-
-  container.innerHTML = `
-    <div class="pedido-list-header">
-      <div class="pedido-col-logo"></div>
-      <div class="pedido-col-sort" data-col="clube">Clube${arrow('clube')}</div>
-      <div class="pedido-col-sort" data-col="pais">Pa\u00eds${arrow('pais')}</div>
-      <div class="pedido-col-sort" data-col="posicao">Posi\u00e7\u00e3o${arrow('posicao')}</div>
-      <div class="pedido-col-sort" data-col="valor_transferencia">Valor Transf.${arrow('valor_transferencia')}</div>
-      <div class="pedido-col-sort" data-col="salario">Sal\u00e1rio${arrow('salario')}</div>
-      <div class="pedido-col-sort pedido-col-right" data-col="budget_total">Budget Total${arrow('budget_total')}</div>
-    </div>
-    ${pedidos.map(p => `
-      <div class="pedido-list-row" data-id="${p.id}">
-        <div class="pedido-cell-logo">
-          ${p.logo_url ? `<img src="${p.logo_url}" alt="${p.clube}" class="pedido-logo-img" />` : '<div class="pedido-logo-placeholder"></div>'}
+  container.innerHTML = pedidos.map(p => {
+    const initClube = (p.clube || '?').substring(0, 2).toUpperCase()
+    return `
+      <div class="player-row" data-id="${p.id}">
+        <div class="player-avatar pedido-avatar">
+          ${p.logo_url
+            ? `<img src="${p.logo_url}" alt="${p.clube}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;" />`
+            : `<span>${initClube}</span>`
+          }
         </div>
-        <div class="pedido-cell"><strong>${p.clube || '\u2014'}</strong></div>
-        <div class="pedido-cell">${p.pais || '\u2014'}</div>
-        <div class="pedido-cell">${p.posicao ? `<span class="pos-badge">${p.posicao}</span>` : '\u2014'}</div>
-        <div class="pedido-cell">${p.valor_transferencia || '\u2014'}</div>
-        <div class="pedido-cell">${p.salario || '\u2014'}</div>
-        <div class="pedido-cell pedido-cell-right">${p.budget_total || '\u2014'}</div>
+        <div class="player-info">
+          <div class="player-name">${p.clube || '\u2014'}</div>
+          <div class="player-meta">${p.pais || ''}${p.posicao ? ' \u00b7 ' + p.posicao : ''}</div>
+        </div>
+        <div class="player-right">
+          <div class="player-right-top">
+            ${p.budget_total ? `<span class="nivel-badge" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;">${p.budget_total}</span>` : ''}
+          </div>
+          <div class="player-right-bottom">
+            ${p.valor_transferencia ? `<span class="pos-badge">${p.valor_transferencia}</span>` : ''}
+          </div>
+        </div>
+        <svg class="row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
-    `).join('')}
-  `
+    `
+  }).join('')
 
-  // Sort on header click
-  container.querySelectorAll('.pedido-col-sort').forEach(th => {
-    th.addEventListener('click', () => {
-      const c = th.dataset.col
-      if (state.pedidoSortCol === c) state.pedidoSortDir *= -1
-      else { state.pedidoSortCol = c; state.pedidoSortDir = 1 }
-      applyPedidoFilters()
-    })
-  })
-
-  // Row click \u2192 open panel
-  container.querySelectorAll('.pedido-list-row').forEach(row => {
-    row.addEventListener('click', (e) => {
-      if (e.target.closest('.pedido-col-sort')) return
+  container.querySelectorAll('.player-row').forEach(row => {
+    row.addEventListener('click', () => {
       const pedido = (state.pedidosFiltered || state.pedidos || []).find(p => String(p.id) === String(row.dataset.id))
       if (pedido) openPedidoPanel(pedido)
     })
