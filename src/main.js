@@ -335,10 +335,10 @@ function renderApp() {
       <div class="tabs-bar" id="tabs-bar">
         ${DATABASES.map(db => {
           let logoHtml = ''
-          if (db.id === 'ligas-portugal') logoHtml = `<img src="${LIGA_PORTUGAL_LOGO}" style="width:16px;height:16px;object-fit:contain;margin-right:5px;vertical-align:middle;" />`
-          if (db.id === 'ligas-brasil') logoHtml = `<img src="${BRASILEIRAO_LOGO}" style="width:16px;height:16px;object-fit:contain;margin-right:5px;vertical-align:middle;" />`
-          if (db.id === 'cbf') logoHtml = `<img src="${CBF_LOGO}" style="width:16px;height:16px;object-fit:contain;margin-right:5px;vertical-align:middle;" />`
-          if (db.id === 'fpf') logoHtml = `<img src="${FPF_LOGO}" style="width:16px;height:16px;object-fit:contain;margin-right:5px;vertical-align:middle;" />`
+          if (db.id === 'ligas-portugal') logoHtml = `<img src="${LIGA_PORTUGAL_LOGO}" alt="LP" />`
+          if (db.id === 'ligas-brasil') logoHtml = `<img src="${BRASILEIRAO_LOGO}" alt="BR" />`
+          if (db.id === 'cbf') logoHtml = `<img src="${CBF_LOGO}" alt="CBF" />`
+          if (db.id === 'fpf') logoHtml = `<img src="${FPF_LOGO}" alt="FPF" />`
           return `<div class="tab-item ${state.activeDb === db.id ? 'active' : ''}" data-db="${db.id}">${logoHtml}${db.label}</div>`
         }).join('')}
         <div style="flex:1"></div>
