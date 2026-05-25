@@ -6,10 +6,10 @@ const CBF_LOGO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACWAAAAlgCAYAAAAM
 const DATABASES = [
   { id: 'geral', label: 'Geral', isGeral: true },
   { id: 'mercado', label: 'Mercado', table: 'players_mercado' },
-  { id: 'cbf', label: 'CBF SeleÃ§Ãµes', table: 'players' },
-  { id: 'fpf', label: 'FPF SeleÃ§Ãµes', table: 'players_portugal' },
+  { id: 'cbf', label: 'CBF Seleções', table: 'players' },
+  { id: 'fpf', label: 'FPF Seleções', table: 'players_portugal' },
   { id: 'ligas-portugal', label: 'Liga Portugal', table: 'players_ligas_portugal' },
-  { id: 'ligas-brasil', label: 'BrasileirÃ£o', table: 'players_ligas_brasil' },
+  { id: 'ligas-brasil', label: 'Brasileirão', table: 'players_ligas_brasil' },
 ]
 
 const LIGA_PORTUGAL_LOGO = 'data:image/png;base64,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'
@@ -18,7 +18,7 @@ const PEDIDOS_DB = { id: 'pedidos', label: '<svg viewBox=\"0 0 24 24\" fill=\"no
 
 import { supabase } from './supabase.js'
 
-const POSICOES = ['Guarda-Redes','Defesa Central','Lateral Dir.','Lateral Esq.','MÃ©dio Defensivo','MÃ©dio-Centro','MÃ©dio Ofensivo','Extremo Dir.','Extremo Esq.','Ponta de LanÃ§a']
+const POSICOES = ['Guarda-Redes','Defesa Central','Lateral Dir.','Lateral Esq.','Médio Defensivo','Médio-Centro','Médio Ofensivo','Extremo Dir.','Extremo Esq.','Ponta de Lança']
 const NIVEIS = ['A+','A','A/B','B+','B','B-','B/C']
 
 let state = {
@@ -96,7 +96,7 @@ function icon(name) {
 }
 
 
-// â”€â”€ WEBAUTHN â”€â”€
+// ── WEBAUTHN ──
 const WA_KEY = 'wa_credential_id'
 
 function bufferToBase64(buffer) {
@@ -128,7 +128,7 @@ async function registerBiometric(userEmail) {
     const credential = await navigator.credentials.create({
       publicKey: {
         challenge,
-        rp: { name: 'Base de Dados â€” All In Sports', id: location.hostname },
+        rp: { name: 'Base de Dados — All In Sports', id: location.hostname },
         user: { id: userId, name: userEmail, displayName: userEmail },
         pubKeyCredParams: [{ alg: -7, type: 'public-key' }, { alg: -257, type: 'public-key' }],
         authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
@@ -161,7 +161,7 @@ async function authenticateBiometric() {
   } catch (e) { console.log('WebAuthn auth error:', e); return null }
 }
 
-// â”€â”€ AUTH â”€â”€
+// ── AUTH ──
 function renderAuth() {
   const hasBiometric = localStorage.getItem(WA_KEY)
   const bioEmail = localStorage.getItem('wa_email')
@@ -178,7 +178,7 @@ function renderAuth() {
         <div style="margin-top:24px;display:flex;flex-direction:column;gap:12px;">
           <button class="btn-biometric-main" id="btn-biometric">
             <svg viewBox="0 0 32 32" fill="none" width="22" height="22"><path d="M16 4C9.373 4 4 9.373 4 16" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M28 16c0 6.627-5.373 12-12 12" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 10a6 6 0 0 1 6 6c0 2-.4 3.9-1.1 5.6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M10 16a6 6 0 0 1 6-6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 16v8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 19c0 2.5.8 4.8 2.1 6.7" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M19 19c0 1.4-.2 2.7-.7 3.9" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="white"/></svg>
-            Entrar com impressÃ£o digital
+            Entrar com impressão digital
           </button>
           <div style="text-align:center;font-size:12px;color:var(--text-3);margin-top:-4px;">ou entra com email e password</div>
         </div>` : ''}
@@ -189,11 +189,11 @@ function renderAuth() {
           </div>
           <div>
             <label class="field-label">Password</label>
-            <input class="field-input" type="password" id="auth-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password" required />
+            <input class="field-input" type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" required />
           </div>
           <div id="auth-error" style="display:none" class="auth-error"></div>
           <label class="toggle-row" id="bio-toggle-row" style="display:none;">
-            <span class="toggle-label">Ativar impressÃ£o digital para prÃ³ximos acessos</span>
+            <span class="toggle-label">Ativar impressão digital para próximos acessos</span>
             <div class="toggle-switch">
               <input type="checkbox" id="bio-toggle" />
               <span class="toggle-slider"></span>
@@ -250,7 +250,7 @@ function renderAuth() {
       if (email) {
         // Re-authenticate with stored session or prompt password once
         const errEl = document.getElementById('auth-error')
-        errEl.textContent = 'Biometria confirmada! Introduz a password uma Ãºltima vez para reativar a sessÃ£o.'
+        errEl.textContent = 'Biometria confirmada! Introduz a password uma última vez para reativar a sessão.'
         errEl.style.display = 'block'
         errEl.style.background = 'var(--green-bg)'
         errEl.style.borderColor = 'var(--green)'
@@ -259,13 +259,13 @@ function renderAuth() {
         document.getElementById('auth-password').focus()
       } else {
         bioBtn.disabled = false
-        bioBtn.innerHTML = `<svg viewBox="0 0 32 32" fill="none" width="22" height="22"><path d="M16 4C9.373 4 4 9.373 4 16" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M28 16c0 6.627-5.373 12-12 12" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 10a6 6 0 0 1 6 6c0 2-.4 3.9-1.1 5.6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M10 16a6 6 0 0 1 6-6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 16v8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 19c0 2.5.8 4.8 2.1 6.7" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M19 19c0 1.4-.2 2.7-.7 3.9" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="white"/></svg> Entrar com impressÃ£o digital`
+        bioBtn.innerHTML = `<svg viewBox="0 0 32 32" fill="none" width="22" height="22"><path d="M16 4C9.373 4 4 9.373 4 16" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M28 16c0 6.627-5.373 12-12 12" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 10a6 6 0 0 1 6 6c0 2-.4 3.9-1.1 5.6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M10 16a6 6 0 0 1 6-6" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M16 16v8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 19c0 2.5.8 4.8 2.1 6.7" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M19 19c0 1.4-.2 2.7-.7 3.9" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="16" r="2" fill="white"/></svg> Entrar com impressão digital`
       }
     })
   }
 }
 
-// â”€â”€ FILTERS â”€â”€
+// ── FILTERS ──
 function applyFilters() {
   const q = state.search.toLowerCase().trim()
   state.filtered = state.players.filter(p => {
@@ -287,7 +287,7 @@ function applyFilters() {
       return an < bn ? -state.sortDir : an > bn ? state.sortDir : 0
     }
     if (state.sortCol === 'posicao') {
-      const POSICAO_ORDER = ['Guarda-Redes','Defesa Central','Lateral Dir.','Lateral Esq.','MÃ©dio Defensivo','MÃ©dio-Centro','MÃ©dio Ofensivo','Extremo Dir.','Extremo Esq.','Ponta de LanÃ§a']
+      const POSICAO_ORDER = ['Guarda-Redes','Defesa Central','Lateral Dir.','Lateral Esq.','Médio Defensivo','Médio-Centro','Médio Ofensivo','Extremo Dir.','Extremo Esq.','Ponta de Lança']
       const ai = POSICAO_ORDER.indexOf(av), bi = POSICAO_ORDER.indexOf(bv)
       const an = ai === -1 ? 99 : ai, bn = bi === -1 ? 99 : bi
       return an < bn ? -state.sortDir : an > bn ? state.sortDir : 0
@@ -297,7 +297,7 @@ function applyFilters() {
   })
 }
 
-// â”€â”€ RENDER APP â”€â”€
+// ── RENDER APP ──
 function renderApp() {
 
   document.getElementById('app').innerHTML = `
@@ -319,11 +319,11 @@ function renderApp() {
           <input class="search-input" id="search" type="search" placeholder="Pesquisar jogador, clube, representante..." value="${state.search}" />
         </div>
         <select class="filter-select" id="f-pos">
-          <option value="">PosiÃ§Ã£o</option>
+          <option value="">Posição</option>
           ${POSICOES.map(p => `<option value="${p}" ${state.filterPos===p?'selected':''}>${p}</option>`).join('')}
         </select>
         <select class="filter-select" id="f-nivel">
-          <option value="">NÃ­vel</option>
+          <option value="">Nível</option>
           ${NIVEIS.map(n => `<option value="${n}" ${state.filterNivel===n?'selected':''}>${n}</option>`).join('')}
         </select>
         <select class="filter-select" id="f-ano">
@@ -352,10 +352,10 @@ function renderApp() {
             <option value="nome">Nome</option>
             <option value="ano">Ano</option>
             <option value="clube">Clube</option>
-            <option value="nivel">NÃ­vel</option>
-            <option value="posicao">PosiÃ§Ã£o</option>
+            <option value="nivel">Nível</option>
+            <option value="posicao">Posição</option>
           </select>
-          <button class="sort-dir-btn" id="sort-dir">â†‘â†“</button>
+          <button class="sort-dir-btn" id="sort-dir">↑↓</button>
         </div>
       </div>
 
@@ -391,12 +391,12 @@ function renderPlayerList() {
         <div style="display:flex;align-items:center;gap:6px;">
           <div class="player-name">${p.nome}</div>
         </div>
-        <div class="player-ano-inline">${p.ano || 'â€”'}</div>
-        <div class="player-meta">${p.clube || 'â€”'}</div>
+        <div class="player-ano-inline">${p.ano || '—'}</div>
+        <div class="player-meta">${p.clube || '—'}</div>
       </div>
       <div class="player-right">
-        <span class="nivel-badge ${nivelClass(p.nivel)}">${p.nivel || 'â€”'}</span>
-        <span class="pos-tag">${p.posicao || 'â€”'}</span>
+        <span class="nivel-badge ${nivelClass(p.nivel)}">${p.nivel || '—'}</span>
+        <span class="pos-tag">${p.posicao || '—'}</span>
       </div>
       <div class="chevron">${icon('chevron')}</div>
     </div>
@@ -443,7 +443,7 @@ function bindAppEvents() {
   document.getElementById('sort-col').addEventListener('change', e => { state.sortCol = e.target.value; updateList() })
   document.getElementById('sort-dir').addEventListener('click', () => {
     state.sortDir *= -1
-    document.getElementById('sort-dir').textContent = state.sortDir === 1 ? 'â†‘â†“' : 'â†“â†‘'
+    document.getElementById('sort-dir').textContent = state.sortDir === 1 ? '↑↓' : '↓↑'
     updateList()
   })
   const btnAdd = document.getElementById('btn-add'); if (btnAdd) btnAdd.addEventListener('click', () => openForm(null))
@@ -491,7 +491,7 @@ function bindRowEvents() {
   })
 }
 
-// â”€â”€ PANEL â”€â”€
+// ── PANEL ──
 function openPanel(player) {
   state.selectedPlayer = player
   const ig = (player.instagram || '').trim()
@@ -519,7 +519,7 @@ function openPanel(player) {
         </div>
         <div>
           <div class="panel-header-title">${player.nome}</div>
-          <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' Â· ')}</div>
+          <div class="panel-header-sub">${[player.posicao, player.clube].filter(Boolean).join(' · ')}</div>
         </div>
       </div>
       <div class="panel-actions">
@@ -532,19 +532,19 @@ function openPanel(player) {
     </div>
     <div class="panel-body">
       <div>
-        <div class="panel-section-title">IdentificaÃ§Ã£o</div>
+        <div class="panel-section-title">Identificação</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Ano Nascimento</span><span class="info-val">${player.ano || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">PosiÃ§Ã£o</span><span class="info-val"><span class="pos-badge-panel">${player.posicao || 'â€”'}</span></span></div>
-          <div class="info-row"><span class="info-label">NÃ­vel</span><span class="info-val"><span class="nivel-badge ${nivelClass(player.nivel)}">${player.nivel || 'â€”'}</span></span></div>
-          <div class="info-row"><span class="info-label">Clube Actual</span><span class="info-val">${player.clube || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Ano Nascimento</span><span class="info-val">${player.ano || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Posição</span><span class="info-val"><span class="pos-badge-panel">${player.posicao || '—'}</span></span></div>
+          <div class="info-row"><span class="info-label">Nível</span><span class="info-val"><span class="nivel-badge ${nivelClass(player.nivel)}">${player.nivel || '—'}</span></span></div>
+          <div class="info-row"><span class="info-label">Clube Actual</span><span class="info-val">${player.clube || '—'}</span></div>
         </div>
       </div>
       <div>
-        <div class="panel-section-title">RepresentaÃ§Ã£o</div>
+        <div class="panel-section-title">Representação</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Representante</span><span class="info-val">${player.representante || '<span style="color:var(--text-3)">â€”</span>'}</span></div>
-          <div class="info-row"><span class="info-label">Recrutador</span><span class="info-val">${player.referenciador || '<span style="color:var(--text-3)">â€”</span>'}</span></div>
+          <div class="info-row"><span class="info-label">Representante</span><span class="info-val">${player.representante || '<span style="color:var(--text-3)">—</span>'}</span></div>
+          <div class="info-row"><span class="info-label">Recrutador</span><span class="info-val">${player.referenciador || '<span style="color:var(--text-3)">—</span>'}</span></div>
         </div>
       </div>
       <div>
@@ -553,19 +553,19 @@ function openPanel(player) {
           <div class="info-row">
             <span class="info-label">Instagram</span>
             <span class="info-val">
-              ${igLink ? `<a href="${igLink}" target="_blank" style="display:inline-flex;align-items:center;color:#E1306C;">${icon('instagram')}</a>` : '<span style="color:var(--text-3)">â€”</span>'}
+              ${igLink ? `<a href="${igLink}" target="_blank" style="display:inline-flex;align-items:center;color:#E1306C;">${icon('instagram')}</a>` : '<span style="color:var(--text-3)">—</span>'}
             </span>
           </div>
           <div class="info-row">
             <span class="info-label">Perfil</span>
             <span class="info-val">
-              ${lk ? `<a href="${lk}" target="_blank" style="display:inline-flex;align-items:center;">${linkIcon}</a>` : '<span style="color:var(--text-3)">â€”</span>'}
+              ${lk ? `<a href="${lk}" target="_blank" style="display:inline-flex;align-items:center;">${linkIcon}</a>` : '<span style="color:var(--text-3)">—</span>'}
             </span>
           </div>
           <div class="info-row">
-            <span class="info-label">VÃ­deo</span>
+            <span class="info-label">Vídeo</span>
             <span class="info-val">
-              ${vid ? `<a href="${vid}" target="_blank" style="display:inline-flex;align-items:center;">${videoIcon}</a>` : '<span style="color:var(--text-3)">â€”</span>'}
+              ${vid ? `<a href="${vid}" target="_blank" style="display:inline-flex;align-items:center;">${videoIcon}</a>` : '<span style="color:var(--text-3)">—</span>'}
             </span>
           </div>
         </div>
@@ -578,7 +578,7 @@ function openPanel(player) {
     const url = `${location.origin}/#player=${player.id}`
     if (navigator.share) {
       navigator.share({
-        title: `${player.nome} â€” Base de Dados All In Sports`,
+        title: `${player.nome} — Base de Dados All In Sports`,
         text: `${player.nome} | ${player.posicao || ''} | ${player.clube || ''}`,
         url
       })
@@ -604,7 +604,7 @@ function closeAll() {
   document.getElementById('form-panel').classList.remove('open')
 }
 
-// â”€â”€ FORM â”€â”€
+// ── FORM ──
 function openForm(player) {
   state.editingPlayer = player
   const isEdit = !!player
@@ -623,14 +623,14 @@ function openForm(player) {
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">PosiÃ§Ã£o</label>
+          <label class="form-label">Posição</label>
           <select class="form-select" id="f-posicao">
             <option value="">Selecionar</option>
             ${POSICOES.map(pos => `<option value="${pos}" ${p.posicao===pos?'selected':''}>${pos}</option>`).join('')}
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">NÃ­vel</label>
+          <label class="form-label">Nível</label>
           <select class="form-select" id="f-nivel-form">
             <option value="">Selecionar</option>
             ${NIVEIS.map(n => `<option value="${n}" ${p.nivel===n?'selected':''}>${n}</option>`).join('')}
@@ -657,7 +657,7 @@ function openForm(player) {
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">TelemÃ³vel</label>
+          <label class="form-label">Telemóvel</label>
           <input class="form-input" id="f-telefone" type="tel" value="${p.telefone || ''}" />
         </div>
         <div class="form-group">
@@ -670,7 +670,7 @@ function openForm(player) {
         <input class="form-input" id="f-link" type="url" value="${p.link || ''}" placeholder="https://transfermarkt.com/..." />
       </div>
       <div class="form-group">
-        <label class="form-label">VÃ­deo (YouTube / Vimeo)</label>
+        <label class="form-label">Vídeo (YouTube / Vimeo)</label>
         <input class="form-input" id="f-video" type="url" value="${p.video || ''}" placeholder="https://youtube.com/..." />
       </div>
       <div class="form-group">
@@ -719,10 +719,10 @@ function openForm(player) {
   }
 }
 
-// â”€â”€ CRUD â”€â”€
+// ── CRUD ──
 async function savePlayer() {
   const nome = document.getElementById('f-nome').value.trim()
-  if (!nome) { showToast('O nome Ã© obrigatÃ³rio', 'error'); return }
+  if (!nome) { showToast('O nome é obrigatório', 'error'); return }
   const btn = document.getElementById('form-save')
   btn.disabled = true
   btn.textContent = 'A guardar...'
@@ -784,7 +784,7 @@ async function savePlayer() {
   const isNew = !state.editingPlayer
   showToast(isNew ? 'Jogador adicionado!' : 'Jogador atualizado!', 'success')
   if (isNew) {
-    sendLocalNotification('Novo jogador adicionado!', `${nome} foi adicionado Ã  base de dados.`)
+    sendLocalNotification('Novo jogador adicionado!', `${nome} foi adicionado à base de dados.`)
   }
   // Clear ALL cache and force fresh reload
   Object.keys(state.dbCache).forEach(k => { state.dbCache[k] = null })
@@ -817,10 +817,10 @@ async function preloadAll() {
   // Build geral from cache
   const all = [
     ...(state.dbCache['mercado'] || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
-    ...(state.dbCache['cbf'] || []).map(p => ({...p, _source: 'CBF SeleÃ§Ãµes', _sourceTable: 'players'})),
-    ...(state.dbCache['fpf'] || []).map(p => ({...p, _source: 'FPF SeleÃ§Ãµes', _sourceTable: 'players_portugal'})),
+    ...(state.dbCache['cbf'] || []).map(p => ({...p, _source: 'CBF Seleções', _sourceTable: 'players'})),
+    ...(state.dbCache['fpf'] || []).map(p => ({...p, _source: 'FPF Seleções', _sourceTable: 'players_portugal'})),
     ...(state.dbCache['ligas-portugal'] || []).map(p => ({...p, _source: 'Liga Portugal', _sourceTable: 'players_ligas_portugal'})),
-    ...(state.dbCache['ligas-brasil'] || []).map(p => ({...p, _source: 'BrasileirÃ£o', _sourceTable: 'players_ligas_brasil'})),
+    ...(state.dbCache['ligas-brasil'] || []).map(p => ({...p, _source: 'Brasileirão', _sourceTable: 'players_ligas_brasil'})),
   ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
   state.dbCache['geral'] = all
 }
@@ -852,22 +852,22 @@ function renderPedidos() {
   if (sortControls) sortControls.style.display = 'none'
 
   if (!pedidos.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">ðŸ“‹</div><div>Sem pedidos de clubes</div></div>'
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div>Sem pedidos de clubes</div></div>'
     return
   }
 
   const col = state.pedidoSortCol || 'clube'
   const dir = state.pedidoSortDir || 1
-  const arrow = (c) => c === col ? (dir === 1 ? ' â†‘' : ' â†“') : ' â†•'
+  const arrow = (c) => c === col ? (dir === 1 ? ' ↑' : ' ↓') : ' ↕'
 
   container.innerHTML = `
     <div class="pedido-list-header">
       <div class="pedido-col-logo"></div>
       <div class="pedido-col-sort" data-col="clube">Clube${arrow('clube')}</div>
-      <div class="pedido-col-sort" data-col="pais">PaÃ­s${arrow('pais')}</div>
-      <div class="pedido-col-sort" data-col="posicao">PosiÃ§Ã£o${arrow('posicao')}</div>
+      <div class="pedido-col-sort" data-col="pais">País${arrow('pais')}</div>
+      <div class="pedido-col-sort" data-col="posicao">Posição${arrow('posicao')}</div>
       <div class="pedido-col-sort" data-col="valor_transferencia">Valor Transf.${arrow('valor_transferencia')}</div>
-      <div class="pedido-col-sort" data-col="salario">SalÃ¡rio${arrow('salario')}</div>
+      <div class="pedido-col-sort" data-col="salario">Salário${arrow('salario')}</div>
       <div class="pedido-col-sort pedido-col-right" data-col="budget_total">Budget Total${arrow('budget_total')}</div>
     </div>
     ${pedidos.map(p => `
@@ -875,12 +875,12 @@ function renderPedidos() {
         <div class="pedido-cell-logo">
           ${p.logo_url ? `<img src="${p.logo_url}" alt="${p.clube}" class="pedido-logo-img" />` : '<div class="pedido-logo-placeholder"></div>'}
         </div>
-        <div class="pedido-cell"><strong>${p.clube || 'â€”'}</strong></div>
-        <div class="pedido-cell">${p.pais || 'â€”'}</div>
-        <div class="pedido-cell">${p.posicao ? `<span class="pos-badge">${p.posicao}</span>` : 'â€”'}</div>
-        <div class="pedido-cell">${p.valor_transferencia || 'â€”'}</div>
-        <div class="pedido-cell">${p.salario || 'â€”'}</div>
-        <div class="pedido-cell pedido-cell-right">${p.budget_total || 'â€”'}</div>
+        <div class="pedido-cell"><strong>${p.clube || '—'}</strong></div>
+        <div class="pedido-cell">${p.pais || '—'}</div>
+        <div class="pedido-cell">${p.posicao ? `<span class="pos-badge">${p.posicao}</span>` : '—'}</div>
+        <div class="pedido-cell">${p.valor_transferencia || '—'}</div>
+        <div class="pedido-cell">${p.salario || '—'}</div>
+        <div class="pedido-cell pedido-cell-right">${p.budget_total || '—'}</div>
       </div>
     `).join('')}
   `
@@ -895,7 +895,7 @@ function renderPedidos() {
     })
   })
 
-  // Row click â†’ open panel
+  // Row click → open panel
   container.querySelectorAll('.pedido-list-row').forEach(row => {
     row.addEventListener('click', (e) => {
       if (e.target.closest('.pedido-col-sort')) return
@@ -947,7 +947,7 @@ async function openPedidoPanel(pedido) {
         }
         <div style="min-width:0;">
           <div class="panel-name">${pedido.clube || 'Clube'}</div>
-          <div class="panel-sub">${pedido.pais || 'â€”'}</div>
+          <div class="panel-sub">${pedido.pais || '—'}</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-shrink:0;">
@@ -962,8 +962,8 @@ async function openPedidoPanel(pedido) {
         <div class="panel-section-title">Pedido</div>
         <div class="info-grid">
           <div class="info-row">
-            <span class="info-label">PosiÃ§Ã£o</span>
-            <span class="info-val" id="disp-posicao">${pedido.posicao ? `<span class="pos-badge">${pedido.posicao}</span>` : 'â€”'}</span>
+            <span class="info-label">Posição</span>
+            <span class="info-val" id="disp-posicao">${pedido.posicao ? `<span class="pos-badge">${pedido.posicao}</span>` : '—'}</span>
           </div>
         </div>
       </div>
@@ -971,18 +971,18 @@ async function openPedidoPanel(pedido) {
       <div class="panel-section">
         <div class="panel-section-title">Modelo Financeiro</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val" id="disp-valor">${pedido.valor_transferencia || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">SalÃ¡rio</span><span class="info-val" id="disp-salario">${pedido.salario || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">ComissÃµes</span><span class="info-val" id="disp-comissoes">${pedido.comissoes || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val" id="disp-budget">${pedido.budget_total || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val" id="disp-valor">${pedido.valor_transferencia || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Salário</span><span class="info-val" id="disp-salario">${pedido.salario || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Comissões</span><span class="info-val" id="disp-comissoes">${pedido.comissoes || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val" id="disp-budget">${pedido.budget_total || '—'}</span></div>
         </div>
       </div>
 
       <div class="panel-section">
         <div class="panel-section-title">Outros Detalhes</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Introduzido por</span><span class="info-val" id="disp-intro">${pedido.introduzido_por || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">Data limite</span><span class="info-val" id="disp-data">${dataLimite || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Introduzido por</span><span class="info-val" id="disp-intro">${pedido.introduzido_por || '—'}</span></div>
+          <div class="info-row"><span class="info-label">Data limite</span><span class="info-val" id="disp-data">${dataLimite || '—'}</span></div>
         </div>
       </div>
 
@@ -1010,13 +1010,13 @@ async function openPedidoPanel(pedido) {
       </div>
       <div class="panel-body">
         <div class="panel-section">
-          <div class="panel-section-title">IdentificaÃ§Ã£o</div>
+          <div class="panel-section-title">Identificação</div>
           <div style="display:flex;flex-direction:column;gap:12px;">
             <div><div class="form-label">Clube</div><input class="form-input" id="ped-clube" value="${pedido.clube || ''}" /></div>
-            <div><div class="form-label">PaÃ­s</div><input class="form-input" id="ped-pais" value="${pedido.pais || ''}" /></div>
-            <div><div class="form-label">PosiÃ§Ã£o</div>
+            <div><div class="form-label">País</div><input class="form-input" id="ped-pais" value="${pedido.pais || ''}" /></div>
+            <div><div class="form-label">Posição</div>
               <select class="form-select" id="ped-posicao">
-                <option value="">â€”</option>
+                <option value="">—</option>
                 ${POSICOES.map(p => `<option value="${p}" ${pedido.posicao===p?'selected':''}>${p}</option>`).join('')}
               </select>
             </div>
@@ -1025,10 +1025,10 @@ async function openPedidoPanel(pedido) {
         <div class="panel-section">
           <div class="panel-section-title">Modelo Financeiro</div>
           <div style="display:flex;flex-direction:column;gap:12px;">
-            <div><div class="form-label">Valor TransferÃªncia</div><input class="form-input" id="ped-valor" value="${pedido.valor_transferencia || ''}" placeholder="Ex: â‚¬2M" /></div>
-            <div><div class="form-label">SalÃ¡rio</div><input class="form-input" id="ped-salario" value="${pedido.salario || ''}" placeholder="Ex: â‚¬15k/mÃªs" /></div>
-            <div><div class="form-label">ComissÃµes</div><input class="form-input" id="ped-comissoes" value="${pedido.comissoes || ''}" placeholder="Ex: 5%" /></div>
-            <div><div class="form-label">Budget Total</div><input class="form-input" id="ped-budget" value="${pedido.budget_total || ''}" placeholder="Ex: â‚¬5M" /></div>
+            <div><div class="form-label">Valor Transferência</div><input class="form-input" id="ped-valor" value="${pedido.valor_transferencia || ''}" placeholder="Ex: €2M" /></div>
+            <div><div class="form-label">Salário</div><input class="form-input" id="ped-salario" value="${pedido.salario || ''}" placeholder="Ex: €15k/mês" /></div>
+            <div><div class="form-label">Comissões</div><input class="form-input" id="ped-comissoes" value="${pedido.comissoes || ''}" placeholder="Ex: 5%" /></div>
+            <div><div class="form-label">Budget Total</div><input class="form-input" id="ped-budget" value="${pedido.budget_total || ''}" placeholder="Ex: €5M" /></div>
           </div>
         </div>
         <div class="panel-section">
@@ -1039,7 +1039,7 @@ async function openPedidoPanel(pedido) {
           </div>
         </div>
         <div class="panel-section">
-          <button class="btn-add" id="ped-save" style="width:100%;justify-content:center;padding:13px;font-size:14px;">Guardar alteraÃ§Ãµes</button>
+          <button class="btn-add" id="ped-save" style="width:100%;justify-content:center;padding:13px;font-size:14px;">Guardar alterações</button>
         </div>
       </div>
     </div>` : ''}
@@ -1071,7 +1071,7 @@ async function openPedidoPanel(pedido) {
       }
       const cleanData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== null && v !== undefined && v !== ''))
       const { error } = await supabase.from('club_requests').update(cleanData).eq('id', pedido.id)
-      if (error) { showToast('Erro: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Guardar alteraÃ§Ãµes'; return }
+      if (error) { showToast('Erro: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Guardar alterações'; return }
       showToast('Pedido guardado!', 'success')
       // Reload pedidos and reopen panel with fresh data
       await loadPedidos()
@@ -1089,7 +1089,7 @@ async function openPedidoPanel(pedido) {
     })
   }
 
-  // Sugerir jogador â€” available to all users
+  // Sugerir jogador — available to all users
   function updateJogadoresLista() {
     const lista = document.getElementById('ped-jogadores-lista')
     if (!lista) return
@@ -1100,7 +1100,7 @@ async function openPedidoPanel(pedido) {
     lista.innerHTML = currentSuggested.map(j => `
       <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 12px;border-radius:20px;font-size:13px;font-family:'DM Sans',sans-serif;">
         ${j.nome}
-        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">Ã—</button>
+        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">×</button>
       </span>
     `).join('')
     lista.querySelectorAll('.remove-jogador').forEach(btn => {
@@ -1127,7 +1127,7 @@ async function openPedidoPanel(pedido) {
     suggestions.innerHTML = matches.map(p => `
       <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
         <strong>${p.nome}</strong>
-        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} Â· ${p.posicao || ''}</span>
+        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} · ${p.posicao || ''}</span>
       </div>
     `).join('')
     suggestions.querySelectorAll('.suggestion-item').forEach(item => {
@@ -1174,8 +1174,8 @@ async function loadPlayers() {
     if (r1.error || r2.error || r3.error) { showToast('Erro ao carregar dados.', 'error'); return }
     const all = [
       ...(r1.data || []).map(p => ({...p, _source: 'Mercado', _sourceTable: 'players_mercado'})),
-      ...(r2.data || []).map(p => ({...p, _source: 'CBF SeleÃ§Ãµes', _sourceTable: 'players'})),
-      ...(r3.data || []).map(p => ({...p, _source: 'FPF SeleÃ§Ãµes', _sourceTable: 'players_portugal'})),
+      ...(r2.data || []).map(p => ({...p, _source: 'CBF Seleções', _sourceTable: 'players'})),
+      ...(r3.data || []).map(p => ({...p, _source: 'FPF Seleções', _sourceTable: 'players_portugal'})),
     ].sort((a,b) => (a.nome||'').localeCompare(b.nome||''))
     state.players = all.map(p => ({ ...p, ano: p.ano != null ? String(p.ano) : '' }))
     state.dbCache[state.activeDb] = state.players
@@ -1199,7 +1199,7 @@ async function loadPlayers() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'players' }, (payload) => {
         const novo = payload.new
         if (novo && novo.nome) {
-          sendLocalNotification('Novo jogador adicionado!', `${novo.nome} foi adicionado Ã  base de dados.`)
+          sendLocalNotification('Novo jogador adicionado!', `${novo.nome} foi adicionado à base de dados.`)
           loadPlayers()
         }
       })
@@ -1299,7 +1299,7 @@ window.setupBiometric = async function(email) {
   toast.classList.remove('show')
   const ok = await registerBiometric(email)
   setTimeout(() => {
-    showToast(ok ? 'ImpressÃ£o digital ativada! âœ“' : 'NÃ£o foi possÃ­vel ativar.', ok ? 'success' : 'error')
+    showToast(ok ? 'Impressão digital ativada! ✓' : 'Não foi possível ativar.', ok ? 'success' : 'error')
   }, 300)
 }
 
