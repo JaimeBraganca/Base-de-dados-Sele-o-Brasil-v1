@@ -307,6 +307,8 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .pedido-cell-logo { display:flex; align-items:center; justify-content:center; }
 .pedido-logo-img { width:34px; height:34px; object-fit:contain; }
 .pedido-logo-placeholder { width:34px; height:34px; border-radius:8px; background:#dde1e7; border:1px solid #c8cdd4; }
+.pedido-avatar { border-radius: 6px !important; background: var(--surface-2) !important; }
+.row-chevron { color: var(--border); flex-shrink: 0; }
 @media (max-width:480px) {
   .pedido-list-header { grid-template-columns:30px minmax(90px,2fr) minmax(55px,1fr) minmax(55px,1fr); gap:4px; }
   .pedido-list-header .pedido-col-sort:nth-child(n+5) { display:none; }
