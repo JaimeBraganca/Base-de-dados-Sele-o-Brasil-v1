@@ -927,11 +927,11 @@ async function openPedidoPanel(pedido) {
       <div class="panel-header-left">
         ${pedido.logo_url
           ? `<img src="${pedido.logo_url}" style="width:48px;height:48px;object-fit:contain;border-radius:10px;margin-right:14px;flex-shrink:0;" />`
-          : `<div style="width:48px;height:48px;border-radius:10px;background:#dde1e7;margin-right:14px;flex-shrink:0;"></div>`
+          : `<div style="width:48px;height:48px;border-radius:10px;background:#dde1e7;margin-right:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#666;">${(pedido.clube||'?').substring(0,2).toUpperCase()}</div>`
         }
         <div style="min-width:0;">
           <div class="panel-name">${pedido.clube || 'Clube'}</div>
-          <div class="panel-sub">${pedido.pais || '\u2014'}</div>
+          <div class="panel-sub">${pedido.pais || 'â€”'}</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-shrink:0;">
@@ -941,35 +941,28 @@ async function openPedidoPanel(pedido) {
     </div>
 
     <div class="panel-body">
-
       <div class="panel-section">
         <div class="panel-section-title">Pedido</div>
         <div class="info-grid">
-          <div class="info-row">
-            <span class="info-label">Posi\u00e7\u00e3o</span>
-            <span class="info-val" id="disp-posicao">${pedido.posicao ? `<span class="pos-badge">${pedido.posicao}</span>` : '\u2014'}</span>
-          </div>
+          <div class="info-row"><span class="info-label">PosiÃ§Ã£o</span><span class="info-val">${pedido.posicao ? `<span class="pos-badge-panel">${pedido.posicao}</span>` : 'â€”'}</span></div>
         </div>
       </div>
-
       <div class="panel-section">
         <div class="panel-section-title">Modelo Financeiro</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val" id="disp-valor">${pedido.valor_transferencia || '\u2014'}</span></div>
-          <div class="info-row"><span class="info-label">Sal\u00e1rio</span><span class="info-val" id="disp-salario">${pedido.salario || '\u2014'}</span></div>
-          <div class="info-row"><span class="info-label">Comiss\u00f5es</span><span class="info-val" id="disp-comissoes">${pedido.comissoes || '\u2014'}</span></div>
-          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val" id="disp-budget">${pedido.budget_total || '\u2014'}</span></div>
+          <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val">${pedido.valor_transferencia || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">SalÃ¡rio</span><span class="info-val">${pedido.salario || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">ComissÃµes</span><span class="info-val">${pedido.comissoes || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val">${pedido.budget_total || 'â€”'}</span></div>
         </div>
       </div>
-
       <div class="panel-section">
         <div class="panel-section-title">Outros Detalhes</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Introduzido por</span><span class="info-val" id="disp-intro">${pedido.introduzido_por || '\u2014'}</span></div>
-          <div class="info-row"><span class="info-label">Data limite</span><span class="info-val" id="disp-data">${dataLimite || '\u2014'}</span></div>
+          <div class="info-row"><span class="info-label">Introduzido por</span><span class="info-val">${pedido.introduzido_por || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Data limite</span><span class="info-val">${dataLimite || 'â€”'}</span></div>
         </div>
       </div>
-
       <div class="panel-section">
         <div class="panel-section-title">Sugerir Jogador</div>
         <div style="position:relative;margin-bottom:12px;">
@@ -978,102 +971,18 @@ async function openPedidoPanel(pedido) {
         </div>
         <div id="ped-jogadores-lista" style="display:flex;flex-wrap:wrap;gap:6px;min-height:24px;"></div>
       </div>
-
       ${isAdmin ? `
-      <div style="padding:0 20px 20px;">
+      <div style="padding:0 0 8px;">
         <button id="ped-delete" style="width:100%;padding:14px;border-radius:10px;border:none;background:#fff0f0;color:#dc2626;cursor:pointer;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;">Eliminar pedido</button>
       </div>` : ''}
-
     </div>
-
-    ${isAdmin ? `
-    <div id="ped-edit-form" style="display:none;position:absolute;inset:0;background:var(--surface);overflow-y:auto;z-index:20;">
-      <div class="panel-header">
-        <div style="font-size:15px;font-weight:700;color:var(--text);">Editar Pedido</div>
-        <button class="btn-icon" id="ped-edit-close">${icon('close')}</button>
-      </div>
-      <div class="panel-body">
-        <div class="panel-section">
-          <div class="panel-section-title">Identifica\u00e7\u00e3o</div>
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <div><div class="form-label">Clube</div><input class="form-input" id="ped-clube" value="${pedido.clube || ''}" /></div>
-            <div><div class="form-label">Pa\u00eds</div><input class="form-input" id="ped-pais" value="${pedido.pais || ''}" /></div>
-            <div><div class="form-label">Posi\u00e7\u00e3o</div>
-              <select class="form-select" id="ped-posicao">
-                <option value="">\u2014</option>
-                ${POSICOES.map(p => `<option value="${p}" ${pedido.posicao===p?'selected':''}>${p}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="panel-section">
-          <div class="panel-section-title">Modelo Financeiro</div>
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <div><div class="form-label">Valor Transfer\u00eancia</div><input class="form-input" id="ped-valor" value="${pedido.valor_transferencia || ''}" placeholder="Ex: \u20ac2M" /></div>
-            <div><div class="form-label">Sal\u00e1rio</div><input class="form-input" id="ped-salario" value="${pedido.salario || ''}" placeholder="Ex: \u20ac15k/m\u00eas" /></div>
-            <div><div class="form-label">Comiss\u00f5es</div><input class="form-input" id="ped-comissoes" value="${pedido.comissoes || ''}" placeholder="Ex: 5%" /></div>
-            <div><div class="form-label">Budget Total</div><input class="form-input" id="ped-budget" value="${pedido.budget_total || ''}" placeholder="Ex: \u20ac5M" /></div>
-          </div>
-        </div>
-        <div class="panel-section">
-          <div class="panel-section-title">Outros Detalhes</div>
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <div><div class="form-label">Introduzido por</div><input class="form-input" id="ped-intro" value="${pedido.introduzido_por || ''}" /></div>
-            <div><div class="form-label">Data limite</div><input class="form-input" type="date" id="ped-data" value="${dataLimite}" /></div>
-          </div>
-        </div>
-        <div class="panel-section">
-          <button class="btn-add" id="ped-save" style="width:100%;justify-content:center;padding:13px;font-size:14px;">Guardar altera\u00e7\u00f5es</button>
-        </div>
-      </div>
-    </div>` : ''}
   `
 
   panel.classList.add('open')
   document.getElementById('overlay').classList.add('show')
   document.getElementById('panel-close-btn').addEventListener('click', closePanel)
 
-  if (isAdmin) {
-    const editForm = document.getElementById('ped-edit-form')
-    document.getElementById('ped-edit-btn').addEventListener('click', () => editForm.style.display = 'block')
-    document.getElementById('ped-edit-close').addEventListener('click', () => editForm.style.display = 'none')
-
-    document.getElementById('ped-save').addEventListener('click', async () => {
-      const btn = document.getElementById('ped-save')
-      btn.disabled = true; btn.textContent = 'A guardar...'
-      const raw = {
-        clube: document.getElementById('ped-clube').value.trim() || null,
-        pais: document.getElementById('ped-pais').value.trim() || null,
-        posicao: document.getElementById('ped-posicao').value || null,
-        valor_transferencia: document.getElementById('ped-valor').value.trim() || null,
-        salario: document.getElementById('ped-salario').value.trim() || null,
-        comissoes: document.getElementById('ped-comissoes').value.trim() || null,
-        budget_total: document.getElementById('ped-budget').value.trim() || null,
-        introduzido_por: document.getElementById('ped-intro').value.trim() || null,
-        data_limite: document.getElementById('ped-data').value || null,
-        jogadores_sugeridos: currentSuggested,
-      }
-      const cleanData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== null && v !== undefined && v !== ''))
-      const { error } = await supabase.from('club_requests').update(cleanData).eq('id', pedido.id)
-      if (error) { showToast('Erro: ' + error.message, 'error'); btn.disabled = false; btn.textContent = 'Guardar altera\u00e7\u00f5es'; return }
-      showToast('Pedido guardado!', 'success')
-      // Reload pedidos and reopen panel with fresh data
-      await loadPedidos()
-      const updated = (state.pedidosFiltered || state.pedidos || []).find(p => p.id === pedido.id)
-      if (updated) openPedidoPanel(updated)
-      else closePanel()
-    })
-
-    document.getElementById('ped-delete').addEventListener('click', async () => {
-      if (!confirm('Eliminar este pedido?')) return
-      await supabase.from('club_requests').delete().eq('id', pedido.id)
-      showToast('Pedido eliminado.', 'success')
-      closePanel()
-      loadPedidos()
-    })
-  }
-
-  // Sugerir jogador \u2014 available to all users
+  // Sugerir jogador
   function updateJogadoresLista() {
     const lista = document.getElementById('ped-jogadores-lista')
     if (!lista) return
@@ -1082,9 +991,9 @@ async function openPedidoPanel(pedido) {
       return
     }
     lista.innerHTML = currentSuggested.map(j => `
-      <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 12px;border-radius:20px;font-size:13px;font-family:'DM Sans',sans-serif;">
+      <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 12px;border-radius:20px;font-size:13px;">
         ${j.nome}
-        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">\u00d7</button>
+        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">Ã—</button>
       </span>
     `).join('')
     lista.querySelectorAll('.remove-jogador').forEach(btn => {
@@ -1099,19 +1008,16 @@ async function openPedidoPanel(pedido) {
 
   const searchInput = document.getElementById('ped-search-player')
   const suggestions = document.getElementById('ped-suggestions')
-
   searchInput.addEventListener('input', () => {
     const q = searchInput.value.toLowerCase()
     if (!q) { suggestions.style.display = 'none'; return }
-    const matches = allPlayers
-      .filter(p => p.nome && p.nome.toLowerCase().includes(q) && !currentSuggested.find(s => String(s.id) === String(p.id)))
-      .slice(0, 8)
+    const matches = allPlayers.filter(p => p.nome && p.nome.toLowerCase().includes(q) && !currentSuggested.find(s => String(s.id) === String(p.id))).slice(0, 8)
     if (!matches.length) { suggestions.style.display = 'none'; return }
     suggestions.style.display = 'block'
     suggestions.innerHTML = matches.map(p => `
       <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
         <strong>${p.nome}</strong>
-        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} \u00b7 ${p.posicao || ''}</span>
+        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} Â· ${p.posicao || ''}</span>
       </div>
     `).join('')
     suggestions.querySelectorAll('.suggestion-item').forEach(item => {
@@ -1120,19 +1026,170 @@ async function openPedidoPanel(pedido) {
       item.addEventListener('click', async () => {
         currentSuggested.push({ id: item.dataset.id, nome: item.dataset.nome })
         await supabase.from('club_requests').update({ jogadores_sugeridos: currentSuggested }).eq('id', pedido.id)
-        searchInput.value = ''
-        suggestions.style.display = 'none'
+        searchInput.value = ''; suggestions.style.display = 'none'
         updateJogadoresLista()
         showToast('Jogador sugerido!', 'success')
       })
     })
   })
-
   document.addEventListener('click', function hideSug(e) {
-    if (!suggestions.contains(e.target) && e.target !== searchInput) {
-      suggestions.style.display = 'none'
-      document.removeEventListener('click', hideSug)
+    if (!suggestions.contains(e.target) && e.target !== searchInput) { suggestions.style.display = 'none'; document.removeEventListener('click', hideSug) }
+  })
+
+  if (isAdmin) {
+    // Editar button opens form-panel (same as players)
+    document.getElementById('ped-edit-btn').addEventListener('click', () => openPedidoForm(pedido))
+
+    document.getElementById('ped-delete').addEventListener('click', async () => {
+      if (!confirm('Eliminar este pedido?')) return
+      await supabase.from('club_requests').delete().eq('id', pedido.id)
+      showToast('Pedido eliminado.', 'success')
+      closeAll()
+      loadPedidos()
+    })
+  }
+}
+
+function openPedidoForm(pedido) {
+  const isEdit = !!pedido
+  const p = pedido || {}
+  const dataLimite = p.data_limite ? p.data_limite.split('T')[0] : ''
+  const formPanel = document.getElementById('form-panel')
+  const formContent = document.getElementById('form-content')
+
+  formContent.innerHTML = `
+    <div class="form-header">
+      <div class="form-title">${isEdit ? 'Editar Pedido' : 'Novo Pedido'}</div>
+      <button class="btn-icon" id="form-close">${icon('close')}</button>
+    </div>
+    <div class="form-body">
+      <div class="form-group">
+        <label class="form-label">Clube</label>
+        <input class="form-input" id="pf-clube" value="${p.clube || ''}" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">PaÃ­s</label>
+        <input class="form-input" id="pf-pais" value="${p.pais || ''}" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">PosiÃ§Ã£o</label>
+        <select class="form-select" id="pf-posicao">
+          <option value="">â€”</option>
+          ${POSICOES.map(pos => `<option value="${pos}" ${p.posicao===pos?'selected':''}>${pos}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Valor TransferÃªncia</label>
+        <input class="form-input" id="pf-valor" value="${p.valor_transferencia || ''}" placeholder="Ex: â‚¬2M" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">SalÃ¡rio</label>
+        <input class="form-input" id="pf-salario" value="${p.salario || ''}" placeholder="Ex: â‚¬15k/mÃªs" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">ComissÃµes</label>
+        <input class="form-input" id="pf-comissoes" value="${p.comissoes || ''}" placeholder="Ex: 5%" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget Total</label>
+        <input class="form-input" id="pf-budget" value="${p.budget_total || ''}" placeholder="Ex: â‚¬5M" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Introduzido por</label>
+        <input class="form-input" id="pf-intro" value="${p.introduzido_por || ''}" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data limite</label>
+        <input class="form-input" id="pf-data" type="date" value="${dataLimite}" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Logo do Clube</label>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${p.logo_url
+            ? `<img id="logo-preview" src="${p.logo_url}" style="width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;" />`
+            : `<div id="logo-preview" style="width:64px;height:64px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-2);">Sem logo</div>`
+          }
+          <input class="form-input" id="pf-logo" type="url" value="${p.logo_url || ''}" placeholder="URL do logo (https://...)" />
+          <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed var(--border-2);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text-2);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Escolher ficheiro local
+            <input type="file" id="pf-logo-file" accept="image/*" style="display:none;" />
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-footer">
+      <button class="btn-cancel" id="form-cancel">Cancelar</button>
+      <button class="btn-save" id="pf-save">${isEdit ? 'Guardar' : 'Criar pedido'}</button>
+    </div>
+  `
+
+  document.getElementById('form-close').addEventListener('click', closeAll)
+  document.getElementById('form-cancel').addEventListener('click', closeAll)
+  document.getElementById('overlay').classList.add('open')
+  formPanel.classList.add('open')
+
+  // Logo file upload preview
+  const fileInput = document.getElementById('pf-logo-file')
+  fileInput.addEventListener('change', e => {
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = ev => {
+      const preview = document.getElementById('logo-preview')
+      if (preview) preview.outerHTML = `<img id="logo-preview" src="${ev.target.result}" style="width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;" />`
+      document.getElementById('pf-logo').value = ''
     }
+    reader.readAsDataURL(file)
+  })
+
+  // Save
+  document.getElementById('pf-save').addEventListener('click', async () => {
+    const btn = document.getElementById('pf-save')
+    btn.disabled = true; btn.textContent = 'A guardar...'
+
+    // Handle logo upload
+    let logoUrl = document.getElementById('pf-logo').value.trim() || null
+    const logoFile = document.getElementById('pf-logo-file')
+    if (logoFile && logoFile.files && logoFile.files[0]) {
+      logoUrl = await new Promise(resolve => {
+        const reader = new FileReader()
+        reader.onload = e => resolve(e.target.result)
+        reader.readAsDataURL(logoFile.files[0])
+      })
+    }
+
+    const raw = {
+      clube: document.getElementById('pf-clube').value.trim() || null,
+      pais: document.getElementById('pf-pais').value.trim() || null,
+      posicao: document.getElementById('pf-posicao').value || null,
+      valor_transferencia: document.getElementById('pf-valor').value.trim() || null,
+      salario: document.getElementById('pf-salario').value.trim() || null,
+      comissoes: document.getElementById('pf-comissoes').value.trim() || null,
+      budget_total: document.getElementById('pf-budget').value.trim() || null,
+      introduzido_por: document.getElementById('pf-intro').value.trim() || null,
+      data_limite: document.getElementById('pf-data').value || null,
+      logo_url: logoUrl,
+    }
+    const cleanData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== null && v !== undefined && v !== ''))
+
+    let result
+    if (isEdit) {
+      result = await supabase.from('club_requests').update(cleanData).eq('id', pedido.id)
+    } else {
+      result = await supabase.from('club_requests').insert(cleanData)
+    }
+
+    if (result.error) {
+      showToast('Erro: ' + result.error.message, 'error')
+      btn.disabled = false; btn.textContent = isEdit ? 'Guardar' : 'Criar pedido'
+      return
+    }
+
+    showToast(isEdit ? 'Pedido guardado!' : 'Pedido criado!', 'success')
+    state.pedidos = null
+    closeAll()
+    loadPedidos()
   })
 }
 
