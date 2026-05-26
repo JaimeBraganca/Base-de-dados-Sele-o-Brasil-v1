@@ -846,8 +846,31 @@ function renderPedidos() {
   const total = state.pedidos?.length || 0
   if (stats) stats.innerHTML = `<strong>${pedidos.length}</strong> de ${total} Pedidos`
 
+  // Replace sort controls with pedido-specific ones
   const sortControls = document.querySelector('.sort-controls')
-  if (sortControls) sortControls.style.display = 'none'
+  if (sortControls) {
+    sortControls.innerHTML = `
+      <select class="sort-select" id="pedido-sort-col">
+        <option value="clube" ${(state.pedidoSortCol||'clube')==='clube'?'selected':''}>Clube</option>
+        <option value="pais" ${state.pedidoSortCol==='pais'?'selected':''}>Pa\u00eds</option>
+        <option value="posicao" ${state.pedidoSortCol==='posicao'?'selected':''}>Posi\u00e7\u00e3o</option>
+        <option value="valor_transferencia" ${state.pedidoSortCol==='valor_transferencia'?'selected':''}>Valor Transf.</option>
+        <option value="salario" ${state.pedidoSortCol==='salario'?'selected':''}>Sal\u00e1rio Anual</option>
+        <option value="budget_total" ${state.pedidoSortCol==='budget_total'?'selected':''}>Budget Total Anual</option>
+      </select>
+      <button class="sort-dir-btn" id="pedido-sort-dir">${(state.pedidoSortDir||1)===1?'\u2191\u2193':'\u2193\u2191'}</button>
+    `
+    sortControls.style.display = ''
+    document.getElementById('pedido-sort-col').addEventListener('change', e => {
+      state.pedidoSortCol = e.target.value
+      applyPedidoFilters()
+    })
+    document.getElementById('pedido-sort-dir').addEventListener('click', () => {
+      state.pedidoSortDir = (state.pedidoSortDir || 1) * -1
+      document.getElementById('pedido-sort-dir').textContent = state.pedidoSortDir === 1 ? '\u2191\u2193' : '\u2193\u2191'
+      applyPedidoFilters()
+    })
+  }
 
   if (!pedidos.length) {
     container.innerHTML = '<div class="empty-state"><div class="empty-icon">\ud83d\udccb</div><div>Sem pedidos de clubes</div></div>'
@@ -857,23 +880,29 @@ function renderPedidos() {
   container.innerHTML = pedidos.map(p => {
     const initClube = (p.clube || '?').substring(0, 2).toUpperCase()
     return `
-      <div class="player-row" data-id="${p.id}">
+      <div class="player-row pedido-row" data-id="${p.id}">
         <div class="player-avatar pedido-avatar">
           ${p.logo_url
             ? `<img src="${p.logo_url}" alt="${p.clube}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;" />`
             : `<span>${initClube}</span>`
           }
         </div>
-        <div class="player-info">
+        <div class="player-info" style="min-width:120px;max-width:160px;">
           <div class="player-name">${p.clube || '\u2014'}</div>
-          <div class="player-meta">${p.pais || ''}${p.posicao ? ' \u00b7 ' + p.posicao : ''}</div>
+          <div class="player-meta">${p.pais || '\u2014'}</div>
         </div>
-        <div class="player-right">
-          <div class="player-right-top">
-            ${p.budget_total ? `<span class="nivel-badge" style="background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7;">${p.budget_total}</span>` : ''}
+        <div class="pedido-cols">
+          <div class="pedido-col-item">
+            ${p.posicao ? `<span class="pos-badge">${p.posicao}</span>` : '<span class="pedido-col-empty">\u2014</span>'}
           </div>
-          <div class="player-right-bottom">
-            ${p.valor_transferencia ? `<span class="pos-badge">${p.valor_transferencia}</span>` : ''}
+          <div class="pedido-col-item">
+            <span class="pedido-col-val">${p.valor_transferencia || '\u2014'}</span>
+          </div>
+          <div class="pedido-col-item">
+            <span class="pedido-col-val">${p.salario || '\u2014'}</span>
+          </div>
+          <div class="pedido-col-item">
+            <span class="pedido-col-val pedido-col-budget">${p.budget_total || '\u2014'}</span>
           </div>
         </div>
         <svg class="row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
@@ -881,14 +910,13 @@ function renderPedidos() {
     `
   }).join('')
 
-  container.querySelectorAll('.player-row').forEach(row => {
+  container.querySelectorAll('.pedido-row').forEach(row => {
     row.addEventListener('click', () => {
       const pedido = (state.pedidosFiltered || state.pedidos || []).find(p => String(p.id) === String(row.dataset.id))
       if (pedido) openPedidoPanel(pedido)
     })
   })
 }
-
 function applyPedidoFilters() {
   let list = [...(state.pedidos || [])]
   // Filters
