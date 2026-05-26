@@ -1138,12 +1138,21 @@ async function openPedidoPanel(pedido) {
     const matches = allPlayers.filter(p => p.nome && p.nome.toLowerCase().includes(q) && !currentSuggested.find(s => String(s.id) === String(p.id))).slice(0, 8)
     if (!matches.length) { suggestions.style.display = 'none'; return }
     suggestions.style.display = 'block'
-    suggestions.innerHTML = matches.map(p => `
-      <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
-        <strong>${p.nome}</strong>
-        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} \u00b7 ${p.posicao || ''}</span>
-      </div>
-    `).join('')
+    suggestions.innerHTML = matches.map(p => {
+      const init = initials(p.nome)
+      const avatarHtml = p.foto
+        ? `<img src="${p.foto}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.outerHTML='<div style=\\'width:32px;height:32px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;\\'>${init}</div>'" />`
+        : `<div style="width:32px;height:32px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;">${init}</div>`
+      return `
+        <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:8px 14px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+          ${avatarHtml}
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;color:var(--text);">${p.nome}</div>
+            <div style="font-size:12px;color:var(--text-2);">${p.clube || ''} \u00b7 ${p.posicao || ''}</div>
+          </div>
+        </div>
+      `
+    }).join('')
     suggestions.querySelectorAll('.suggestion-item').forEach(item => {
       item.addEventListener('mouseover', () => item.style.background = 'var(--bg)')
       item.addEventListener('mouseout', () => item.style.background = '')
