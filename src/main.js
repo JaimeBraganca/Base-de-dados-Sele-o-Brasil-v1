@@ -298,6 +298,110 @@ function applyFilters() {
 }
 
 // \u2500\u2500 RENDER APP \u2500\u2500
+function renderPedidosPage() {
+  document.getElementById('app').innerHTML = `
+    <div class="app-layout">
+      <div class="topbar">
+        <div class="topbar-left">
+          <div class="topbar-logo"><img src="${LOGO}" style="width:30px;height:30px;object-fit:cover;" /></div>
+          <span class="topbar-title">Pedidos</span>
+        </div>
+        <div class="topbar-right">
+          ${(state.role === 'admin' || state.role === 'moderator') ? `<button class="btn-add" id="btn-add-pedido">${icon('plus')}<span>Novo Pedido</span></button>` : ''}
+          <button class="btn-icon" id="btn-back-scout" title="Voltar" onclick="history.back()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="btn-icon" id="btn-logout" title="Sair">${icon('logout')}</button>
+        </div>
+      </div>
+
+      <div class="filters-bar" id="pedidos-filters-bar">
+        <div class="search-wrap">
+          ${icon('search')}
+          <input class="search-input" id="pedido-search" type="search" placeholder="Pesquisar por clube, pa\u00eds..." value="${state.pedidoSearch||''}" />
+        </div>
+        <select class="filter-select" id="pf-posicao">
+          <option value="">Posi\u00e7\u00e3o</option>
+          ${POSICOES.map(p => `<option value="${p}" ${state.pedidoFilterPos===p?'selected':''}>${p}</option>`).join('')}
+        </select>
+        <select class="filter-select" id="pf-clube">
+          <option value="">Clube</option>
+        </select>
+        <select class="filter-select" id="pf-pais">
+          <option value="">Pa\u00eds</option>
+        </select>
+        <button class="btn-clear-filters" id="pedido-btn-clear">Limpar</button>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stats-count" id="stats-count"><strong>0</strong> Pedidos</div>
+        <div class="sort-controls">
+          <select class="sort-select" id="pedido-sort-col">
+            <option value="clube">Clube</option>
+            <option value="pais">Pa\u00eds</option>
+            <option value="posicao">Posi\u00e7\u00e3o</option>
+            <option value="valor_transferencia">Valor Transf.</option>
+            <option value="salario">Sal\u00e1rio Anual</option>
+            <option value="budget_total">Budget Total Anual</option>
+          </select>
+          <button class="sort-dir-btn" id="pedido-sort-dir">\u2191\u2193</button>
+        </div>
+      </div>
+
+      <div class="player-list" id="player-list"></div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="side-panel" id="side-panel"><div id="panel-content"></div></div>
+    <div class="form-panel" id="form-panel"><div id="form-content"></div></div>
+    <div class="toast" id="toast"></div>
+  `
+  bindPedidosPageEvents()
+  loadPedidos()
+}
+
+function bindPedidosPageEvents() {
+  document.getElementById('btn-logout').addEventListener('click', async () => { resetState(); await supabase.auth.signOut() })
+  document.getElementById('overlay').addEventListener('click', closeAll)
+
+  const btnAdd = document.getElementById('btn-add-pedido')
+  if (btnAdd) btnAdd.addEventListener('click', () => openPedidoForm(null))
+
+  document.getElementById('pedido-search').addEventListener('input', e => { state.pedidoSearch = e.target.value; applyPedidoFilters() })
+  document.getElementById('pf-posicao').addEventListener('change', e => { state.pedidoFilterPos = e.target.value; applyPedidoFilters() })
+  document.getElementById('pf-clube').addEventListener('change', e => { state.pedidoFilterClube = e.target.value; applyPedidoFilters() })
+  document.getElementById('pf-pais').addEventListener('change', e => { state.pedidoFilterPais = e.target.value; applyPedidoFilters() })
+  document.getElementById('pedido-btn-clear').addEventListener('click', () => {
+    state.pedidoSearch = ''; state.pedidoFilterPos = ''; state.pedidoFilterClube = ''; state.pedidoFilterPais = ''
+    document.getElementById('pedido-search').value = ''
+    document.getElementById('pf-posicao').value = ''
+    document.getElementById('pf-clube').value = ''
+    document.getElementById('pf-pais').value = ''
+    applyPedidoFilters()
+  })
+  document.getElementById('pedido-sort-col').addEventListener('change', e => { state.pedidoSortCol = e.target.value; applyPedidoFilters() })
+  document.getElementById('pedido-sort-dir').addEventListener('click', () => {
+    state.pedidoSortDir = (state.pedidoSortDir || 1) * -1
+    document.getElementById('pedido-sort-dir').textContent = state.pedidoSortDir === 1 ? '\u2191\u2193' : '\u2193\u2191'
+    applyPedidoFilters()
+  })
+}
+
+function populatePedidoFilterDropdowns() {
+  const pedidos = state.pedidos || []
+  const clubes = [...new Set(pedidos.map(p => p.clube).filter(Boolean))].sort()
+  const paises = [...new Set(pedidos.map(p => p.pais).filter(Boolean))].sort()
+
+  const selClube = document.getElementById('pf-clube')
+  const selPais = document.getElementById('pf-pais')
+  if (selClube) {
+    selClube.innerHTML = `<option value="">Clube</option>` + clubes.map(c => `<option value="${c}" ${state.pedidoFilterClube===c?'selected':''}>${c}</option>`).join('')
+  }
+  if (selPais) {
+    selPais.innerHTML = `<option value="">Pa\u00eds</option>` + paises.map(p => `<option value="${p}" ${state.pedidoFilterPais===p?'selected':''}>${p}</option>`).join('')
+  }
+}
+
 function renderApp() {
 
   document.getElementById('app').innerHTML = `
@@ -451,14 +555,8 @@ function bindAppEvents() {
   const btnPedidosFil = document.getElementById('btn-pedidos-filters')
   if (btnPedidosFil) {
     btnPedidosFil.addEventListener('click', () => {
-      if (state.activeDb === 'pedidos') return
-      state.activeDb = 'pedidos'
-      document.querySelectorAll('.tab-item').forEach(t => {
-        t.classList.toggle('active', t.dataset.db === state.activeDb && !t.dataset.pedidos)
-        t.classList.toggle('active-pedidos', t.dataset.db === state.activeDb && !!t.dataset.pedidos)
-      })
-      btnPedidosFil.classList.add('active-pedidos-filters')
-      loadPedidos()
+      history.pushState({}, '', '/pedidos')
+      renderPedidosPage()
     })
   }
   // Tab switching
@@ -831,9 +929,6 @@ async function loadPedidos() {
   state.pedidoSortCol = state.pedidoSortCol || 'clube'
   state.pedidoSortDir = state.pedidoSortDir || 1
   state.pedidoSearch = state.pedidoSearch || ''
-  // Show sort controls again when switching back to players
-  const sortControls = document.querySelector('.sort-controls')
-  if (sortControls) sortControls.style.display = ''
   applyPedidoFilters()
 }
 
@@ -919,17 +1014,18 @@ function renderPedidos() {
 }
 function applyPedidoFilters() {
   let list = [...(state.pedidos || [])]
-  // Filters
   if (state.pedidoSearch) {
     const q = state.pedidoSearch.toLowerCase()
     list = list.filter(p => (p.clube||'').toLowerCase().includes(q) || (p.pais||'').toLowerCase().includes(q))
   }
+  if (state.pedidoFilterPos) list = list.filter(p => p.posicao === state.pedidoFilterPos)
+  if (state.pedidoFilterClube) list = list.filter(p => p.clube === state.pedidoFilterClube)
   if (state.pedidoFilterPais) list = list.filter(p => p.pais === state.pedidoFilterPais)
-  // Sort
   const col = state.pedidoSortCol || 'clube'
   const dir = state.pedidoSortDir || 1
   list.sort((a, b) => dir * (a[col]||'').toString().localeCompare((b[col]||'').toString()))
   state.pedidosFiltered = list
+  populatePedidoFilterDropdowns()
   renderPedidos()
 }
 
@@ -1321,6 +1417,10 @@ function resetState() {
   state.players = []
   state.filtered = []
   state.loading = true
+  state.pedidoSearch = ''
+  state.pedidoFilterPos = ''
+  state.pedidoFilterClube = ''
+  state.pedidoFilterPais = ''
 }
 
 // Intercept Android back button
@@ -1387,9 +1487,13 @@ async function init() {
     renderAuth(); return
   }
   await fetchRole()
-  renderApp()
-  preloadAll()  // Start loading all tables in parallel immediately
-  await loadPlayers()
+  if (location.pathname === '/pedidos') {
+    renderPedidosPage()
+  } else {
+    renderApp()
+    preloadAll()
+    await loadPlayers()
+  }
   // Open shared player from URL hash
   function checkAndOpenSharedPlayer() {
     const hash = location.hash
