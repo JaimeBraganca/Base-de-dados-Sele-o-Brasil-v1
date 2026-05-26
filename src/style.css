@@ -310,11 +310,11 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .pedido-avatar { border-radius: 6px !important; background: var(--surface-2) !important; }
 .row-chevron { color: var(--border); flex-shrink: 0; }
 .pedido-row { display: grid !important; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 16px; align-items: center; gap: 0; padding: 12px 20px !important; }
-.pedido-row .player-avatar { display: none; }
+.pedido-row .player-avatar { width: 38px; height: 38px; border-radius: 6px !important; background: var(--accent-light) !important; flex-shrink: 0; }
 .pedido-row .player-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.pedido-row .player-info .pedido-logo { width: 34px; height: 34px; border-radius: 6px; object-fit: contain; flex-shrink: 0; }
-.pedido-row .player-info .pedido-initials { width: 34px; height: 34px; border-radius: 6px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
-.pedido-row .player-info .pedido-text { min-width: 0; }
+.pedido-logo { width: 38px; height: 38px; border-radius: 6px; object-fit: contain; flex-shrink: 0; }
+.pedido-initials { width: 38px; height: 38px; border-radius: 6px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+.pedido-text { min-width: 0; }
 .pedido-cols { display: contents; }
 .pedido-col-item { display: flex; align-items: center; justify-content: center; text-align: center; }
 .pedido-col-item:last-child { justify-content: flex-end; }
