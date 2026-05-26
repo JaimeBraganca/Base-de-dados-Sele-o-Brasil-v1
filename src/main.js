@@ -1147,6 +1147,7 @@ function openPedidoForm(pedido) {
   document.getElementById('pf-save').addEventListener('click', async () => {
     const btn = document.getElementById('pf-save')
     btn.disabled = true; btn.textContent = 'A guardar...'
+    console.log('=== SAVE PEDIDO ===', 'isEdit:', isEdit, 'pedido:', pedido)
 
     // Handle logo upload
     let logoUrl = document.getElementById('pf-logo').value.trim() || null
