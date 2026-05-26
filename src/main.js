@@ -974,17 +974,17 @@ function renderPedidos() {
 
   container.innerHTML = pedidos.map(p => {
     const initClube = (p.clube || '?').substring(0, 2).toUpperCase()
+    const logoHtml = p.logo_url
+      ? `<img class="pedido-logo" src="${p.logo_url}" alt="${p.clube}" />`
+      : `<div class="pedido-initials">${initClube}</div>`
     return `
       <div class="player-row pedido-row" data-id="${p.id}">
-        <div class="player-avatar pedido-avatar">
-          ${p.logo_url
-            ? `<img src="${p.logo_url}" alt="${p.clube}" style="width:38px;height:38px;object-fit:contain;border-radius:6px;" />`
-            : `<span>${initClube}</span>`
-          }
-        </div>
-        <div class="player-info" style="min-width:120px;max-width:160px;">
-          <div class="player-name">${p.clube || '\u2014'}</div>
-          <div class="player-meta">${p.pais || '\u2014'}</div>
+        <div class="player-info">
+          ${logoHtml}
+          <div class="pedido-text">
+            <div class="player-name">${p.clube || '\u2014'}</div>
+            <div class="player-meta">${p.pais || '\u2014'}</div>
+          </div>
         </div>
         <div class="pedido-cols">
           <div class="pedido-col-item">
