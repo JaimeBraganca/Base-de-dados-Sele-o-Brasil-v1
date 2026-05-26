@@ -1175,21 +1175,23 @@ function openPedidoForm(pedido) {
 
     let result
     if (isEdit) {
-      result = await supabase.from('club_requests').update(cleanData).eq('id', pedido.id)
+      console.log('Updating pedido id:', pedido.id, 'data:', cleanData)
+      result = await supabase.from('club_requests').update(cleanData).eq('id', String(pedido.id))
+      console.log('Update result:', result)
     } else {
       result = await supabase.from('club_requests').insert(cleanData)
     }
 
     if (result.error) {
+      console.error('Save error:', result.error)
       showToast('Erro: ' + result.error.message, 'error')
       btn.disabled = false; btn.textContent = isEdit ? 'Guardar' : 'Criar pedido'
       return
     }
 
     showToast(isEdit ? 'Pedido guardado!' : 'Pedido criado!', 'success')
-    state.pedidos = null
     closeAll()
-    loadPedidos()
+    await loadPedidos()
   })
 }
 
