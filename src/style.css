@@ -325,3 +325,7 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
   .pedido-list-row .pedido-cell-right { display:none; }
   .pedido-logo-img, .pedido-logo-placeholder { width:26px; height:26px; }
 }
+
+/* ── PEDIDOS PAGE ── */
+.pedidos-page .filters-bar { top: 54px; }
+.pedidos-page .stats-bar { top: 114px; }
