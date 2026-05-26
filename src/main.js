@@ -931,7 +931,7 @@ async function openPedidoPanel(pedido) {
         }
         <div style="min-width:0;">
           <div class="panel-name">${pedido.clube || 'Clube'}</div>
-          <div class="panel-sub">${pedido.pais || 'â€”'}</div>
+          <div class="panel-sub">${pedido.pais || '\u2014'}</div>
         </div>
       </div>
       <div style="display:flex;gap:8px;flex-shrink:0;">
@@ -944,23 +944,23 @@ async function openPedidoPanel(pedido) {
       <div class="panel-section">
         <div class="panel-section-title">Pedido</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">PosiÃ§Ã£o</span><span class="info-val">${pedido.posicao ? `<span class="pos-badge-panel">${pedido.posicao}</span>` : 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Posi\u00e7\u00e3o</span><span class="info-val">${pedido.posicao ? `<span class="pos-badge-panel">${pedido.posicao}</span>` : '\u2014'}</span></div>
         </div>
       </div>
       <div class="panel-section">
         <div class="panel-section-title">Modelo Financeiro</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val">${pedido.valor_transferencia || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">SalÃ¡rio</span><span class="info-val">${pedido.salario || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">ComissÃµes</span><span class="info-val">${pedido.comissoes || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val">${pedido.budget_total || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val">${pedido.valor_transferencia || '\u2014'}</span></div>
+          <div class="info-row"><span class="info-label">Sal\u00e1rio</span><span class="info-val">${pedido.salario || '\u2014'}</span></div>
+          <div class="info-row"><span class="info-label">Comiss\u00f5es</span><span class="info-val">${pedido.comissoes || '\u2014'}</span></div>
+          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val">${pedido.budget_total || '\u2014'}</span></div>
         </div>
       </div>
       <div class="panel-section">
         <div class="panel-section-title">Outros Detalhes</div>
         <div class="info-grid">
-          <div class="info-row"><span class="info-label">Introduzido por</span><span class="info-val">${pedido.introduzido_por || 'â€”'}</span></div>
-          <div class="info-row"><span class="info-label">Data limite</span><span class="info-val">${dataLimite || 'â€”'}</span></div>
+          <div class="info-row"><span class="info-label">Introduzido por</span><span class="info-val">${pedido.introduzido_por || '\u2014'}</span></div>
+          <div class="info-row"><span class="info-label">Data limite</span><span class="info-val">${dataLimite || '\u2014'}</span></div>
         </div>
       </div>
       <div class="panel-section">
@@ -993,7 +993,7 @@ async function openPedidoPanel(pedido) {
     lista.innerHTML = currentSuggested.map(j => `
       <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 12px;border-radius:20px;font-size:13px;">
         ${j.nome}
-        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">Ã—</button>
+        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">\u00d7</button>
       </span>
     `).join('')
     lista.querySelectorAll('.remove-jogador').forEach(btn => {
@@ -1017,7 +1017,7 @@ async function openPedidoPanel(pedido) {
     suggestions.innerHTML = matches.map(p => `
       <div class="suggestion-item" data-id="${p.id}" data-nome="${p.nome}" style="padding:10px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
         <strong>${p.nome}</strong>
-        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} Â· ${p.posicao || ''}</span>
+        <span style="color:var(--text-2);font-size:12px;">${p.clube || ''} \u00b7 ${p.posicao || ''}</span>
       </div>
     `).join('')
     suggestions.querySelectorAll('.suggestion-item').forEach(item => {
@@ -1068,31 +1068,31 @@ function openPedidoForm(pedido) {
         <input class="form-input" id="pf-clube" value="${p.clube || ''}" />
       </div>
       <div class="form-group">
-        <label class="form-label">PaÃ­s</label>
+        <label class="form-label">Pa\u00eds</label>
         <input class="form-input" id="pf-pais" value="${p.pais || ''}" />
       </div>
       <div class="form-group">
-        <label class="form-label">PosiÃ§Ã£o</label>
+        <label class="form-label">Posi\u00e7\u00e3o</label>
         <select class="form-select" id="pf-posicao">
-          <option value="">â€”</option>
+          <option value="">\u2014</option>
           ${POSICOES.map(pos => `<option value="${pos}" ${p.posicao===pos?'selected':''}>${pos}</option>`).join('')}
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Valor TransferÃªncia</label>
-        <input class="form-input" id="pf-valor" value="${p.valor_transferencia || ''}" placeholder="Ex: â‚¬2M" />
+        <label class="form-label">Valor Transfer\u00eancia</label>
+        <input class="form-input" id="pf-valor" value="${p.valor_transferencia || ''}" placeholder="Ex: \u20ac2M" />
       </div>
       <div class="form-group">
-        <label class="form-label">SalÃ¡rio</label>
-        <input class="form-input" id="pf-salario" value="${p.salario || ''}" placeholder="Ex: â‚¬15k/mÃªs" />
+        <label class="form-label">Sal\u00e1rio</label>
+        <input class="form-input" id="pf-salario" value="${p.salario || ''}" placeholder="Ex: \u20ac15k/m\u00eas" />
       </div>
       <div class="form-group">
-        <label class="form-label">ComissÃµes</label>
+        <label class="form-label">Comiss\u00f5es</label>
         <input class="form-input" id="pf-comissoes" value="${p.comissoes || ''}" placeholder="Ex: 5%" />
       </div>
       <div class="form-group">
         <label class="form-label">Budget Total</label>
-        <input class="form-input" id="pf-budget" value="${p.budget_total || ''}" placeholder="Ex: â‚¬5M" />
+        <input class="form-input" id="pf-budget" value="${p.budget_total || ''}" placeholder="Ex: \u20ac5M" />
       </div>
       <div class="form-group">
         <label class="form-label">Introduzido por</label>
