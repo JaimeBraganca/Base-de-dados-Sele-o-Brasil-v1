@@ -309,6 +309,14 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .pedido-logo-placeholder { width:34px; height:34px; border-radius:8px; background:#dde1e7; border:1px solid #c8cdd4; }
 .pedido-avatar { border-radius: 6px !important; background: var(--surface-2) !important; }
 .row-chevron { color: var(--border); flex-shrink: 0; }
+.pedido-cols { display: flex; flex: 1; align-items: center; gap: 0; }
+.pedido-col-item { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 4px; }
+.pedido-col-val { font-size: 12px; color: var(--text-2); white-space: nowrap; }
+.pedido-col-budget { font-weight: 600; color: var(--text); }
+.pedido-col-empty { font-size: 12px; color: var(--border); }
+@media (max-width: 480px) {
+  .pedido-cols { display: none; }
+}
 @media (max-width:480px) {
   .pedido-list-header { grid-template-columns:30px minmax(90px,2fr) minmax(55px,1fr) minmax(55px,1fr); gap:4px; }
   .pedido-list-header .pedido-col-sort:nth-child(n+5) { display:none; }
