@@ -336,7 +336,7 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 }
 
 /* ── PEDIDOS PAGE ── */
-#pedidos-filters-bar { top: 114px; }
+#pedidos-filters-bar { top: 54px; }
 
 /* ── PEDIDO SORT BAR ── */
 .pedido-sort-bar { display: flex; align-items: center; gap: 4px; }
