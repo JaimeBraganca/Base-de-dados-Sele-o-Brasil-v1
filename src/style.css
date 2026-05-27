@@ -338,3 +338,11 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 /* ── PEDIDOS PAGE ── */
 .pedidos-page .filters-bar { top: 54px; }
 .pedidos-page .stats-bar { top: 114px; }
+
+/* ── PEDIDO SORT BAR ── */
+.pedido-sort-bar { display: flex; align-items: center; gap: 4px; }
+.pedido-sort-btn { background: none; border: none; cursor: pointer; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text-2); padding: 4px 8px; border-radius: 6px; white-space: nowrap; transition: color 0.15s, background 0.15s; }
+.pedido-sort-btn:hover { color: var(--accent); background: var(--accent-light); }
+.pedido-sort-btn.active { color: var(--accent); font-weight: 600; }
+.psb-arrow { font-size: 11px; margin-left: 2px; }
+.psb-sep { color: var(--border); font-size: 12px; user-select: none; }
