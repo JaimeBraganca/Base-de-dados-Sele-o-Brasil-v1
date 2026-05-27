@@ -326,7 +326,6 @@ function renderPedidosPage() {
     </div>
 
     <div class="pedido-header-bar">
-      <div class="pedido-header-count" id="stats-count"><strong>0</strong> Pedidos</div>
       <div class="pedido-header-cols">
         <div class="pedido-header-col" style="flex:1.5"><button class="pedido-sort-btn" data-col="clube">Clube <span class="psb-arrow">\u2195</span></button></div>
         <div class="pedido-header-col"><button class="pedido-sort-btn" data-col="posicao">Posi\u00e7\u00e3o <span class="psb-arrow">\u2195</span></button></div>
