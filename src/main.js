@@ -312,44 +312,37 @@ function renderPedidosPage() {
         </div>
       </div>
 
+      <div class="stats-bar">
+        <div class="stats-count" id="stats-count"><strong>0</strong> Pedidos</div>
+        <div class="pedido-sort-bar" id="pedido-sort-bar">
+          <button class="pedido-sort-btn" data-col="clube" id="psb-clube">Clube <span class="psb-arrow" id="psb-arrow-clube">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="posicao" id="psb-posicao">PosiÃ§Ã£o <span class="psb-arrow" id="psb-arrow-posicao">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="valor_transferencia" id="psb-valor_transferencia">Valor Transf. <span class="psb-arrow" id="psb-arrow-valor_transferencia">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="salario" id="psb-salario">SalÃ¡rio <span class="psb-arrow" id="psb-arrow-salario">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="budget_total" id="psb-budget_total">Budget Total <span class="psb-arrow" id="psb-arrow-budget_total">â†•</span></button>
+        </div>
+      </div>
+
       <div class="filters-bar" id="pedidos-filters-bar">
         <div class="search-wrap">
           ${icon('search')}
-          <input class="search-input" id="pedido-search" type="search" placeholder="Pesquisar por clube, pa\u00eds..." value="${state.pedidoSearch||''}" />
+          <input class="search-input" id="pedido-search" type="search" placeholder="Pesquisar por clube, paÃ­s..." value="${state.pedidoSearch||''}" />
         </div>
         <select class="filter-select" id="pf-posicao">
-          <option value="">Posi\u00e7\u00e3o</option>
+          <option value="">PosiÃ§Ã£o</option>
           ${POSICOES.map(p => `<option value="${p}" ${state.pedidoFilterPos===p?'selected':''}>${p}</option>`).join('')}
         </select>
         <select class="filter-select" id="pf-clube">
           <option value="">Clube</option>
         </select>
         <select class="filter-select" id="pf-pais">
-          <option value="">Pa\u00eds</option>
+          <option value="">PaÃ­s</option>
         </select>
         <button class="btn-clear-filters" id="pedido-btn-clear">Limpar</button>
-      </div>
-
-      <div class="tabs-bar">
-        <div class="tab-item active" id="btn-bases-dados">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>
-          Bases de Dados
-        </div>
-      </div>
-
-      <div class="stats-bar">
-        <div class="stats-count" id="stats-count"><strong>0</strong> Pedidos</div>
-        <div class="pedido-sort-bar" id="pedido-sort-bar">
-          <button class="pedido-sort-btn" data-col="clube" id="psb-clube">Clube <span class="psb-arrow" id="psb-arrow-clube">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="posicao" id="psb-posicao">Posi\u00e7\u00e3o <span class="psb-arrow" id="psb-arrow-posicao">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="valor_transferencia" id="psb-valor_transferencia">Valor Transf. <span class="psb-arrow" id="psb-arrow-valor_transferencia">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="salario" id="psb-salario">Sal\u00e1rio <span class="psb-arrow" id="psb-arrow-salario">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="budget_total" id="psb-budget_total">Budget Total <span class="psb-arrow" id="psb-arrow-budget_total">â†•</span></button>
-        </div>
       </div>
 
       <div class="player-list" id="player-list"></div>
@@ -362,7 +355,6 @@ function renderPedidosPage() {
   `
   bindPedidosPageEvents()
   loadPedidos()
-  // Preload all player DBs for suggestions
   if (!state.dbCache['cbf'] && !state.dbCache['mercado']) preloadAll()
 }
 
