@@ -300,53 +300,47 @@ function applyFilters() {
 // \u2500\u2500 RENDER APP \u2500\u2500
 function renderPedidosPage() {
   document.getElementById('app').innerHTML = `
-    <div class="app-layout">
-      <div class="topbar">
-        <div class="topbar-left">
-          <div class="topbar-logo"><img src="${LOGO}" style="width:30px;height:30px;object-fit:cover;" /></div>
-          <span class="topbar-title">Pedidos</span>
-        </div>
-        <div class="topbar-right">
-          ${(state.role === 'admin' || state.role === 'moderator') ? `<button class="btn-add" id="btn-add-pedido">${icon('plus')}<span>Novo Pedido</span></button>` : ''}
-          <button class="btn-icon" id="btn-logout" title="Sair">${icon('logout')}</button>
-        </div>
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-logo"><img src="${LOGO}" style="width:30px;height:30px;object-fit:cover;" /></div>
+        <span class="topbar-title">Pedidos</span>
       </div>
-
-      <div class="stats-bar">
-        <div class="stats-count" id="stats-count"><strong>0</strong> Pedidos</div>
-        <div class="pedido-sort-bar" id="pedido-sort-bar">
-          <button class="pedido-sort-btn" data-col="clube" id="psb-clube">Clube <span class="psb-arrow" id="psb-arrow-clube">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="posicao" id="psb-posicao">PosiÃ§Ã£o <span class="psb-arrow" id="psb-arrow-posicao">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="valor_transferencia" id="psb-valor_transferencia">Valor Transf. <span class="psb-arrow" id="psb-arrow-valor_transferencia">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="salario" id="psb-salario">SalÃ¡rio <span class="psb-arrow" id="psb-arrow-salario">â†•</span></button>
-          <span class="psb-sep">|</span>
-          <button class="pedido-sort-btn" data-col="budget_total" id="psb-budget_total">Budget Total <span class="psb-arrow" id="psb-arrow-budget_total">â†•</span></button>
-        </div>
+      <div class="topbar-right">
+        ${(state.role === 'admin' || state.role === 'moderator') ? `<button class="btn-add" id="btn-add-pedido">${icon('plus')}<span>Novo Pedido</span></button>` : ''}
+        <button class="btn-icon" id="btn-logout" title="Sair">${icon('logout')}</button>
       </div>
-
-      <div class="filters-bar" id="pedidos-filters-bar">
-        <div class="search-wrap">
-          ${icon('search')}
-          <input class="search-input" id="pedido-search" type="search" placeholder="Pesquisar por clube, paÃ­s..." value="${state.pedidoSearch||''}" />
-        </div>
-        <select class="filter-select" id="pf-posicao">
-          <option value="">PosiÃ§Ã£o</option>
-          ${POSICOES.map(p => `<option value="${p}" ${state.pedidoFilterPos===p?'selected':''}>${p}</option>`).join('')}
-        </select>
-        <select class="filter-select" id="pf-clube">
-          <option value="">Clube</option>
-        </select>
-        <select class="filter-select" id="pf-pais">
-          <option value="">PaÃ­s</option>
-        </select>
-        <button class="btn-clear-filters" id="pedido-btn-clear">Limpar</button>
-      </div>
-
-      <div class="player-list" id="player-list"></div>
     </div>
+
+    <div class="filters-bar">
+      <div class="search-wrap">
+        ${icon('search')}
+        <input class="search-input" id="pedido-search" type="search" placeholder="Pesquisar por clube, pa\u00eds..." value="${state.pedidoSearch||''}" />
+      </div>
+      <select class="filter-select" id="pf-posicao">
+        <option value="">Posi\u00e7\u00e3o</option>
+        ${POSICOES.map(p => `<option value="${p}" ${state.pedidoFilterPos===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+      <select class="filter-select" id="pf-clube"><option value="">Clube</option></select>
+      <select class="filter-select" id="pf-pais"><option value="">Pa\u00eds</option></select>
+      <button class="btn-clear-filters" id="pedido-btn-clear">Limpar</button>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stats-count" id="stats-count"><strong>0</strong> Pedidos</div>
+      <div class="pedido-sort-bar" id="pedido-sort-bar">
+        <button class="pedido-sort-btn" data-col="clube">Clube <span class="psb-arrow">\u2195</span></button>
+        <span class="psb-sep">|</span>
+        <button class="pedido-sort-btn" data-col="posicao">Posi\u00e7\u00e3o <span class="psb-arrow">\u2195</span></button>
+        <span class="psb-sep">|</span>
+        <button class="pedido-sort-btn" data-col="valor_transferencia">Valor Transf. <span class="psb-arrow">\u2195</span></button>
+        <span class="psb-sep">|</span>
+        <button class="pedido-sort-btn" data-col="salario">Sal\u00e1rio <span class="psb-arrow">\u2195</span></button>
+        <span class="psb-sep">|</span>
+        <button class="pedido-sort-btn" data-col="budget_total">Budget Total <span class="psb-arrow">\u2195</span></button>
+      </div>
+    </div>
+
+    <div class="player-list" id="player-list"></div>
 
     <div class="overlay" id="overlay"></div>
     <div class="side-panel" id="side-panel"><div id="panel-content"></div></div>
@@ -354,9 +348,10 @@ function renderPedidosPage() {
     <div class="toast" id="toast"></div>
   `
   bindPedidosPageEvents()
-  loadPedidos()
   if (!state.dbCache['cbf'] && !state.dbCache['mercado']) preloadAll()
+  loadPedidos()
 }
+
 
 function bindPedidosPageEvents() {
   document.getElementById('btn-logout').addEventListener('click', async () => { resetState(); await supabase.auth.signOut() })
