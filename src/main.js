@@ -312,14 +312,14 @@ function renderPedidosPage() {
         </div>
       </div>
 
-      <div class="tabs-bar" style="position:sticky;top:54px;z-index:38;">
+      <div class="tabs-bar">
         <div class="tab-item active" id="btn-bases-dados">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>
           Bases de Dados
         </div>
       </div>
 
-      <div class="filters-bar" id="pedidos-filters-bar" style="top:96px;">
+      <div class="filters-bar" id="pedidos-filters-bar">
         <div class="search-wrap">
           ${icon('search')}
           <input class="search-input" id="pedido-search" type="search" placeholder="Pesquisar por clube, pa\u00eds..." value="${state.pedidoSearch||''}" />
