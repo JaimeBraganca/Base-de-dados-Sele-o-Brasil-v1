@@ -325,18 +325,15 @@ function renderPedidosPage() {
       <button class="btn-clear-filters" id="pedido-btn-clear">Limpar</button>
     </div>
 
-    <div class="stats-bar">
-      <div class="stats-count" id="stats-count"><strong>0</strong> Pedidos</div>
-      <div class="pedido-sort-bar" id="pedido-sort-bar">
-        <button class="pedido-sort-btn" data-col="clube">Clube <span class="psb-arrow">\u2195</span></button>
-        <span class="psb-sep">|</span>
-        <button class="pedido-sort-btn" data-col="posicao">Posi\u00e7\u00e3o <span class="psb-arrow">\u2195</span></button>
-        <span class="psb-sep">|</span>
-        <button class="pedido-sort-btn" data-col="valor_transferencia">Valor Transf. <span class="psb-arrow">\u2195</span></button>
-        <span class="psb-sep">|</span>
-        <button class="pedido-sort-btn" data-col="salario">Sal\u00e1rio <span class="psb-arrow">\u2195</span></button>
-        <span class="psb-sep">|</span>
-        <button class="pedido-sort-btn" data-col="budget_total">Budget Total <span class="psb-arrow">\u2195</span></button>
+    <div class="pedido-header-bar">
+      <div class="pedido-header-count" id="stats-count"><strong>0</strong> Pedidos</div>
+      <div class="pedido-header-cols">
+        <div class="pedido-header-col" style="flex:1.5"><button class="pedido-sort-btn" data-col="clube">Clube <span class="psb-arrow">\u2195</span></button></div>
+        <div class="pedido-header-col"><button class="pedido-sort-btn" data-col="posicao">Posi\u00e7\u00e3o <span class="psb-arrow">\u2195</span></button></div>
+        <div class="pedido-header-col"><button class="pedido-sort-btn" data-col="valor_transferencia">Valor Transf. <span class="psb-arrow">\u2195</span></button></div>
+        <div class="pedido-header-col"><button class="pedido-sort-btn" data-col="salario">Sal\u00e1rio <span class="psb-arrow">\u2195</span></button></div>
+        <div class="pedido-header-col" style="justify-content:flex-end"><button class="pedido-sort-btn" data-col="budget_total">Budget Total <span class="psb-arrow">\u2195</span></button></div>
+        <div style="width:16px"></div>
       </div>
     </div>
 
@@ -355,12 +352,6 @@ function renderPedidosPage() {
 
 function bindPedidosPageEvents() {
   document.getElementById('btn-logout').addEventListener('click', async () => { resetState(); await supabase.auth.signOut() })
-  document.getElementById('btn-bases-dados').addEventListener('click', () => {
-    history.pushState({}, '', '/')
-    renderApp()
-    preloadAll()
-    loadPlayers()
-  })
   document.getElementById('overlay').addEventListener('click', closeAll)
 
   const btnAdd = document.getElementById('btn-add-pedido')
