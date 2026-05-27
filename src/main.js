@@ -335,16 +335,16 @@ function renderPedidosPage() {
 
       <div class="stats-bar">
         <div class="stats-count" id="stats-count"><strong>0</strong> Pedidos</div>
-        <div class="sort-controls">
-          <select class="sort-select" id="pedido-sort-col">
-            <option value="clube">Clube</option>
-            <option value="pais">Pa\u00eds</option>
-            <option value="posicao">Posi\u00e7\u00e3o</option>
-            <option value="valor_transferencia">Valor Transf.</option>
-            <option value="salario">Sal\u00e1rio Anual</option>
-            <option value="budget_total">Budget Total Anual</option>
-          </select>
-          <button class="sort-dir-btn" id="pedido-sort-dir">\u2191\u2193</button>
+        <div class="pedido-sort-bar" id="pedido-sort-bar">
+          <button class="pedido-sort-btn" data-col="clube" id="psb-clube">Clube <span class="psb-arrow" id="psb-arrow-clube">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="posicao" id="psb-posicao">Posi\u00e7\u00e3o <span class="psb-arrow" id="psb-arrow-posicao">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="valor_transferencia" id="psb-valor_transferencia">Valor Transf. <span class="psb-arrow" id="psb-arrow-valor_transferencia">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="salario" id="psb-salario">Sal\u00e1rio <span class="psb-arrow" id="psb-arrow-salario">â†•</span></button>
+          <span class="psb-sep">|</span>
+          <button class="pedido-sort-btn" data-col="budget_total" id="psb-budget_total">Budget Total <span class="psb-arrow" id="psb-arrow-budget_total">â†•</span></button>
         </div>
       </div>
 
@@ -379,11 +379,18 @@ function bindPedidosPageEvents() {
     document.getElementById('pf-pais').value = ''
     applyPedidoFilters()
   })
-  document.getElementById('pedido-sort-col').addEventListener('change', e => { state.pedidoSortCol = e.target.value; applyPedidoFilters() })
-  document.getElementById('pedido-sort-dir').addEventListener('click', () => {
-    state.pedidoSortDir = (state.pedidoSortDir || 1) * -1
-    document.getElementById('pedido-sort-dir').textContent = state.pedidoSortDir === 1 ? '\u2191\u2193' : '\u2193\u2191'
-    applyPedidoFilters()
+  document.querySelectorAll('.pedido-sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const col = btn.dataset.col
+      if (state.pedidoSortCol === col) {
+        state.pedidoSortDir = (state.pedidoSortDir || 1) * -1
+      } else {
+        state.pedidoSortCol = col
+        state.pedidoSortDir = 1
+      }
+      updatePedidoSortUI()
+      applyPedidoFilters()
+    })
   })
 }
 
@@ -932,6 +939,21 @@ async function loadPedidos() {
   applyPedidoFilters()
 }
 
+function updatePedidoSortUI() {
+  const col = state.pedidoSortCol || 'clube'
+  const dir = state.pedidoSortDir || 1
+  document.querySelectorAll('.pedido-sort-btn').forEach(btn => {
+    const arrow = btn.querySelector('.psb-arrow')
+    if (btn.dataset.col === col) {
+      btn.classList.add('active')
+      if (arrow) arrow.textContent = dir === 1 ? '\u2191' : '\u2193'
+    } else {
+      btn.classList.remove('active')
+      if (arrow) arrow.textContent = '\u2195'
+    }
+  })
+}
+
 function renderPedidos() {
   const container = document.getElementById('player-list')
   if (!container) return
@@ -941,31 +963,7 @@ function renderPedidos() {
   const total = state.pedidos?.length || 0
   if (stats) stats.innerHTML = `<strong>${pedidos.length}</strong> de ${total} Pedidos`
 
-  // Replace sort controls with pedido-specific ones
-  const sortControls = document.querySelector('.sort-controls')
-  if (sortControls) {
-    sortControls.innerHTML = `
-      <select class="sort-select" id="pedido-sort-col">
-        <option value="clube" ${(state.pedidoSortCol||'clube')==='clube'?'selected':''}>Clube</option>
-        <option value="pais" ${state.pedidoSortCol==='pais'?'selected':''}>Pa\u00eds</option>
-        <option value="posicao" ${state.pedidoSortCol==='posicao'?'selected':''}>Posi\u00e7\u00e3o</option>
-        <option value="valor_transferencia" ${state.pedidoSortCol==='valor_transferencia'?'selected':''}>Valor Transf.</option>
-        <option value="salario" ${state.pedidoSortCol==='salario'?'selected':''}>Sal\u00e1rio Anual</option>
-        <option value="budget_total" ${state.pedidoSortCol==='budget_total'?'selected':''}>Budget Total Anual</option>
-      </select>
-      <button class="sort-dir-btn" id="pedido-sort-dir">${(state.pedidoSortDir||1)===1?'\u2191\u2193':'\u2193\u2191'}</button>
-    `
-    sortControls.style.display = ''
-    document.getElementById('pedido-sort-col').addEventListener('change', e => {
-      state.pedidoSortCol = e.target.value
-      applyPedidoFilters()
-    })
-    document.getElementById('pedido-sort-dir').addEventListener('click', () => {
-      state.pedidoSortDir = (state.pedidoSortDir || 1) * -1
-      document.getElementById('pedido-sort-dir').textContent = state.pedidoSortDir === 1 ? '\u2191\u2193' : '\u2193\u2191'
-      applyPedidoFilters()
-    })
-  }
+  updatePedidoSortUI()
 
   if (!pedidos.length) {
     container.innerHTML = '<div class="empty-state"><div class="empty-icon">\ud83d\udccb</div><div>Sem pedidos de clubes</div></div>'
