@@ -308,14 +308,18 @@ function renderPedidosPage() {
         </div>
         <div class="topbar-right">
           ${(state.role === 'admin' || state.role === 'moderator') ? `<button class="btn-add" id="btn-add-pedido">${icon('plus')}<span>Novo Pedido</span></button>` : ''}
-          <button class="btn-icon" id="btn-back-scout" title="Voltar" onclick="history.back()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
           <button class="btn-icon" id="btn-logout" title="Sair">${icon('logout')}</button>
         </div>
       </div>
 
-      <div class="filters-bar" id="pedidos-filters-bar">
+      <div class="tabs-bar" style="position:sticky;top:54px;z-index:38;">
+        <div class="tab-item active" id="btn-bases-dados">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-right:4px;"><polyline points="15 18 9 12 15 6"/></svg>
+          Bases de Dados
+        </div>
+      </div>
+
+      <div class="filters-bar" id="pedidos-filters-bar" style="top:96px;">
         <div class="search-wrap">
           ${icon('search')}
           <input class="search-input" id="pedido-search" type="search" placeholder="Pesquisar por clube, pa\u00eds..." value="${state.pedidoSearch||''}" />
@@ -358,10 +362,18 @@ function renderPedidosPage() {
   `
   bindPedidosPageEvents()
   loadPedidos()
+  // Preload all player DBs for suggestions
+  if (!state.dbCache['cbf'] && !state.dbCache['mercado']) preloadAll()
 }
 
 function bindPedidosPageEvents() {
   document.getElementById('btn-logout').addEventListener('click', async () => { resetState(); await supabase.auth.signOut() })
+  document.getElementById('btn-bases-dados').addEventListener('click', () => {
+    history.pushState({}, '', '/')
+    renderApp()
+    preloadAll()
+    loadPlayers()
+  })
   document.getElementById('overlay').addEventListener('click', closeAll)
 
   const btnAdd = document.getElementById('btn-add-pedido')
@@ -569,6 +581,11 @@ function bindAppEvents() {
   // Tab switching
   document.querySelectorAll('.tab-item[data-db]').forEach(tab => {
     tab.addEventListener('click', () => {
+      if (tab.dataset.pedidos) {
+        history.pushState({}, '', '/pedidos')
+        renderPedidosPage()
+        return
+      }
       if (state.activeDb === tab.dataset.db) return
       state.activeDb = tab.dataset.db
       document.querySelectorAll('.tab-item').forEach(t => {
