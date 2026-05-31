@@ -321,8 +321,15 @@ function renderPedidosPage() {
         ${POSICOES.map(p => `<option value="${p}" ${state.pedidoFilterPos===p?'selected':''}>${p}</option>`).join('')}
       </select>
       <select class="filter-select" id="pf-clube"><option value="">Clube</option></select>
-      <select class="filter-select" id="pf-pais"><option value="">Pa\u00eds</option></select>
-      <button class="btn-clear-filters" id="pedido-btn-clear">Limpar</button>
+      <select class="filter-select pf-pais-desktop" id="pf-pais"><option value="">Pa\u00eds</option></select>
+      <button class="btn-clear-filters pf-pais-desktop" id="pedido-btn-clear">Limpar</button>
+    </div>
+
+    <div class="tabs-bar pedidos-back-bar">
+      <div class="tab-item" id="btn-bases-dados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar \u00e0s Bases de Dados
+      </div>
     </div>
 
     <div class="stats-bar">
@@ -354,6 +361,12 @@ function renderPedidosPage() {
 
 function bindPedidosPageEvents() {
   document.getElementById('btn-logout').addEventListener('click', async () => { resetState(); await supabase.auth.signOut() })
+  document.getElementById('btn-bases-dados').addEventListener('click', () => {
+    history.pushState({}, '', '/')
+    renderApp()
+    preloadAll()
+    loadPlayers()
+  })
   document.getElementById('overlay').addEventListener('click', closeAll)
 
   const btnAdd = document.getElementById('btn-add-pedido')
@@ -1123,10 +1136,13 @@ async function openPedidoPanel(pedido) {
       return
     }
     lista.innerHTML = currentSuggested.map(j => `
-      <span style="display:inline-flex;align-items:center;gap:5px;background:#eff4ff;color:#0061ff;padding:5px 12px;border-radius:20px;font-size:13px;">
-        ${j.nome}
-        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:16px;line-height:1;padding:0;" class="remove-jogador">\u00d7</button>
-      </span>
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#eff4ff;padding:8px 12px;border-radius:10px;margin-bottom:6px;">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#0061ff;">${j.nome}</div>
+          <div style="font-size:11px;color:var(--text-2);margin-top:2px;">por ${j.sugerido_por || 'â€”'} ${j.sugerido_em ? 'Â· ' + new Date(j.sugerido_em).toLocaleDateString('pt-PT') : ''}</div>
+        </div>
+        <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:18px;line-height:1;padding:0 4px;" class="remove-jogador">\u00d7</button>
+      </div>
     `).join('')
     lista.querySelectorAll('.remove-jogador').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -1165,7 +1181,12 @@ async function openPedidoPanel(pedido) {
       item.addEventListener('mouseover', () => item.style.background = 'var(--bg)')
       item.addEventListener('mouseout', () => item.style.background = '')
       item.addEventListener('click', async () => {
-        currentSuggested.push({ id: item.dataset.id, nome: item.dataset.nome })
+        currentSuggested.push({ 
+          id: item.dataset.id, 
+          nome: item.dataset.nome,
+          sugerido_por: state.userName || state.user?.email || 'desconhecido',
+          sugerido_em: new Date().toISOString()
+        })
         await supabase.from('club_requests').update({ jogadores_sugeridos: currentSuggested }).eq('id', pedido.id)
         searchInput.value = ''; suggestions.style.display = 'none'
         updateJogadoresLista()
@@ -1393,8 +1414,9 @@ async function loadPlayers() {
 }
 
 async function fetchRole() {
-  const { data } = await supabase.from('user_roles').select('role').eq('id', state.user.id).single()
+  const { data } = await supabase.from('user_roles').select('role,nome').eq('id', state.user.id).single()
   state.role = data?.role || 'viewer'
+  state.userName = data?.nome || state.user.email
 }
 
 async function requestNotificationPermission() {
@@ -1438,6 +1460,7 @@ function resetState() {
   state.pedidoFilterPos = ''
   state.pedidoFilterClube = ''
   state.pedidoFilterPais = ''
+  state.userName = ''
 }
 
 // Intercept Android back button
