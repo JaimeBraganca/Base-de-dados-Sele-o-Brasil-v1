@@ -1139,7 +1139,7 @@ async function openPedidoPanel(pedido) {
       <div style="display:flex;align-items:center;justify-content:space-between;background:#eff4ff;padding:8px 12px;border-radius:10px;margin-bottom:6px;">
         <div>
           <div style="font-size:13px;font-weight:600;color:#0061ff;">${j.nome}</div>
-          <div style="font-size:11px;color:var(--text-2);margin-top:2px;">por ${j.sugerido_por || 'â€”'} ${j.sugerido_em ? 'Â· ' + new Date(j.sugerido_em).toLocaleDateString('pt-PT') : ''}</div>
+          <div style="font-size:11px;color:var(--text-2);margin-top:2px;">por ${j.sugerido_por || '\u2014'} ${j.sugerido_em ? '- ' + new Date(j.sugerido_em).toLocaleDateString('pt-PT') : ''}</div>
         </div>
         <button data-id="${j.id}" style="background:none;border:none;cursor:pointer;color:#0061ff;font-size:18px;line-height:1;padding:0 4px;" class="remove-jogador">\u00d7</button>
       </div>
