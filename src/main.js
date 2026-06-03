@@ -459,6 +459,8 @@ function renderApp() {
       <div class="tabs-bar" id="tabs-bar">
         ${DATABASES.map(db => {
           let logoHtml = ''
+          if (db.id === 'geral') logoHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3a11 11 0 0 1 3 7 11 11 0 0 1-3 7 11 11 0 0 1-3-7 11 11 0 0 1 3-7z"/><line x1="15.5" y1="15.5" x2="21" y2="21" stroke-width="2" stroke-linecap="round"/></svg>`
+          if (db.id === 'mercado') logoHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><polyline points="7 16 3 12 7 8"/><polyline points="17 8 21 12 17 16"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`
           if (db.id === 'ligas-portugal') logoHtml = `<img src="${LIGA_PORTUGAL_LOGO}" alt="LP" />`
           if (db.id === 'ligas-brasil') logoHtml = `<img src="${BRASILEIRAO_LOGO}" alt="BR" />`
           if (db.id === 'cbf') logoHtml = `<img src="${CBF_LOGO}" alt="CBF" />`
