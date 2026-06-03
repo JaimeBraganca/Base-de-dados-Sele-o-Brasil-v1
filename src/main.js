@@ -459,7 +459,7 @@ function renderApp() {
       <div class="tabs-bar" id="tabs-bar">
         ${DATABASES.map(db => {
           let logoHtml = ''
-          if (db.id === 'geral') logoHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3a11 11 0 0 1 3 7 11 11 0 0 1-3 7 11 11 0 0 1-3-7 11 11 0 0 1 3-7z"/><line x1="15.5" y1="15.5" x2="21" y2="21" stroke-width="2" stroke-linecap="round"/></svg>`
+          if (db.id === 'geral') logoHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`
           if (db.id === 'mercado') logoHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><polyline points="7 16 3 12 7 8"/><polyline points="17 8 21 12 17 16"/><line x1="3" y1="12" x2="21" y2="12"/></svg>`
           if (db.id === 'ligas-portugal') logoHtml = `<img src="${LIGA_PORTUGAL_LOGO}" alt="LP" />`
           if (db.id === 'ligas-brasil') logoHtml = `<img src="${BRASILEIRAO_LOGO}" alt="BR" />`
@@ -468,7 +468,7 @@ function renderApp() {
           return `<div class="tab-item ${state.activeDb === db.id ? 'active' : ''}" data-db="${db.id}">${logoHtml}${db.label}</div>`
         }).join('')}
         <div style="flex:1"></div>
-        <div class="tab-item tab-pedidos ${state.activeDb === 'pedidos' ? 'active-pedidos' : ''}" data-db="pedidos" data-pedidos="1"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" width=\"14\" height=\"14\" style=\"vertical-align:middle;margin-right:4px\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z\"/></svg> Pedidos</div>
+        <div class="tab-item tab-pedidos ${state.activeDb === 'pedidos' ? 'active-pedidos' : ''}" data-db="pedidos" data-pedidos="1"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" width=\"14\" height=\"14\" style=\"vertical-align:middle;margin-right:4px\"><rect x=\"4\" y=\"2\" width=\"13\" height=\"19\" rx=\"2\"/><line x1=\"8\" y1=\"8\" x2=\"14\" y2=\"8\"/><line x1=\"8\" y1=\"12\" x2=\"14\" y2=\"12\"/><line x1=\"8\" y1=\"16\" x2=\"12\" y2=\"16\"/><path d=\"M17 2l1.5 1.5L17 5l-1.5-1.5z\" fill=\"currentColor\"/></svg> Pedidos</div>
       </div>
 
       <div class="stats-bar">
