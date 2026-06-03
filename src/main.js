@@ -1353,8 +1353,10 @@ function openPedidoForm(pedido) {
     }
 
     showToast(isEdit ? 'Pedido guardado!' : 'Pedido criado!', 'success')
-    closeAll()
-    setTimeout(async () => { await loadPedidos() }, 100)
+    // Close form panel only, keep player-list intact
+    document.getElementById('form-panel').classList.remove('open')
+    document.getElementById('overlay').classList.remove('open')
+    await loadPedidos()
   })
 }
 
