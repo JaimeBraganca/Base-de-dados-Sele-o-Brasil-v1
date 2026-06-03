@@ -1227,42 +1227,42 @@ function openPedidoForm(pedido) {
     <div class="form-body">
       <div class="form-group">
         <label class="form-label">Clube</label>
-        <input class="form-input" id="pf-clube" value="${p.clube || ''}" />
+        <input class="form-input" id="pf-form-clube" value="${p.clube || ''}" />
       </div>
       <div class="form-group">
         <label class="form-label">Pa\u00eds</label>
-        <input class="form-input" id="pf-pais" value="${p.pais || ''}" />
+        <input class="form-input" id="pf-form-pais" value="${p.pais || ''}" />
       </div>
       <div class="form-group">
         <label class="form-label">Posi\u00e7\u00e3o</label>
-        <select class="form-select" id="pf-posicao">
+        <select class="form-select" id="pf-form-posicao">
           <option value="">\u2014</option>
           ${POSICOES.map(pos => `<option value="${pos}" ${p.posicao===pos?'selected':''}>${pos}</option>`).join('')}
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">Valor Transfer\u00eancia</label>
-        <input class="form-input" id="pf-valor" value="${p.valor_transferencia || ''}" placeholder="Ex: \u20ac2M" />
+        <input class="form-input" id="pf-form-valor" value="${p.valor_transferencia || ''}" placeholder="Ex: \u20ac2M" />
       </div>
       <div class="form-group">
         <label class="form-label">Sal\u00e1rio</label>
-        <input class="form-input" id="pf-salario" value="${p.salario || ''}" placeholder="Ex: \u20ac15k/m\u00eas" />
+        <input class="form-input" id="pf-form-salario" value="${p.salario || ''}" placeholder="Ex: \u20ac15k/m\u00eas" />
       </div>
       <div class="form-group">
         <label class="form-label">Comiss\u00f5es</label>
-        <input class="form-input" id="pf-comissoes" value="${p.comissoes || ''}" placeholder="Ex: 5%" />
+        <input class="form-input" id="pf-form-comissoes" value="${p.comissoes || ''}" placeholder="Ex: 5%" />
       </div>
       <div class="form-group">
         <label class="form-label">Budget Total</label>
-        <input class="form-input" id="pf-budget" value="${p.budget_total || ''}" placeholder="Ex: \u20ac5M" />
+        <input class="form-input" id="pf-form-budget" value="${p.budget_total || ''}" placeholder="Ex: \u20ac5M" />
       </div>
       <div class="form-group">
         <label class="form-label">Introduzido por</label>
-        <input class="form-input" id="pf-intro" value="${p.introduzido_por || ''}" />
+        <input class="form-input" id="pf-form-intro" value="${p.introduzido_por || ''}" />
       </div>
       <div class="form-group">
         <label class="form-label">Data limite</label>
-        <input class="form-input" id="pf-data" type="date" value="${dataLimite}" />
+        <input class="form-input" id="pf-form-data" type="date" value="${dataLimite}" />
       </div>
       <div class="form-group">
         <label class="form-label">Logo do Clube</label>
@@ -1271,18 +1271,18 @@ function openPedidoForm(pedido) {
             ? `<img id="logo-preview" src="${p.logo_url}" style="width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;" />`
             : `<div id="logo-preview" style="width:64px;height:64px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-2);">Sem logo</div>`
           }
-          <input class="form-input" id="pf-logo" type="url" value="${p.logo_url || ''}" placeholder="URL do logo (https://...)" />
+          <input class="form-input" id="pf-form-logo" type="url" value="${p.logo_url || ''}" placeholder="URL do logo (https://...)" />
           <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed var(--border-2);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text-2);">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Escolher ficheiro local
-            <input type="file" id="pf-logo-file" accept="image/*" style="display:none;" />
+            <input type="file" id="pf-form-logo-file" accept="image/*" style="display:none;" />
           </label>
         </div>
       </div>
     </div>
     <div class="form-footer">
       <button class="btn-cancel" id="form-cancel">Cancelar</button>
-      <button class="btn-save" id="pf-save">${isEdit ? 'Guardar' : 'Criar pedido'}</button>
+      <button class="btn-save" id="pf-form-save">${isEdit ? 'Guardar' : 'Criar pedido'}</button>
     </div>
   `
 
@@ -1292,7 +1292,7 @@ function openPedidoForm(pedido) {
   formPanel.classList.add('open')
 
   // Logo file upload preview
-  const fileInput = document.getElementById('pf-logo-file')
+  const fileInput = document.getElementById('pf-form-logo-file')
   fileInput.addEventListener('change', e => {
     const file = e.target.files[0]
     if (!file) return
@@ -1300,20 +1300,20 @@ function openPedidoForm(pedido) {
     reader.onload = ev => {
       const preview = document.getElementById('logo-preview')
       if (preview) preview.outerHTML = `<img id="logo-preview" src="${ev.target.result}" style="width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;" />`
-      document.getElementById('pf-logo').value = ''
+      document.getElementById('pf-form-logo').value = ''
     }
     reader.readAsDataURL(file)
   })
 
   // Save
-  document.getElementById('pf-save').addEventListener('click', async () => {
-    const btn = document.getElementById('pf-save')
+  document.getElementById('pf-form-save').addEventListener('click', async () => {
+    const btn = document.getElementById('pf-form-save')
     btn.disabled = true; btn.textContent = 'A guardar...'
     console.log('=== SAVE PEDIDO ===', 'isEdit:', isEdit, 'pedido:', pedido)
 
     // Handle logo upload
-    let logoUrl = document.getElementById('pf-logo').value.trim() || null
-    const logoFile = document.getElementById('pf-logo-file')
+    let logoUrl = document.getElementById('pf-form-logo').value.trim() || null
+    const logoFile = document.getElementById('pf-form-logo-file')
     if (logoFile && logoFile.files && logoFile.files[0]) {
       logoUrl = await new Promise(resolve => {
         const reader = new FileReader()
@@ -1323,15 +1323,15 @@ function openPedidoForm(pedido) {
     }
 
     const raw = {
-      clube: document.getElementById('pf-clube').value.trim() || null,
-      pais: document.getElementById('pf-pais').value.trim() || null,
-      posicao: document.getElementById('pf-posicao').value || null,
-      valor_transferencia: document.getElementById('pf-valor').value.trim() || null,
-      salario: document.getElementById('pf-salario').value.trim() || null,
-      comissoes: document.getElementById('pf-comissoes').value.trim() || null,
-      budget_total: document.getElementById('pf-budget').value.trim() || null,
-      introduzido_por: document.getElementById('pf-intro').value.trim() || null,
-      data_limite: document.getElementById('pf-data').value || null,
+      clube: document.getElementById('pf-form-clube').value.trim() || null,
+      pais: document.getElementById('pf-form-pais').value.trim() || null,
+      posicao: document.getElementById('pf-form-posicao').value || null,
+      valor_transferencia: document.getElementById('pf-form-valor').value.trim() || null,
+      salario: document.getElementById('pf-form-salario').value.trim() || null,
+      comissoes: document.getElementById('pf-form-comissoes').value.trim() || null,
+      budget_total: document.getElementById('pf-form-budget').value.trim() || null,
+      introduzido_por: document.getElementById('pf-form-intro').value.trim() || null,
+      data_limite: document.getElementById('pf-form-data').value || null,
       logo_url: logoUrl,
     }
     const cleanData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== null && v !== undefined && v !== ''))
@@ -1354,7 +1354,7 @@ function openPedidoForm(pedido) {
 
     showToast(isEdit ? 'Pedido guardado!' : 'Pedido criado!', 'success')
     closeAll()
-    await loadPedidos()
+    setTimeout(async () => { await loadPedidos() }, 100)
   })
 }
 
