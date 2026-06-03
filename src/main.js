@@ -1218,11 +1218,16 @@ function openPedidoForm(pedido) {
   const dataLimite = p.data_limite ? p.data_limite.split('T')[0] : ''
   const formPanel = document.getElementById('form-panel')
   const formContent = document.getElementById('form-content')
+  if (!formPanel || !formContent) return
 
-  formContent.innerHTML = `
+  // Always replace the node to destroy all previous listeners
+  const newContent = formContent.cloneNode(false)
+  formContent.parentNode.replaceChild(newContent, formContent)
+
+  newContent.innerHTML = `
     <div class="form-header">
       <div class="form-title">${isEdit ? 'Editar Pedido' : 'Novo Pedido'}</div>
-      <button class="btn-icon" id="form-close">${icon('close')}</button>
+      <button class="btn-icon" id="pf-close">${icon('close')}</button>
     </div>
     <div class="form-body">
       <div class="form-group">
@@ -1262,16 +1267,16 @@ function openPedidoForm(pedido) {
       </div>
       <div class="form-group">
         <label class="form-label">Data limite</label>
-        <input class="form-input" id="pf-form-data" type="date" value="${dataLimite}" />
+        <input class="form-input" type="date" id="pf-form-data" value="${dataLimite}" />
       </div>
       <div class="form-group">
         <label class="form-label">Logo do Clube</label>
         <div style="display:flex;flex-direction:column;gap:8px;">
           ${p.logo_url
-            ? `<img id="logo-preview" src="${p.logo_url}" style="width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;" />`
-            : `<div id="logo-preview" style="width:64px;height:64px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-2);">Sem logo</div>`
+            ? `<img id="pf-logo-preview" src="${p.logo_url}" style="width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;" />`
+            : `<div id="pf-logo-preview" style="width:64px;height:64px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-2);">Sem logo</div>`
           }
-          <input class="form-input" id="pf-form-logo" type="url" value="${p.logo_url || ''}" placeholder="URL do logo (https://...)" />
+          <input class="form-input" id="pf-form-logo-url" type="url" value="${p.logo_url && !p.logo_url.startsWith('data:') ? p.logo_url : ''}" placeholder="URL do logo (https://...)" />
           <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px dashed var(--border-2);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text-2);">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Escolher ficheiro local
@@ -1281,84 +1286,96 @@ function openPedidoForm(pedido) {
       </div>
     </div>
     <div class="form-footer">
-      <button class="btn-cancel" id="form-cancel">Cancelar</button>
+      <button class="btn-cancel" id="pf-cancel">Cancelar</button>
       <button class="btn-save" id="pf-form-save">${isEdit ? 'Guardar' : 'Criar pedido'}</button>
     </div>
   `
 
-  document.getElementById('form-close').addEventListener('click', closeAll)
-  document.getElementById('form-cancel').addEventListener('click', closeAll)
-  document.getElementById('overlay').classList.add('open')
+  document.getElementById('overlay').classList.add('show')
   formPanel.classList.add('open')
 
-  // Logo file upload preview
-  const fileInput = document.getElementById('pf-form-logo-file')
-  fileInput.addEventListener('change', e => {
+  // Close handlers
+  document.getElementById('pf-close').addEventListener('click', closeAll)
+  document.getElementById('pf-cancel').addEventListener('click', closeAll)
+
+  // Logo file preview
+  document.getElementById('pf-form-logo-file').addEventListener('change', e => {
     const file = e.target.files[0]
     if (!file) return
     const reader = new FileReader()
     reader.onload = ev => {
-      const preview = document.getElementById('logo-preview')
-      if (preview) preview.outerHTML = `<img id="logo-preview" src="${ev.target.result}" style="width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;" />`
-      document.getElementById('pf-form-logo').value = ''
+      const preview = document.getElementById('pf-logo-preview')
+      if (preview) {
+        const img = document.createElement('img')
+        img.id = 'pf-logo-preview'
+        img.src = ev.target.result
+        img.style.cssText = 'width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;'
+        preview.replaceWith(img)
+      }
+      document.getElementById('pf-form-logo-url').value = ''
     }
     reader.readAsDataURL(file)
   })
 
-  // Save
+  // SAVE â€” single listener, disabled guard
   document.getElementById('pf-form-save').addEventListener('click', async () => {
     const btn = document.getElementById('pf-form-save')
-    btn.disabled = true; btn.textContent = 'A guardar...'
-    console.log('=== SAVE PEDIDO ===', 'isEdit:', isEdit, 'pedido:', pedido)
+    if (btn.disabled) return
+    btn.disabled = true
+    btn.textContent = 'A guardar...'
 
-    // Handle logo upload
-    let logoUrl = document.getElementById('pf-form-logo').value.trim() || null
-    const logoFile = document.getElementById('pf-form-logo-file')
-    if (logoFile && logoFile.files && logoFile.files[0]) {
+    // Get logo
+    let logoUrl = p.logo_url || null
+    const fileInput = document.getElementById('pf-form-logo-file')
+    const urlInput = document.getElementById('pf-form-logo-url').value.trim()
+    if (fileInput && fileInput.files && fileInput.files[0]) {
       logoUrl = await new Promise(resolve => {
         const reader = new FileReader()
         reader.onload = e => resolve(e.target.result)
-        reader.readAsDataURL(logoFile.files[0])
+        reader.readAsDataURL(fileInput.files[0])
       })
+    } else if (urlInput) {
+      logoUrl = urlInput
     }
 
     const raw = {
-      clube: document.getElementById('pf-form-clube').value.trim() || null,
-      pais: document.getElementById('pf-form-pais').value.trim() || null,
-      posicao: document.getElementById('pf-form-posicao').value || null,
-      valor_transferencia: document.getElementById('pf-form-valor').value.trim() || null,
-      salario: document.getElementById('pf-form-salario').value.trim() || null,
-      comissoes: document.getElementById('pf-form-comissoes').value.trim() || null,
-      budget_total: document.getElementById('pf-form-budget').value.trim() || null,
-      introduzido_por: document.getElementById('pf-form-intro').value.trim() || null,
-      data_limite: document.getElementById('pf-form-data').value || null,
-      logo_url: logoUrl,
+      clube:               document.getElementById('pf-form-clube').value.trim()     || null,
+      pais:                document.getElementById('pf-form-pais').value.trim()      || null,
+      posicao:             document.getElementById('pf-form-posicao').value          || null,
+      valor_transferencia: document.getElementById('pf-form-valor').value.trim()    || null,
+      salario:             document.getElementById('pf-form-salario').value.trim()   || null,
+      comissoes:           document.getElementById('pf-form-comissoes').value.trim() || null,
+      budget_total:        document.getElementById('pf-form-budget').value.trim()    || null,
+      introduzido_por:     document.getElementById('pf-form-intro').value.trim()     || null,
+      data_limite:         document.getElementById('pf-form-data').value             || null,
+      logo_url:            logoUrl,
     }
-    const cleanData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== null && v !== undefined && v !== ''))
+    const cleanData = Object.fromEntries(Object.entries(raw).filter(([_, v]) => v !== null))
 
-    let result
+    let error
     if (isEdit) {
-      console.log('Updating pedido id:', pedido.id, 'data:', cleanData)
-      result = await supabase.from('club_requests').update(cleanData).eq('id', String(pedido.id))
-      console.log('Update result:', result)
+      const res = await supabase.from('club_requests').update(cleanData).eq('id', p.id)
+      error = res.error
     } else {
-      result = await supabase.from('club_requests').insert(cleanData)
+      const res = await supabase.from('club_requests').insert(cleanData)
+      error = res.error
     }
 
-    if (result.error) {
-      console.error('Save error:', result.error)
-      showToast('Erro: ' + result.error.message, 'error')
-      btn.disabled = false; btn.textContent = isEdit ? 'Guardar' : 'Criar pedido'
+    if (error) {
+      showToast('Erro: ' + error.message, 'error')
+      btn.disabled = false
+      btn.textContent = isEdit ? 'Guardar' : 'Criar pedido'
       return
     }
 
     showToast(isEdit ? 'Pedido guardado!' : 'Pedido criado!', 'success')
-    // Close form panel only, keep player-list intact
     document.getElementById('form-panel').classList.remove('open')
-    document.getElementById('overlay').classList.remove('open')
+    document.getElementById('overlay').classList.remove('show')
     await loadPedidos()
   })
 }
+
+
 
 
 async function loadPlayers() {
