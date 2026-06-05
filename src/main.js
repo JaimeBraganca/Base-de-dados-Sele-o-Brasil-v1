@@ -1116,7 +1116,16 @@ async function openPedidoPanel(pedido) {
           <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val">${pedido.valor_transferencia || '\u2014'}</span></div>
           <div class="info-row"><span class="info-label">Sal\u00e1rio</span><span class="info-val">${pedido.salario || '\u2014'}</span></div>
           <div class="info-row"><span class="info-label">Comiss\u00f5es</span><span class="info-val">${pedido.comissoes || '\u2014'}</span></div>
-          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val">${(() => { const t = parseValor(pedido.valor_transferencia); const s = parseValor(pedido.salario); return (t !== null && s !== null) ? formatValor(t + s) : (pedido.budget_total || '\u2014') })()}</span></div>
+          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val">${(() => {
+            const t = parseValor(pedido.valor_transferencia)
+            const s = parseValor(pedido.salario)
+            if (t === null || s === null) return pedido.budget_total || '\u2014'
+            const base = t + s
+            const commStr = (pedido.comissoes || '').toString().replace('%','').trim()
+            const commPct = parseFloat(commStr)
+            const total = (!isNaN(commPct) && commPct > 0) ? base * (1 + commPct / 100) : base
+            return formatValor(total)
+          })()}</span></div>
         </div>
       </div>
       <div class="panel-section">
