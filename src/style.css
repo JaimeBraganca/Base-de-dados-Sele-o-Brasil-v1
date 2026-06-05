@@ -309,7 +309,7 @@ select option { background: var(--surface); color: var(--text); font-family: 'DM
 .pedido-logo-placeholder { width:34px; height:34px; border-radius:8px; background:#dde1e7; border:1px solid #c8cdd4; }
 .pedido-avatar { border-radius: 6px !important; background: var(--surface-2) !important; }
 .row-chevron { color: var(--border); flex-shrink: 0; }
-.pedido-row { display: grid !important; grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 16px; align-items: center; gap: 0; padding: 13px 20px !important; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; -webkit-tap-highlight-color: transparent; }
+.pedido-row { display: grid !important; grid-template-columns: 1.5fr 1fr 1fr 1fr 16px; align-items: center; gap: 0; padding: 13px 20px !important; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.1s; -webkit-tap-highlight-color: transparent; }
 .pedido-row .player-avatar { width: 38px; height: 38px; border-radius: 6px !important; background: var(--accent-light) !important; flex-shrink: 0; }
 .pedido-row .player-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .pedido-logo { width: 38px; height: 38px; border-radius: 6px; object-fit: contain; flex-shrink: 0; }
