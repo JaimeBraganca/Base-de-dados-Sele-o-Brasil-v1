@@ -298,6 +298,25 @@ function applyFilters() {
 }
 
 // \u2500\u2500 RENDER APP \u2500\u2500
+
+function parseValor(str) {
+  if (!str) return null
+  const s = str.toString().replace(/[â‚¬$\s]/g, '').toUpperCase()
+  const num = parseFloat(s)
+  if (isNaN(num)) return null
+  if (s.endsWith('M')) return num * 1000000
+  if (s.endsWith('K')) return num * 1000
+  return num
+}
+
+function formatValor(n) {
+  if (n === null || n === undefined || isNaN(n)) return null
+  if (n >= 1000000) return '\u20ac' + (n / 1000000).toFixed(n % 1000000 === 0 ? 0 : 1) + 'M'
+  if (n >= 1000) return '\u20ac' + (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k'
+  return '\u20ac' + n
+}
+
+
 function renderPedidosPage() {
   document.getElementById('app').innerHTML = `
     <div class="topbar">
@@ -1019,9 +1038,6 @@ function renderPedidos() {
           <div class="pedido-col-item">
             <span class="pedido-col-val">${p.salario || '\u2014'}</span>
           </div>
-          <div class="pedido-col-item">
-            <span class="pedido-col-val pedido-col-budget">${p.budget_total || '\u2014'}</span>
-          </div>
         </div>
         <svg class="row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
@@ -1100,7 +1116,7 @@ async function openPedidoPanel(pedido) {
           <div class="info-row"><span class="info-label">Valor Transf.</span><span class="info-val">${pedido.valor_transferencia || '\u2014'}</span></div>
           <div class="info-row"><span class="info-label">Sal\u00e1rio</span><span class="info-val">${pedido.salario || '\u2014'}</span></div>
           <div class="info-row"><span class="info-label">Comiss\u00f5es</span><span class="info-val">${pedido.comissoes || '\u2014'}</span></div>
-          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val">${pedido.budget_total || '\u2014'}</span></div>
+          <div class="info-row"><span class="info-label">Budget Total</span><span class="info-val">${(() => { const t = parseValor(pedido.valor_transferencia); const s = parseValor(pedido.salario); return (t !== null && s !== null) ? formatValor(t + s) : (pedido.budget_total || '\u2014') })()}</span></div>
         </div>
       </div>
       <div class="panel-section">
