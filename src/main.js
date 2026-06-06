@@ -975,6 +975,11 @@ async function loadPedidos() {
   state.pedidoSortCol = state.pedidoSortCol || 'clube'
   state.pedidoSortDir = state.pedidoSortDir || 1
   state.pedidoSearch = state.pedidoSearch || ''
+  // Build club logo map
+  state.clubLogoMap = {}
+  ;(data || []).forEach(p => {
+    if (p.clube && p.logo_url) state.clubLogoMap[p.clube] = p.logo_url
+  })
   applyPedidoFilters()
 }
 
@@ -1325,6 +1330,28 @@ function openPedidoForm(pedido) {
   document.getElementById('pf-close').addEventListener('click', closeAll)
   document.getElementById('pf-cancel').addEventListener('click', closeAll)
 
+  // Auto-assign logo when clube name matches existing club
+  document.getElementById('pf-form-clube').addEventListener('blur', () => {
+    const clube = document.getElementById('pf-form-clube').value.trim()
+    if (!clube) return
+    const existingLogo = (state.clubLogoMap || {})[clube]
+    if (!existingLogo) return
+    // Only auto-assign if no logo already set
+    const preview = document.getElementById('pf-logo-preview')
+    const urlInput = document.getElementById('pf-form-logo-url')
+    const hasLogo = (urlInput && urlInput.value.trim()) || (preview && preview.tagName === 'IMG')
+    if (!hasLogo) {
+      if (preview) {
+        const img = document.createElement('img')
+        img.id = 'pf-logo-preview'
+        img.src = existingLogo
+        img.style.cssText = 'width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;'
+        preview.replaceWith(img)
+      }
+      showToast('Logo do ' + clube + ' aplicado automaticamente', 'success')
+    }
+  })
+
   // Logo file preview
   document.getElementById('pf-form-logo-file').addEventListener('change', e => {
     const file = e.target.files[0]
@@ -1363,6 +1390,11 @@ function openPedidoForm(pedido) {
       })
     } else if (urlInput) {
       logoUrl = urlInput
+    }
+    // Auto-assign from club logo map if no logo set
+    const clubeName = document.getElementById('pf-form-clube').value.trim()
+    if (!logoUrl && clubeName && (state.clubLogoMap || {})[clubeName]) {
+      logoUrl = state.clubLogoMap[clubeName]
     }
 
     const raw = {
