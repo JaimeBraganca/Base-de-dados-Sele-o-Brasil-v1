@@ -975,10 +975,12 @@ async function loadPedidos() {
   state.pedidoSortCol = state.pedidoSortCol || 'clube'
   state.pedidoSortDir = state.pedidoSortDir || 1
   state.pedidoSearch = state.pedidoSearch || ''
-  // Build club logo map
+  // Build club logo + country map
   state.clubLogoMap = {}
+  state.clubPaisMap = {}
   ;(data || []).forEach(p => {
     if (p.clube && p.logo_url) state.clubLogoMap[p.clube] = p.logo_url
+    if (p.clube && p.pais) state.clubPaisMap[p.clube] = p.pais
   })
   applyPedidoFilters()
 }
@@ -1335,12 +1337,13 @@ function openPedidoForm(pedido) {
     const clube = document.getElementById('pf-form-clube').value.trim()
     if (!clube) return
     const existingLogo = (state.clubLogoMap || {})[clube]
-    if (!existingLogo) return
-    // Only auto-assign if no logo already set
+    const existingPais = (state.clubPaisMap || {})[clube]
+    let changed = []
+    // Auto-assign logo if not set
     const preview = document.getElementById('pf-logo-preview')
     const urlInput = document.getElementById('pf-form-logo-url')
     const hasLogo = (urlInput && urlInput.value.trim()) || (preview && preview.tagName === 'IMG')
-    if (!hasLogo) {
+    if (existingLogo && !hasLogo) {
       if (preview) {
         const img = document.createElement('img')
         img.id = 'pf-logo-preview'
@@ -1348,8 +1351,15 @@ function openPedidoForm(pedido) {
         img.style.cssText = 'width:64px;height:64px;border-radius:10px;object-fit:contain;background:#f0f0f0;'
         preview.replaceWith(img)
       }
-      showToast('Logo do ' + clube + ' aplicado automaticamente', 'success')
+      changed.push('logo')
     }
+    // Auto-assign country if not set
+    const paisInput = document.getElementById('pf-form-pais')
+    if (existingPais && paisInput && !paisInput.value.trim()) {
+      paisInput.value = existingPais
+      changed.push('paÃ­s')
+    }
+    if (changed.length) showToast(clube + ': ' + changed.join(' e ') + ' preenchido automaticamente', 'success')
   })
 
   // Logo file preview
@@ -1391,10 +1401,14 @@ function openPedidoForm(pedido) {
     } else if (urlInput) {
       logoUrl = urlInput
     }
-    // Auto-assign from club logo map if no logo set
+    // Auto-assign from club logo/country map if not set
     const clubeName = document.getElementById('pf-form-clube').value.trim()
     if (!logoUrl && clubeName && (state.clubLogoMap || {})[clubeName]) {
       logoUrl = state.clubLogoMap[clubeName]
+    }
+    const paisInput2 = document.getElementById('pf-form-pais')
+    if (paisInput2 && !paisInput2.value.trim() && clubeName && (state.clubPaisMap || {})[clubeName]) {
+      paisInput2.value = state.clubPaisMap[clubeName]
     }
 
     const raw = {
