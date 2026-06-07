@@ -317,6 +317,53 @@ function formatValor(n) {
 }
 
 
+
+// â”€â”€ PUSH NOTIFICATIONS â”€â”€
+const VAPID_PUBLIC_KEY = 'BHD3hxSGuk_QZKxRDBCvX97lpa09H4MoDqn9LuoX3Q1Zv3_QnhlhCjM2M4fKoek8jE1kvkoLDEhl1RlGH-q5hlo'
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = atob(base64)
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)))
+}
+
+async function registerPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return
+  try {
+    const reg = await navigator.serviceWorker.ready
+    let sub = await reg.pushManager.getSubscription()
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      })
+    }
+    const { endpoint, keys } = sub.toJSON()
+    await supabase.from('push_subscriptions').upsert({
+      user_id: state.user.id,
+      endpoint,
+      p256dh: keys.p256dh,
+      auth: keys.auth
+    }, { onConflict: 'user_id,endpoint' })
+  } catch (e) {
+    console.log('Push registration failed:', e)
+  }
+}
+
+async function sendPushToOthers(title, body) {
+  if (!state.user) return
+  try {
+    await fetch('https://aiulcycosynvrriabpqg.supabase.co/functions/v1/send-push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (await supabase.auth.getSession()).data.session?.access_token },
+      body: JSON.stringify({ title, body, url: '/pedidos', exclude_user_id: state.user.id })
+    })
+  } catch (e) {
+    console.log('Push send failed:', e)
+  }
+}
+
 function renderPedidosPage() {
   document.getElementById('app').innerHTML = `
     <div class="topbar">
@@ -1444,6 +1491,10 @@ function openPedidoForm(pedido) {
     showToast(isEdit ? 'Pedido guardado!' : 'Pedido criado!', 'success')
     document.getElementById('form-panel').classList.remove('open')
     document.getElementById('overlay').classList.remove('show')
+    if (!isEdit) {
+      const clubeNome = document.getElementById('pf-form-clube')?.value?.trim() || 'Novo clube'
+      sendPushToOthers('Novo Pedido â€” Scout AIS', state.userName + ' adicionou um pedido: ' + clubeNome)
+    }
     await loadPedidos()
   })
 }
@@ -1619,6 +1670,12 @@ async function init() {
     renderAuth(); return
   }
   await fetchRole()
+  // Register service worker and push notifications for admin/moderator
+  if (state.role === 'admin' || state.role === 'moderator') {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(() => registerPush()).catch(e => console.log('SW:', e))
+    }
+  }
   if (location.pathname === '/pedidos') {
     renderPedidosPage()
   } else {
